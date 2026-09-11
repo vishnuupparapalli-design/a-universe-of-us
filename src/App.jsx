@@ -1,117 +1,136 @@
 import React, { useState } from 'react'
-import { WORLD_BIBLE } from './styles/worldBible'
+import { siteSettings, countdownSettings } from './data/settings'
+import { memories } from './data/memories'
+import { movies } from './data/movies'
+import { letters } from './data/letters'
+import { useDiscoveryState } from './hooks/useDiscoveryState'
 
 export default function App() {
-  const [activeAtmosphere, setActiveAtmosphere] = useState('beginning')
-  const current = WORLD_BIBLE.atmospheres[activeAtmosphere]
+  const { discoveredIds, discoveredCount, discover, isDiscovered, resetDiscovery } = useDiscoveryState()
+  const [selectedItem, setSelectedItem] = useState(null)
+
+  // Combine all items to test universal discovery
+  const allItems = [...memories, ...movies]
 
   return (
-    <div 
-      className="min-h-screen transition-colors duration-700 p-6 md:p-12 flex flex-col justify-between"
-      style={{ backgroundColor: current.ambient }}
-    >
-      {/* Top Persistent Bar Preview (Countdown + Nav Thread) */}
+    <div className="min-h-screen bg-elsewhere-void text-elsewhere-textPrimary p-6 md:p-12 flex flex-col justify-between font-sans selection:bg-elsewhere-gold/20 selection:text-elsewhere-gold">
+      {/* Top Bar */}
       <header className="max-w-5xl mx-auto w-full flex items-center justify-between pb-8 border-b border-white/5">
         <div className="flex items-center gap-3">
           <span className="w-2.5 h-2.5 rounded-full bg-elsewhere-gold shadow-glow-gold animate-pulse"></span>
-          <span className="font-serif text-xl tracking-wider text-elsewhere-textPrimary">Elsewhere</span>
-          <span className="text-xs font-sans uppercase tracking-widest text-elsewhere-textMuted px-2 py-0.5 rounded bg-white/5">
-            Living Archive
+          <span className="font-serif text-2xl tracking-wider text-elsewhere-textPrimary">{siteSettings.title}</span>
+          <span className="text-[11px] uppercase tracking-widest text-elsewhere-textMuted px-2 py-0.5 rounded bg-white/5 border border-white/5">
+            Stage 2: Data Architecture
           </span>
         </div>
 
-        {/* Persistent Countdown Widget Preview (Section F2) */}
-        <div className="bg-elsewhere-surface/80 backdrop-blur-md border border-elsewhere-border rounded-xl px-4 py-2 flex items-center gap-4 shadow-clay-card">
-          <div className="text-right">
-            <p className="text-[10px] font-sans tracking-widest uppercase text-elsewhere-textMuted">Until We Meet</p>
-            <p className="text-xs font-sans text-elsewhere-textSecondary">Target Date Set</p>
-          </div>
-          <div className="flex items-baseline gap-1.5 font-sans">
-            <span className="text-lg font-semibold text-elsewhere-textPrimary">--</span>
-            <span className="text-[10px] text-elsewhere-textMuted uppercase">days</span>
-          </div>
+        {/* Discovery Counter (Subtle world feedback, not gamification) */}
+        <div className="flex items-center gap-3 bg-elsewhere-surface/80 border border-elsewhere-border rounded-full px-4 py-1.5 shadow-clay-card">
+          <span className="text-xs text-elsewhere-textMuted">Stars Ignited:</span>
+          <span className="text-xs font-semibold text-elsewhere-gold font-serif">{discoveredCount} / {allItems.length}</span>
+          {discoveredCount > 0 && (
+            <button
+              onClick={resetDiscovery}
+              className="text-[10px] text-elsewhere-textMuted hover:text-rose-400 transition-colors underline ml-1"
+              title="Reset discovery state in localStorage"
+            >
+              reset
+            </button>
+          )}
         </div>
       </header>
 
-      {/* Main Experience Hero Mock */}
-      <main className="max-w-4xl mx-auto w-full my-auto py-12 text-center">
-        {/* Guiding Metaphor */}
-        <p className="text-xs md:text-sm uppercase tracking-[0.3em] text-elsewhere-textMuted font-sans mb-4">
-          Visual Design System & Atmosphere Preview
-        </p>
-
-        <h1 className="text-4xl md:text-6xl font-serif font-light text-elsewhere-textPrimary mb-6 leading-tight">
-          "One meeting became a memory.<br />
-          <span className="italic text-elsewhere-gold font-normal">Memories became stars.</span><br />
-          Stars became a little universe."
-        </h1>
-
-        <p className="text-base md:text-lg text-elsewhere-textSecondary font-sans font-light max-w-xl mx-auto mb-10 leading-relaxed">
-          {current.headline}
-        </p>
-
-        {/* Tactile Claymorphic Cards Preview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left mb-12">
-          {/* Card 1: Claymorphic Primitive */}
-          <div className="bg-elsewhere-surface/90 border border-elsewhere-border rounded-2xl p-6 shadow-clay-card hover:border-elsewhere-borderHover transition-all">
-            <div className="w-8 h-8 rounded-lg bg-elsewhere-surfaceLight border border-white/10 flex items-center justify-center mb-4 text-elsewhere-gold">
-              ★
-            </div>
-            <h3 className="font-serif text-lg text-elsewhere-textPrimary mb-1">The First Star</h3>
-            <p className="text-xs font-sans text-elsewhere-textSecondary leading-relaxed">
-              Born from The Beginning. Every other star in the constellation traces back toward it.
-            </p>
-          </div>
-
-          {/* Card 2: Living Archive & Future Memory */}
-          <div className="bg-elsewhere-surface/90 border border-dashed border-white/20 rounded-2xl p-6 shadow-clay-card">
-            <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center mb-4 text-elsewhere-dawn">
-              ◌
-            </div>
-            <h3 className="font-serif text-lg text-elsewhere-textPrimary mb-1">An Empty Frame</h3>
-            <p className="text-xs font-sans text-elsewhere-textMuted leading-relaxed">
-              Not missing content—the photo we haven't taken yet. Ready to flip from future to past.
-            </p>
-          </div>
-
-          {/* Card 3: Reserved Muted Gold Accent */}
-          <div className="bg-elsewhere-surface/90 border border-elsewhere-gold/30 rounded-2xl p-6 shadow-clay-card shadow-glow-gold">
-            <div className="w-8 h-8 rounded-lg bg-elsewhere-gold/10 border border-elsewhere-gold/30 flex items-center justify-center mb-4 text-elsewhere-gold">
-              ✦
-            </div>
-            <h3 className="font-serif text-lg text-elsewhere-gold mb-1">201 Days</h3>
-            <p className="text-xs font-sans text-elsewhere-textSecondary leading-relaxed">
-              Reserved muted gold tone: strictly for special moments, never used as decorative filler.
-            </p>
-          </div>
+      {/* Main Content */}
+      <main className="max-w-5xl mx-auto w-full my-8">
+        <div className="text-center max-w-2xl mx-auto mb-10">
+          <p className="text-xs uppercase tracking-[0.25em] text-elsewhere-textMuted mb-2">
+            Living Archive &bull; Data Verification
+          </p>
+          <h1 className="text-3xl md:text-5xl font-serif font-light text-elsewhere-textPrimary leading-tight mb-4">
+            "One meeting became a memory.<br />
+            <span className="italic text-elsewhere-gold font-normal">Memories became stars.</span>"
+          </h1>
+          <p className="text-sm text-elsewhere-textSecondary leading-relaxed">
+            Click any entry below to simulate discovering it. Notice how its star lights up and stays remembered in your browser even if you refresh the page.
+          </p>
         </div>
 
-        {/* Interactive Atmosphere Switcher (Validates Chapter Palettes) */}
-        <div className="inline-flex flex-wrap justify-center items-center gap-2 p-1.5 rounded-full bg-elsewhere-surface/60 border border-elsewhere-border backdrop-blur-md">
-          {Object.entries(WORLD_BIBLE.atmospheres).map(([key, atm]) => (
-            <button
-              key={key}
-              onClick={() => setActiveAtmosphere(key)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-sans transition-all ${
-                activeAtmosphere === key
-                  ? 'bg-white/15 text-elsewhere-textPrimary shadow-clay-btn'
-                  : 'text-elsewhere-textMuted hover:text-elsewhere-textSecondary'
-              }`}
-            >
-              {atm.name}
-            </button>
-          ))}
+        {/* Interactive Memories List */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          {allItems.map((item) => {
+            const discovered = isDiscovered(item.id)
+            const isFuture = item.status === 'future'
+
+            return (
+              <div
+                key={item.id}
+                onClick={() => {
+                  discover(item.id)
+                  setSelectedItem(item)
+                }}
+                className={`cursor-pointer rounded-2xl p-5 border transition-all duration-300 shadow-clay-card flex flex-col justify-between ${
+                  discovered
+                    ? 'bg-elsewhere-surface border-elsewhere-gold/40 shadow-glow-gold/10'
+                    : isFuture
+                    ? 'bg-elsewhere-surface/40 border-dashed border-white/15 hover:border-white/30'
+                    : 'bg-elsewhere-surface/60 border-elsewhere-border hover:border-elsewhere-borderHover'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[11px] uppercase tracking-wider px-2 py-0.5 rounded bg-white/5 text-elsewhere-textMuted">
+                      {item.chapter}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      {isFuture && (
+                        <span className="text-[10px] uppercase tracking-wider text-elsewhere-dawn bg-elsewhere-dawn/10 px-2 py-0.5 rounded">
+                          Future Placeholder
+                        </span>
+                      )}
+                      <span className={`text-sm ${discovered ? 'text-elsewhere-gold' : 'text-white/20'}`}>
+                        {discovered ? '★ Lit' : '☆ Unlit'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <h3 className="font-serif text-xl text-elsewhere-textPrimary mb-1">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-elsewhere-textSecondary line-clamp-2 leading-relaxed">
+                    {item.text}
+                  </p>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-elsewhere-textMuted">
+                  <span>{item.location || item.approximateDate || 'Elsewhere'}</span>
+                  <span>Coords: ({item.constellationPosition?.x}, {item.constellationPosition?.y})</span>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Letters Section Preview */}
+        <div className="border border-white/10 rounded-2xl p-6 bg-elsewhere-surface/30 backdrop-blur-sm">
+          <h2 className="font-serif text-xl text-elsewhere-textPrimary mb-4 flex items-center gap-2">
+            <span>✉</span> Open-When Letters ({letters.length})
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {letters.map((letter) => (
+              <div key={letter.id} className="p-4 rounded-xl bg-white/5 border border-white/5">
+                <h4 className="font-serif text-base text-elsewhere-textPrimary mb-1">{letter.title}</h4>
+                <p className="text-xs text-elsewhere-gold font-serif italic mb-2">{letter.subtitle}</p>
+                <p className="text-xs text-elsewhere-textSecondary leading-relaxed">{letter.text}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </main>
 
-      {/* Footer System Verification */}
-      <footer className="max-w-5xl mx-auto w-full pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-sans text-elsewhere-textMuted">
-        <p>Stage 1: Design System & Shared Visual Language</p>
-        <div className="flex items-center gap-6">
-          <span>Serif: Cormorant Garamond</span>
-          <span>Sans: Plus Jakarta Sans</span>
-          <span>Tailwind v3.4.17</span>
-        </div>
+      {/* Footer */}
+      <footer className="max-w-5xl mx-auto w-full pt-8 border-t border-white/5 text-xs text-elsewhere-textMuted flex flex-col md:flex-row items-center justify-between gap-2">
+        <p>{countdownSettings.title} &bull; Target: {countdownSettings.targetDate} ({countdownSettings.timezone})</p>
+        <p>Data Layer Verified &bull; Checked into Git</p>
       </footer>
     </div>
   )
