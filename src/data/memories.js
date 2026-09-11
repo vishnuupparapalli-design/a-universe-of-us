@@ -1,18 +1,6 @@
 /**
  * Memories Data Architecture (Master Plan Section AE)
- * 
- * Schema:
- * - id: unique string key
- * - chapter: chapter identifier
- * - title: memory headline
- * - text: personal authored story
- * - image: path in public/photos/ or null (empty frame)
- * - date: YYYY-MM-DD or null
- * - approximateDate: soft label like "early on"
- * - location: symbolic or real location
- * - status: "past" (happened) | "future" (reserved placeholder)
- * - constellationPosition: { x, y } (0.0 to 1.0 normalized coordinates)
- * - linkedStars: array of IDs this star connects to in the sky
+ * Updated to 203 Days
  */
 
 export const memories = [
@@ -26,18 +14,31 @@ export const memories = [
     approximateDate: "The first meeting",
     location: "Genshin Impact",
     status: "past",
-    constellationPosition: { x: 0.50, y: 0.50 }, // The anchor star at the center of the sky
-    linkedStars: ["two-hundred-one-days", "movie-night-01"],
+    constellationPosition: { x: 0.50, y: 0.50 },
+    linkedStars: ["two-hundred-three-days", "movie-night-01"],
   },
   {
-    id: "two-hundred-one-days",
-    chapter: "201-days",
-    title: "201 Days",
-    text: "201 days of choosing each other across the distance.",
+    id: "our-stories",
+    chapter: "our-stories",
+    title: "Our Stories",
+    text: "I learned your story, and you learned mine. Two books resting side by side across the distance.",
     image: null,
     date: null,
-    approximateDate: "201 Days",
-    location: "Across the screens",
+    approximateDate: "Getting to know each other",
+    location: "Late night calls",
+    status: "past",
+    constellationPosition: { x: 0.45, y: 0.35 },
+    linkedStars: ["the-beginning"],
+  },
+  {
+    id: "two-hundred-three-days",
+    chapter: "203-days",
+    title: "203 Days",
+    text: "203 days of choosing each other across the distance.",
+    image: null,
+    date: null,
+    approximateDate: "203 Days",
+    location: "New Delhi ↔ Hanoi",
     status: "past",
     constellationPosition: { x: 0.38, y: 0.42 },
     linkedStars: ["the-beginning", "distance-thread"],
@@ -53,7 +54,7 @@ export const memories = [
     location: "Between us",
     status: "past",
     constellationPosition: { x: 0.65, y: 0.35 },
-    linkedStars: ["two-hundred-one-days"],
+    linkedStars: ["two-hundred-three-days"],
   },
   {
     id: "hard-days-01",
@@ -77,7 +78,7 @@ export const memories = [
     date: null,
     approximateDate: "Someday",
     location: "Where we meet",
-    status: "future", // Notice: status is "future"! Renders as an empty frame.
+    status: "future",
     constellationPosition: { x: 0.72, y: 0.68 },
     linkedStars: ["distance-thread"],
   },

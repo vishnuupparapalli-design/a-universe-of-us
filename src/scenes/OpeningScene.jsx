@@ -5,9 +5,6 @@ import * as THREE from 'three'
 import gsap from 'gsap'
 import InteractiveObject from '../components/InteractiveObject'
 
-/**
- * Handcrafted Clay Envelope Flap (Hinged at the top fold)
- */
 function EnvelopeFlap({ flapRef }) {
   const shape = useMemo(() => {
     const s = new THREE.Shape()
@@ -19,7 +16,6 @@ function EnvelopeFlap({ flapRef }) {
   }, [])
 
   return (
-    // Pivot group positioned at the top hinge of the envelope
     <group ref={flapRef} position={[0, 0.046, -0.45]}>
       <mesh position={[0, 0, 0.45]} rotation={[-Math.PI / 2, 0, 0]}>
         <extrudeGeometry
@@ -45,9 +41,6 @@ function EnvelopeFlap({ flapRef }) {
   )
 }
 
-/**
- * Opening Scene Diorama with Physical Open Sequence
- */
 export default function OpeningScene({ isOpen, onOpen }) {
   const groupRef = useRef()
   const envelopeRef = useRef()
@@ -56,27 +49,21 @@ export default function OpeningScene({ isOpen, onOpen }) {
   const sealRef = useRef()
   const lightRef = useRef()
 
-  // Animate flap opening and letter paper sliding out
   useEffect(() => {
     if (!flapRef.current || !letterSheetRef.current || !sealRef.current) return
 
     if (isOpen) {
-      // 1. Seal pops slightly and fades
       gsap.to(sealRef.current.position, {
         y: 0.15,
         duration: 0.35,
         ease: 'power2.out',
       })
-
-      // 2. Flap folds back 160 degrees like a real envelope
       gsap.to(flapRef.current.rotation, {
         x: Math.PI * 0.85,
         duration: 0.65,
         ease: 'back.out(1.2)',
         delay: 0.1,
       })
-
-      // 3. Glowing letter sheet slides smoothly upward
       gsap.to(letterSheetRef.current.position, {
         y: 0.45,
         z: 0.05,
@@ -85,23 +72,18 @@ export default function OpeningScene({ isOpen, onOpen }) {
         delay: 0.25,
       })
     } else {
-      // Letter slides back into envelope
       gsap.to(letterSheetRef.current.position, {
         y: 0.02,
         z: 0,
         duration: 0.45,
         ease: 'power2.in',
       })
-
-      // Flap folds closed
       gsap.to(flapRef.current.rotation, {
         x: 0,
         duration: 0.55,
         ease: 'power2.out',
         delay: 0.15,
       })
-
-      // Seal resets
       gsap.to(sealRef.current.position, {
         y: 0.055,
         duration: 0.35,
@@ -111,14 +93,10 @@ export default function OpeningScene({ isOpen, onOpen }) {
     }
   }, [isOpen])
 
-  // Gentle breathing float animation
   useFrame((state) => {
     const t = state.clock.getElapsedTime()
     if (groupRef.current) {
       groupRef.current.position.y = -0.1 + Math.sin(t * 1.1) * 0.025
-    }
-    if (envelopeRef.current && !isOpen) {
-      envelopeRef.current.position.y = 0.05 + Math.sin(t * 1.5) * 0.008
     }
     if (lightRef.current) {
       lightRef.current.intensity = (isOpen ? 2.2 : 1.6) + Math.sin(t * 2.2) * 0.15
@@ -154,15 +132,14 @@ export default function OpeningScene({ isOpen, onOpen }) {
         <meshBasicMaterial color="#000000" transparent opacity={0.45} />
       </mesh>
 
-      {/* 2. The Envelope Group wrapped with InteractiveObject */}
+      {/* 2. The Envelope Group */}
       <group
         ref={envelopeRef}
         position={[0, 0.05, 0]}
         rotation={[0, 0.12, 0]}
       >
-        <InteractiveObject onOpen={onOpen} isOpen={isOpen}>
+        <InteractiveObject onOpen={onOpen} isOpen={isOpen} showAura={false}>
           
-          {/* Warm Candlelight Glow */}
           <pointLight
             ref={lightRef}
             color="#ffd699"
@@ -172,7 +149,7 @@ export default function OpeningScene({ isOpen, onOpen }) {
             position={[0, 0.8, 0.3]}
           />
 
-          {/* Letter Sheet that slides out */}
+          {/* Letter Sheet */}
           <group ref={letterSheetRef} position={[0, 0.02, 0]}>
             <RoundedBox args={[1.5, 0.015, 0.95]} radius={0.02} smoothness={2}>
               <meshStandardMaterial
@@ -198,10 +175,10 @@ export default function OpeningScene({ isOpen, onOpen }) {
             />
           </RoundedBox>
 
-          {/* Hinged Opening Flap */}
+          {/* Flap */}
           <EnvelopeFlap flapRef={flapRef} />
 
-          {/* Wax Seal Button */}
+          {/* Wax Seal */}
           <group ref={sealRef} position={[0, 0.055, 0.14]}>
             <mesh>
               <cylinderGeometry args={[0.13, 0.14, 0.035, 32]} />
@@ -221,13 +198,6 @@ export default function OpeningScene({ isOpen, onOpen }) {
                 metalness={0.15}
               />
             </mesh>
-          </group>
-
-          {/* Keepsake Stamp */}
-          <group position={[1.1, -0.03, -0.6]} rotation={[0, -0.4, 0]}>
-            <RoundedBox args={[0.36, 0.02, 0.46]} radius={0.015} smoothness={2}>
-              <meshStandardMaterial color="#323b52" roughness={0.75} />
-            </RoundedBox>
           </group>
 
         </InteractiveObject>

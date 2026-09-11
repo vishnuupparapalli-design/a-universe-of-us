@@ -4,10 +4,33 @@ import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 
 /**
- * Ambient floating starlight particles
+ * Creates a soft circular particle texture dynamically (no image files needed)
+ */
+function createCircleTexture() {
+  const canvas = document.createElement('canvas')
+  canvas.width = 64
+  canvas.height = 64
+  const ctx = canvas.getContext('2d')
+
+  const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32)
+  gradient.addColorStop(0, 'rgba(255, 255, 255, 1)')
+  gradient.addColorStop(0.3, 'rgba(223, 195, 138, 0.8)')
+  gradient.addColorStop(0.7, 'rgba(223, 195, 138, 0.2)')
+  gradient.addColorStop(1, 'rgba(0, 0, 0, 0)')
+
+  ctx.fillStyle = gradient
+  ctx.fillRect(0, 0, 64, 64)
+
+  const texture = new THREE.CanvasTexture(canvas)
+  return texture
+}
+
+/**
+ * Ambient floating starlight particles (dreamy round motes)
  */
 function SoftParticles({ count = 50 }) {
   const pointsRef = useRef()
+  const circleTexture = useMemo(() => createCircleTexture(), [])
 
   const [positions, speeds] = useMemo(() => {
     const pos = new Float32Array(count * 3)
@@ -18,7 +41,7 @@ function SoftParticles({ count = 50 }) {
       pos[i * 3 + 2] = (Math.random() - 0.5) * 6
 
       spd[i * 3 + 0] = (Math.random() - 0.5) * 0.0015
-      spd[i * 3 + 1] = Math.random() * 0.0025 + 0.0008
+      spd[i * 3 + 1] = Math.random() * 0.002 + 0.0008
       spd[i * 3 + 2] = (Math.random() - 0.5) * 0.0015
     }
     return [pos, spd]
@@ -52,10 +75,10 @@ function SoftParticles({ count = 50 }) {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.045}
-        color="#dfc89e"
+        size={0.08}
+        map={circleTexture}
         transparent
-        opacity={0.6}
+        opacity={0.65}
         blending={THREE.AdditiveBlending}
         depthWrite={false}
       />
@@ -65,7 +88,6 @@ function SoftParticles({ count = 50 }) {
 
 /**
  * Diorama Stage Wrapper
- * Framed at an intimate 3/4 isometric angle looking down onto the desk.
  */
 export default function Diorama({ children }) {
   return (
@@ -75,31 +97,26 @@ export default function Diorama({ children }) {
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         className="w-full h-full"
       >
-        {/* Rich ambient fill so the desk is visible as a ceramic surface */}
         <ambientLight color="#182238" intensity={1.1} />
 
-        {/* Warm key directional light */}
         <directionalLight
           position={[3.5, 5.5, 3.5]}
           intensity={1.6}
           color="#fff5e4"
         />
 
-        {/* Soft violet rim fill light from the back */}
         <directionalLight
           position={[-3.5, 3, -3]}
           intensity={0.65}
           color="#8595c2"
         />
 
-        {/* Floating motes */}
         <SoftParticles count={50} />
 
         <Suspense fallback={null}>
           {children}
         </Suspense>
 
-        {/* Camera Controls */}
         <OrbitControls
           target={[0, 0.05, 0]}
           enableZoom={false}
