@@ -1,7 +1,8 @@
-/**
- * Memories Data Architecture (Master Plan Section AE)
- * Updated to 203 Days
- */
+import { siteSettings, countdownSettings } from './settings';
+import { getLiveTimeTogether } from '../utils/countdown';
+
+const liveTime = getLiveTimeTogether(siteSettings.relationshipStartDate, countdownSettings.timezone);
+const currentDays = liveTime.days;
 
 export const memories = [
   {
@@ -14,8 +15,9 @@ export const memories = [
     approximateDate: "The first meeting",
     location: "Genshin Impact",
     status: "past",
-    constellationPosition: { x: 0.50, y: 0.50 },
-    linkedStars: ["two-hundred-three-days", "movie-night-01"],
+    // Center Anchor Star
+    constellationPosition: { x: 0.50, y: 0.48 },
+    linkedStars: ["two-hundred-three-days", "movie-night-01", "our-stories"],
   },
   {
     id: "our-stories",
@@ -27,34 +29,23 @@ export const memories = [
     approximateDate: "Getting to know each other",
     location: "Late night calls",
     status: "past",
-    constellationPosition: { x: 0.45, y: 0.35 },
+    // Upper Left
+    constellationPosition: { x: 0.35, y: 0.24 },
     linkedStars: ["the-beginning"],
   },
   {
     id: "two-hundred-three-days",
-    chapter: "203-days",
-    title: "203 Days",
-    text: "203 days of choosing each other across the distance.",
+    chapter: `${currentDays}-days`,
+    title: `${currentDays} Days`,
+    text: `${currentDays} days of choosing each other across the distance.`,
     image: null,
     date: null,
-    approximateDate: "203 Days",
+    approximateDate: `${currentDays} Days`,
     location: "New Delhi ↔ Hanoi",
     status: "past",
-    constellationPosition: { x: 0.38, y: 0.42 },
-    linkedStars: ["the-beginning", "distance-thread"],
-  },
-  {
-    id: "distance-thread",
-    chapter: "across-the-distance",
-    title: "Across the Distance",
-    text: "Somewhere between here and there, we built a world of our own. The luminous thread connecting two far-apart lights.",
-    image: null,
-    date: null,
-    approximateDate: "Every night",
-    location: "Between us",
-    status: "past",
-    constellationPosition: { x: 0.65, y: 0.35 },
-    linkedStars: ["two-hundred-three-days"],
+    // Mid Left
+    constellationPosition: { x: 0.22, y: 0.42 },
+    linkedStars: ["the-beginning", "hard-days-01"],
   },
   {
     id: "hard-days-01",
@@ -66,8 +57,23 @@ export const memories = [
     approximateDate: "A difficult week",
     location: "In the quiet",
     status: "past",
-    constellationPosition: { x: 0.30, y: 0.65 },
-    linkedStars: ["the-beginning"],
+    // Lower Left
+    constellationPosition: { x: 0.16, y: 0.72 },
+    linkedStars: ["two-hundred-three-days"],
+  },
+  {
+    id: "distance-thread",
+    chapter: "across-the-distance",
+    title: "Across the Distance",
+    text: "Somewhere between here and there, we built a world of our own. The luminous thread connecting two far-apart lights.",
+    image: null,
+    date: null,
+    approximateDate: "Every night",
+    location: "Between us",
+    status: "past",
+    // Far Upper Right
+    constellationPosition: { x: 0.82, y: 0.22 },
+    linkedStars: ["movie-night-01", "someday-first-photo"],
   },
   {
     id: "someday-first-photo",
@@ -79,7 +85,8 @@ export const memories = [
     approximateDate: "Someday",
     location: "Where we meet",
     status: "future",
-    constellationPosition: { x: 0.72, y: 0.68 },
+    // Lower Right (Reserved place)
+    constellationPosition: { x: 0.76, y: 0.74 },
     linkedStars: ["distance-thread"],
   },
 ];

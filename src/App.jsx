@@ -4,6 +4,7 @@ import OpeningScene from './scenes/OpeningScene'
 import ShelfScene from './scenes/ShelfScene'
 import MemoryPanel from './components/MemoryPanel'
 import CountdownWidget from './components/CountdownWidget'
+import ConstellationLayer from './components/ConstellationLayer'
 import { siteSettings } from './data/settings'
 import { letters } from './data/letters'
 import { memories } from './data/memories'
@@ -13,6 +14,7 @@ import { useDiscoveryState } from './hooks/useDiscoveryState'
 export default function App() {
   const { discoveredCount, discover, isDiscovered, resetDiscovery } = useDiscoveryState()
   
+  // Experience Views: 'arrival' | 'shelf' | 'sky'
   const [viewMode, setViewMode] = useState('arrival')
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
@@ -46,7 +48,7 @@ export default function App() {
     }, 400)
   }
 
-  const handleSelectShelfObject = (id) => {
+  const handleSelectMemory = (id) => {
     const found = allContent.find((item) => item.id === id)
     if (found) {
       setActiveMemory(found)
@@ -54,38 +56,64 @@ export default function App() {
     }
   }
 
-  // Find hovered object for dynamic banner
   const hoveredItem = allContent.find((item) => item.id === hoveredId)
 
   return (
     <div className="relative w-screen h-screen bg-elsewhere-void overflow-hidden text-elsewhere-textPrimary font-sans select-none">
       
-      {/* Light Bloom Transition */}
+      {/* 1. Memory Constellation — HIDDEN DURING ARRIVAL (Master Plan Section C & E) */}
+      {viewMode !== 'arrival' && (
+        <ConstellationLayer
+          items={allContent}
+          isDiscovered={isDiscovered}
+          onSelectStar={(item) => handleSelectMemory(item.id)}
+          fullScreen={viewMode === 'sky'}
+        />
+      )}
+
+      {/* Atmospheric Transition Bloom */}
       <div 
         className={`fixed inset-0 z-40 bg-amber-100/10 pointer-events-none transition-opacity duration-700 ${
           transitioning ? 'opacity-100' : 'opacity-0'
         }`}
       />
 
-      {/* Top HUD */}
-      <header className="absolute top-0 left-0 right-0 z-20 p-6 md:p-8 flex items-center justify-between pointer-events-none">
+      {/* 2. Top HUD Bar */}
+      <header className="absolute top-0 left-0 right-0 z-30 p-6 md:p-8 flex items-center justify-between pointer-events-none">
         <div className="flex items-center gap-3 pointer-events-auto">
           <span className="w-2.5 h-2.5 rounded-full bg-elsewhere-gold shadow-glow-gold animate-pulse"></span>
           <span className="font-serif text-2xl tracking-wider text-elsewhere-textPrimary">
             {siteSettings.title}
           </span>
           <span className="hidden sm:inline text-[10px] uppercase tracking-widest text-elsewhere-textMuted px-2.5 py-0.5 rounded-full bg-white/5 border border-white/5">
-            {viewMode === 'arrival' ? 'Stage 6: Arrival' : 'The Shelf (Living Hub)'}
+            {viewMode === 'arrival'
+              ? 'Arrival'
+              : viewMode === 'sky'
+              ? 'The Sky Between Us'
+              : 'The Shelf (Living Hub)'}
           </span>
         </div>
 
         {/* Right HUD */}
-        <div className="flex items-center gap-3 pointer-events-auto">
-          {viewMode === 'shelf' && (
+        <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
+          {viewMode !== 'arrival' && (
             <>
+              {/* Sky View / Shelf View Switcher */}
+              <button
+                onClick={() => setViewMode(viewMode === 'sky' ? 'shelf' : 'sky')}
+                className={`text-xs font-sans px-3.5 py-1.5 rounded-full border transition-all flex items-center gap-1.5 ${
+                  viewMode === 'sky'
+                    ? 'bg-elsewhere-gold text-elsewhere-void border-elsewhere-gold font-semibold shadow-glow-gold'
+                    : 'bg-white/5 hover:bg-white/10 text-elsewhere-textSecondary border-white/10'
+                }`}
+                title="Toggle constellation night sky"
+              >
+                <span>{viewMode === 'sky' ? '📚 Return to Shelf' : '🌌 The Sky'}</span>
+              </button>
+
               <button
                 onClick={handleReturnToOpening}
-                className="text-[11px] font-sans text-elsewhere-textMuted hover:text-elsewhere-textPrimary px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
+                className="hidden md:block text-[11px] font-sans text-elsewhere-textMuted hover:text-elsewhere-textPrimary px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
                 title="Return to the opening letter"
               >
                 ✉ Re-read letter
@@ -95,6 +123,7 @@ export default function App() {
             </>
           )}
 
+          {/* Star Counter */}
           <div className="bg-elsewhere-surface/80 backdrop-blur-md border border-elsewhere-border rounded-full px-3.5 py-1.5 shadow-clay-card text-xs flex items-center gap-2">
             <span className="text-elsewhere-gold font-serif">★ {discoveredCount}</span>
             {discoveredCount > 1 && (
@@ -110,8 +139,8 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main 3D Diorama */}
-      <main className="w-full h-full">
+      {/* 3. Main 3D Diorama Stage */}
+      <main className="w-full h-full relative z-10">
         {viewMode === 'arrival' ? (
           <Diorama>
             <OpeningScene
@@ -119,19 +148,19 @@ export default function App() {
               onOpen={handleOpenEnvelope}
             />
           </Diorama>
-        ) : (
+        ) : viewMode === 'shelf' ? (
           <Diorama>
             <ShelfScene
-              onSelectObject={handleSelectShelfObject}
+              onSelectObject={handleSelectMemory}
               onHoverObject={setHoveredId}
               isDiscovered={isDiscovered}
             />
           </Diorama>
-        )}
+        ) : null}
       </main>
 
-      {/* Bottom Guidance & Dynamic Shelf Banner */}
-      <footer className="absolute bottom-0 left-0 right-0 z-20 pb-6 sm:pb-8 flex flex-col items-center justify-center text-center pointer-events-none">
+      {/* 4. Bottom Guidance & Prompt */}
+      <footer className="absolute bottom-0 left-0 right-0 z-30 pb-6 sm:pb-8 flex flex-col items-center justify-center text-center pointer-events-none">
         {viewMode === 'arrival' ? (
           <>
             <p className="text-sm md:text-base font-serif italic text-elsewhere-textSecondary max-w-md mb-3 pointer-events-auto">
@@ -149,20 +178,28 @@ export default function App() {
               <span className="text-elsewhere-gold">✦</span>
             </div>
           </>
+        ) : viewMode === 'sky' ? (
+          <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
+            <span className="text-elsewhere-gold text-xs">✦</span>
+            <span className="font-serif text-sm text-elsewhere-textPrimary">
+              The Sky Between Us — Click any ignited star or hollow ring to explore
+            </span>
+            <span className="text-elsewhere-gold text-xs">✦</span>
+          </div>
         ) : (
           <div className="pointer-events-auto transition-all duration-300 bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3 max-w-lg mx-4">
             <span className="text-elsewhere-gold text-xs">✦</span>
             <span className="font-serif text-sm text-elsewhere-textPrimary truncate">
               {hoveredItem 
                 ? `${hoveredItem.title} — ${hoveredItem.approximateDate || 'Keepsake'}`
-                : 'Hover or tap any keepsake to explore'}
+                : 'Hover or tap any keepsake to explore & light up the sky'}
             </span>
             <span className="text-elsewhere-gold text-xs">✦</span>
           </div>
         )}
       </footer>
 
-      {/* Opening Letter Panel */}
+      {/* Opening Letter Modal */}
       <MemoryPanel
         isOpen={isEnvelopeOpen}
         onClose={() => setIsEnvelopeOpen(false)}
@@ -175,7 +212,7 @@ export default function App() {
         onPrimaryAction={handleEnterWorld}
       />
 
-      {/* Shelf Memory Panel */}
+      {/* Keepsake / Star Story Modal */}
       {activeMemory && (
         <MemoryPanel
           isOpen={Boolean(activeMemory)}

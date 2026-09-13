@@ -1,8 +1,3 @@
-/**
- * Movie Corner Data (Master Plan Section I)
- * Focuses on what it felt like to watch together apart, not just listing titles.
- */
-
 export const movies = [
   {
     id: "movie-night-01",
@@ -13,7 +8,8 @@ export const movies = [
     date: null,
     approximateDate: "Movie Night",
     status: "past",
-    constellationPosition: { x: 0.58, y: 0.40 },
-    linkedStars: ["the-beginning"],
+    // Upper Center-Right
+    constellationPosition: { x: 0.64, y: 0.32 },
+    linkedStars: ["the-beginning", "distance-thread"],
   }
 ];

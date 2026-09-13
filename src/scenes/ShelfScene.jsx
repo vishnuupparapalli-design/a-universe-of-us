@@ -48,25 +48,24 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
 
   return (
     <group ref={groupRef} position={[0, -0.12, 0]}>
-      {/* Shelf Structure */}
+      {/* ================= OPEN-BACK FLOATING SHELF PLANKS ================= */}
+      {/* Top Plank */}
       <RoundedBox args={[3.8, 0.08, 1.2]} radius={0.03} smoothness={3} position={[0, 0.65, 0]}>
         <meshStandardMaterial color="#232a3d" roughness={0.75} metalness={0.05} />
       </RoundedBox>
 
+      {/* Bottom Plank */}
       <RoundedBox args={[4.2, 0.09, 1.4]} radius={0.03} smoothness={3} position={[0, -0.2, 0]}>
         <meshStandardMaterial color="#202638" roughness={0.75} metalness={0.05} />
       </RoundedBox>
 
-      <RoundedBox args={[4.4, 2.0, 0.06]} radius={0.04} smoothness={2} position={[0, 0.35, -0.65]}>
-        <meshStandardMaterial color="#161c2b" roughness={0.85} metalness={0.02} />
-      </RoundedBox>
-
+      {/* Soft Contact Shadow below the bottom shelf */}
       <mesh position={[0, -0.32, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[4.6, 2.0]} />
-        <meshBasicMaterial color="#000000" transparent opacity={0.4} />
+        <meshBasicMaterial color="#000000" transparent opacity={0.35} />
       </mesh>
 
-      {/* 3D Connecting Threads */}
+      {/* ================= 3D CONNECTING THREADS ON SHELF ================= */}
       {threadLines.map((pair, index) => (
         <Line
           key={index}
@@ -78,7 +77,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         />
       ))}
 
-      {/* ================= TOP SHELF ================= */}
+      {/* ================= TOP SHELF OBJECTS ================= */}
 
       {/* 1. The Beginning */}
       <group position={[-1.2, 0.74, 0]}>
@@ -143,7 +142,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* ================= BOTTOM SHELF ================= */}
+      {/* ================= BOTTOM SHELF OBJECTS ================= */}
 
       {/* 4. The Hard Days */}
       <group position={[-1.4, -0.11, 0]}>
@@ -181,7 +180,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* 5. 203 Days */}
+      {/* 5. 203 Days Medallion */}
       <group position={[-0.45, -0.11, 0]}>
         <InteractiveObject
           onOpen={() => onSelectObject('two-hundred-three-days')}
