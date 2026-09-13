@@ -64,6 +64,7 @@ export default function OpeningScene({ isOpen, onOpen }) {
         ease: 'back.out(1.2)',
         delay: 0.1,
       })
+      // Letter slides up smoothly
       gsap.to(letterSheetRef.current.position, {
         y: 0.45,
         z: 0.05,
@@ -72,8 +73,9 @@ export default function OpeningScene({ isOpen, onOpen }) {
         delay: 0.25,
       })
     } else {
+      // Letter slides deep inside the pouch (y = -0.04, completely hidden!)
       gsap.to(letterSheetRef.current.position, {
-        y: 0.02,
+        y: -0.04,
         z: 0,
         duration: 0.45,
         ease: 'power2.in',
@@ -105,19 +107,9 @@ export default function OpeningScene({ isOpen, onOpen }) {
 
   return (
     <group ref={groupRef} position={[0, -0.1, 0]}>
-      
       {/* 1. Base Floating Desk Slab */}
-      <RoundedBox
-        args={[3.4, 0.22, 2.4]}
-        radius={0.14}
-        smoothness={4}
-        position={[0, -0.11, 0]}
-      >
-        <meshStandardMaterial
-          color="#242c3f"
-          roughness={0.7}
-          metalness={0.06}
-        />
+      <RoundedBox args={[3.4, 0.22, 2.4]} radius={0.14} smoothness={4} position={[0, -0.11, 0]}>
+        <meshStandardMaterial color="#242c3f" roughness={0.7} metalness={0.06} />
       </RoundedBox>
 
       {/* Desk Shadow */}
@@ -133,11 +125,7 @@ export default function OpeningScene({ isOpen, onOpen }) {
       </mesh>
 
       {/* 2. The Envelope Group */}
-      <group
-        ref={envelopeRef}
-        position={[0, 0.05, 0]}
-        rotation={[0, 0.12, 0]}
-      >
+      <group ref={envelopeRef} position={[0, 0.05, 0]} rotation={[0, 0.12, 0]}>
         <InteractiveObject onOpen={onOpen} isOpen={isOpen} showAura={false}>
           
           <pointLight
@@ -149,30 +137,16 @@ export default function OpeningScene({ isOpen, onOpen }) {
             position={[0, 0.8, 0.3]}
           />
 
-          {/* Letter Sheet */}
-          <group ref={letterSheetRef} position={[0, 0.02, 0]}>
+          {/* Letter Sheet — Hidden deep at y = -0.04 when closed */}
+          <group ref={letterSheetRef} position={[0, -0.04, 0]}>
             <RoundedBox args={[1.5, 0.015, 0.95]} radius={0.02} smoothness={2}>
-              <meshStandardMaterial
-                color="#ffffff"
-                roughness={0.5}
-                emissive="#fffae8"
-                emissiveIntensity={0.2}
-              />
+              <meshStandardMaterial color="#ffffff" roughness={0.5} emissive="#fffae8" emissiveIntensity={0.2} />
             </RoundedBox>
           </group>
 
           {/* Envelope Main Body */}
-          <RoundedBox
-            args={[1.8, 0.08, 1.2]}
-            radius={0.035}
-            smoothness={4}
-            position={[0, 0, 0]}
-          >
-            <meshStandardMaterial
-              color="#f5eedd"
-              roughness={0.62}
-              metalness={0.02}
-            />
+          <RoundedBox args={[1.8, 0.08, 1.2]} radius={0.035} smoothness={4} position={[0, 0, 0]}>
+            <meshStandardMaterial color="#f5eedd" roughness={0.62} metalness={0.02} />
           </RoundedBox>
 
           {/* Flap */}
@@ -182,21 +156,11 @@ export default function OpeningScene({ isOpen, onOpen }) {
           <group ref={sealRef} position={[0, 0.055, 0.14]}>
             <mesh>
               <cylinderGeometry args={[0.13, 0.14, 0.035, 32]} />
-              <meshStandardMaterial
-                color="#dfb76c"
-                roughness={0.4}
-                metalness={0.22}
-                emissive="#dfb76c"
-                emissiveIntensity={0.15}
-              />
+              <meshStandardMaterial color="#dfb76c" roughness={0.4} metalness={0.22} emissive="#dfb76c" emissiveIntensity={0.15} />
             </mesh>
             <mesh position={[0, 0.02, 0]}>
               <cylinderGeometry args={[0.08, 0.08, 0.01, 24]} />
-              <meshStandardMaterial
-                color="#c79a45"
-                roughness={0.5}
-                metalness={0.15}
-              />
+              <meshStandardMaterial color="#c79a45" roughness={0.5} metalness={0.15} />
             </mesh>
           </group>
 

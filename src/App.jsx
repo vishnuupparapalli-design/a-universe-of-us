@@ -2,9 +2,11 @@ import React, { useState } from 'react'
 import Diorama from './components/Diorama'
 import OpeningScene from './scenes/OpeningScene'
 import ShelfScene from './scenes/ShelfScene'
+import BeginningScene from './scenes/BeginningScene'
 import MemoryPanel from './components/MemoryPanel'
 import CountdownWidget from './components/CountdownWidget'
 import ConstellationLayer from './components/ConstellationLayer'
+import WarpTransition from './components/WarpTransition'
 import { siteSettings } from './data/settings'
 import { letters } from './data/letters'
 import { memories } from './data/memories'
@@ -14,10 +16,11 @@ import { useDiscoveryState } from './hooks/useDiscoveryState'
 export default function App() {
   const { discoveredCount, discover, isDiscovered, resetDiscovery } = useDiscoveryState()
   
-  // Experience Views: 'arrival' | 'shelf' | 'sky'
+  // Experience Views: 'arrival' | 'shelf' | 'sky' | 'beginning'
   const [viewMode, setViewMode] = useState('arrival')
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
+  const [isWarping, setIsWarping] = useState(false) // Wormhole trigger!
   const [activeMemory, setActiveMemory] = useState(null)
   const [hoveredId, setHoveredId] = useState(null)
 
@@ -48,7 +51,14 @@ export default function App() {
     }, 400)
   }
 
+  // Handle selecting any memory/chapter
   const handleSelectMemory = (id) => {
+    // If "Where It Started" is clicked -> TRIGGER THE CINEMATIC WORMHOLE!
+    if (id === 'the-beginning') {
+      setIsWarping(true)
+      return
+    }
+
     const found = allContent.find((item) => item.id === id)
     if (found) {
       setActiveMemory(found)
@@ -61,7 +71,19 @@ export default function App() {
   return (
     <div className="relative w-screen h-screen bg-elsewhere-void overflow-hidden text-elsewhere-textPrimary font-sans select-none">
       
-      {/* 1. Memory Constellation — HIDDEN DURING ARRIVAL (Master Plan Section C & E) */}
+      {/* 1. Cinematic Starlight Wormhole Overlay */}
+      <WarpTransition
+        isActive={isWarping}
+        onMidpoint={() => {
+          // Switch scene to Beginning at the height of the warp flash
+          setViewMode('beginning')
+        }}
+        onComplete={() => {
+          setIsWarping(false)
+        }}
+      />
+
+      {/* 2. Memory Constellation (Hidden during arrival) */}
       {viewMode !== 'arrival' && (
         <ConstellationLayer
           items={allContent}
@@ -78,7 +100,7 @@ export default function App() {
         }`}
       />
 
-      {/* 2. Top HUD Bar */}
+      {/* 3. Top HUD Bar */}
       <header className="absolute top-0 left-0 right-0 z-30 p-6 md:p-8 flex items-center justify-between pointer-events-none">
         <div className="flex items-center gap-3 pointer-events-auto">
           <span className="w-2.5 h-2.5 rounded-full bg-elsewhere-gold shadow-glow-gold animate-pulse"></span>
@@ -88,6 +110,8 @@ export default function App() {
           <span className="hidden sm:inline text-[10px] uppercase tracking-widest text-elsewhere-textMuted px-2.5 py-0.5 rounded-full bg-white/5 border border-white/5">
             {viewMode === 'arrival'
               ? 'Arrival'
+              : viewMode === 'beginning'
+              ? 'Origin: The Beginning'
               : viewMode === 'sky'
               ? 'The Sky Between Us'
               : 'The Shelf (Living Hub)'}
@@ -98,23 +122,31 @@ export default function App() {
         <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
           {viewMode !== 'arrival' && (
             <>
-              {/* Sky View / Shelf View Switcher */}
-              <button
-                onClick={() => setViewMode(viewMode === 'sky' ? 'shelf' : 'sky')}
-                className={`text-xs font-sans px-3.5 py-1.5 rounded-full border transition-all flex items-center gap-1.5 ${
-                  viewMode === 'sky'
-                    ? 'bg-elsewhere-gold text-elsewhere-void border-elsewhere-gold font-semibold shadow-glow-gold'
-                    : 'bg-white/5 hover:bg-white/10 text-elsewhere-textSecondary border-white/10'
-                }`}
-                title="Toggle constellation night sky"
-              >
-                <span>{viewMode === 'sky' ? '📚 Return to Shelf' : '🌌 The Sky'}</span>
-              </button>
+              {viewMode === 'beginning' ? (
+                <button
+                  onClick={() => setViewMode('shelf')}
+                  className="text-xs font-sans px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-elsewhere-textPrimary border border-white/10 transition-all flex items-center gap-1.5 shadow-clay-btn"
+                >
+                  <span>📚 Return to Shelf</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => setViewMode(viewMode === 'sky' ? 'shelf' : 'sky')}
+                  className={`text-xs font-sans px-3.5 py-1.5 rounded-full border transition-all flex items-center gap-1.5 ${
+                    viewMode === 'sky'
+                      ? 'bg-elsewhere-gold text-elsewhere-void border-elsewhere-gold font-semibold shadow-glow-gold'
+                      : 'bg-white/5 hover:bg-white/10 text-elsewhere-textSecondary border-white/10'
+                  }`}
+                  title="Toggle constellation night sky"
+                >
+                  <span>{viewMode === 'sky' ? '📚 Return to Shelf' : '🌌 The Sky'}</span>
+                </button>
+              )}
 
               <button
                 onClick={handleReturnToOpening}
                 className="hidden md:block text-[11px] font-sans text-elsewhere-textMuted hover:text-elsewhere-textPrimary px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
-                title="Return to the opening letter"
+                title="Return to opening letter"
               >
                 ✉ Re-read letter
               </button>
@@ -139,7 +171,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* 3. Main 3D Diorama Stage */}
+      {/* 4. Main 3D Diorama Stage */}
       <main className="w-full h-full relative z-10">
         {viewMode === 'arrival' ? (
           <Diorama>
@@ -156,17 +188,22 @@ export default function App() {
               isDiscovered={isDiscovered}
             />
           </Diorama>
+        ) : viewMode === 'beginning' ? (
+          <Diorama>
+            <BeginningScene
+              onMerged={() => discover('the-beginning')}
+            />
+          </Diorama>
         ) : null}
       </main>
 
-      {/* 4. Bottom Guidance & Prompt */}
+      {/* 5. Bottom Guidance & Direct Sky Payoff Button */}
       <footer className="absolute bottom-0 left-0 right-0 z-30 pb-6 sm:pb-8 flex flex-col items-center justify-center text-center pointer-events-none">
         {viewMode === 'arrival' ? (
           <>
             <p className="text-sm md:text-base font-serif italic text-elsewhere-textSecondary max-w-md mb-3 pointer-events-auto">
               "One meeting became a memory. Memories became stars. Stars became a little universe."
             </p>
-
             <div
               onClick={handleOpenEnvelope}
               className="cursor-pointer pointer-events-auto group bg-elsewhere-surface/80 hover:bg-elsewhere-surface hover:border-elsewhere-gold/40 backdrop-blur-md border border-elsewhere-border px-4 py-1.5 rounded-full shadow-clay-btn transition-all flex items-center gap-2 text-xs"
@@ -178,11 +215,32 @@ export default function App() {
               <span className="text-elsewhere-gold">✦</span>
             </div>
           </>
+        ) : viewMode === 'beginning' ? (
+          <div className="pointer-events-auto flex flex-col sm:flex-row items-center gap-3">
+            <div className="bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-2.5">
+              <span className="text-elsewhere-star text-xs">✦</span>
+              <span className="font-serif text-sm text-elsewhere-textPrimary">
+                {isDiscovered('the-beginning')
+                  ? 'Two people, two screens, one small world between them.'
+                  : 'Click anywhere on the island to bring the lights together'}
+              </span>
+              <span className="text-elsewhere-gold text-xs">✦</span>
+            </div>
+
+            {isDiscovered('the-beginning') && (
+              <button
+                onClick={() => setViewMode('sky')}
+                className="px-5 py-2.5 rounded-full bg-elsewhere-gold hover:bg-yellow-300 text-elsewhere-void font-sans text-xs font-semibold shadow-glow-gold transition-all animate-bounce flex items-center gap-1.5"
+              >
+                <span>🌌 See Your Star in the Sky →</span>
+              </button>
+            )}
+          </div>
         ) : viewMode === 'sky' ? (
           <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
             <span className="text-elsewhere-gold text-xs">✦</span>
             <span className="font-serif text-sm text-elsewhere-textPrimary">
-              The Sky Between Us — Click any ignited star or hollow ring to explore
+              The Sky Between Us — Click any star or hollow ring to explore
             </span>
             <span className="text-elsewhere-gold text-xs">✦</span>
           </div>
@@ -192,7 +250,7 @@ export default function App() {
             <span className="font-serif text-sm text-elsewhere-textPrimary truncate">
               {hoveredItem 
                 ? `${hoveredItem.title} — ${hoveredItem.approximateDate || 'Keepsake'}`
-                : 'Hover or tap any keepsake to explore & light up the sky'}
+                : 'Hover or tap any keepsake to explore'}
             </span>
             <span className="text-elsewhere-gold text-xs">✦</span>
           </div>
@@ -212,7 +270,7 @@ export default function App() {
         onPrimaryAction={handleEnterWorld}
       />
 
-      {/* Keepsake / Star Story Modal */}
+      {/* Keepsake Story Modal */}
       {activeMemory && (
         <MemoryPanel
           isOpen={Boolean(activeMemory)}
