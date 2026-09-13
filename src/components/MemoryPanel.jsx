@@ -1,8 +1,66 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
+import { siteSettings, countdownSettings } from '../data/settings'
+import { getLiveTimeTogether } from '../utils/countdown'
 
 /**
- * MemoryPanel — Master Plan Section AD & G
- * Tactile overlay for reading letters, memories, and triggering chapter entry.
+ * Stylish Live Counter Widget rendered specifically inside the Days Together card
+ */
+function DaysTogetherLiveCard() {
+  const [liveTime, setLiveTime] = useState(() => 
+    getLiveTimeTogether(siteSettings.relationshipStartDate, countdownSettings.timezone)
+  )
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLiveTime(getLiveTimeTogether(siteSettings.relationshipStartDate, countdownSettings.timezone))
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [])
+
+  return (
+    <div className="my-5 p-5 rounded-2xl bg-elsewhere-surface/80 border border-elsewhere-gold/30 shadow-clay-card shadow-glow-gold/10 text-center select-none">
+      <p className="text-[10px] font-sans tracking-[0.25em] uppercase text-elsewhere-gold mb-1">
+        Live Relationship Counter
+      </p>
+
+      {/* Big Headline Count */}
+      <h3 className="font-serif text-4xl sm:text-5xl font-light text-elsewhere-textPrimary my-2">
+        {liveTime.days} <span className="italic text-elsewhere-gold font-normal">Days</span>
+      </h3>
+
+      {/* Live Digital Ticking Bar (Days : Hours : Minutes : Seconds) */}
+      <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 font-sans tabular-nums text-xs sm:text-sm my-2">
+        <div className="flex items-baseline gap-0.5">
+          <span className="font-bold text-elsewhere-textPrimary">{liveTime.days}</span>
+          <span className="text-[10px] text-elsewhere-gold">d</span>
+        </div>
+        <span className="text-white/20">:</span>
+        <div className="flex items-baseline gap-0.5">
+          <span className="font-bold text-elsewhere-textPrimary">{String(liveTime.hours).padStart(2, '0')}</span>
+          <span className="text-[10px] text-elsewhere-gold">h</span>
+        </div>
+        <span className="text-white/20">:</span>
+        <div className="flex items-baseline gap-0.5">
+          <span className="font-bold text-elsewhere-textPrimary">{String(liveTime.minutes).padStart(2, '0')}</span>
+          <span className="text-[10px] text-elsewhere-gold">m</span>
+        </div>
+        <span className="text-white/20">:</span>
+        <div className="flex items-baseline gap-0.5">
+          <span className="font-bold text-elsewhere-gold">{String(liveTime.seconds).padStart(2, '0')}</span>
+          <span className="text-[10px] text-elsewhere-gold">s</span>
+        </div>
+      </div>
+
+      <p className="text-[11px] font-sans text-elsewhere-textMuted mt-1">
+        Since February 22, 2026 &bull; Synced to Hanoi Time
+      </p>
+    </div>
+  )
+}
+
+/**
+ * MemoryPanel Component
  */
 export default function MemoryPanel({
   isOpen,
@@ -26,10 +84,12 @@ export default function MemoryPanel({
   if (!isOpen) return null
 
   const isFuture = status === 'future'
+  // Check if this is the days-together card
+  const isDaysTogetherCard = title && title.includes('Days')
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 select-none">
-      {/* Atmospheric backdrop blur */}
+      {/* Atmospheric backdrop */}
       <div
         onClick={onClose}
         className="absolute inset-0 bg-elsewhere-void/85 backdrop-blur-md transition-opacity duration-500 animate-fadeIn"
@@ -57,17 +117,20 @@ export default function MemoryPanel({
         </div>
 
         {/* Title and Subtitle */}
-        <h2 className="font-serif text-2xl sm:text-3xl text-elsewhere-textPrimary mb-2 leading-tight">
+        <h2 className="font-serif text-2xl sm:text-3xl text-elsewhere-textPrimary mb-1 leading-tight">
           {title}
         </h2>
         {subtitle && (
-          <p className="font-serif italic text-sm text-elsewhere-gold mb-4">
+          <p className="font-serif italic text-sm text-elsewhere-gold mb-3">
             {subtitle}
           </p>
         )}
 
-        {/* Letter Body Text */}
-        <div className="my-6">
+        {/* IF THIS IS THE DAYS CARD -> EMBED THE STYLISH LIVE COUNTER! */}
+        {isDaysTogetherCard && <DaysTogetherLiveCard />}
+
+        {/* Story Text */}
+        <div className="my-4">
           <p className="font-serif text-base sm:text-lg text-elsewhere-textSecondary leading-relaxed whitespace-pre-line font-light">
             {text}
           </p>
