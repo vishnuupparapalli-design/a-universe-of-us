@@ -15,7 +15,6 @@ export const memories = [
     approximateDate: "The first meeting",
     location: "Genshin Impact",
     status: "past",
-    // Center Anchor Star
     constellationPosition: { x: 0.50, y: 0.48 },
     linkedStars: ["two-hundred-three-days", "movie-night-01", "our-stories"],
   },
@@ -27,9 +26,8 @@ export const memories = [
     image: null,
     date: null,
     approximateDate: "Getting to know each other",
-    location: "Late night calls",
+    location: "Late night texts", // Updated to texts!
     status: "past",
-    // Upper Left
     constellationPosition: { x: 0.35, y: 0.24 },
     linkedStars: ["the-beginning"],
   },
@@ -43,7 +41,6 @@ export const memories = [
     approximateDate: `${currentDays} Days`,
     location: "New Delhi ↔ Hanoi",
     status: "past",
-    // Mid Left
     constellationPosition: { x: 0.22, y: 0.42 },
     linkedStars: ["the-beginning", "hard-days-01"],
   },
@@ -57,7 +54,6 @@ export const memories = [
     approximateDate: "A difficult week",
     location: "In the quiet",
     status: "past",
-    // Lower Left
     constellationPosition: { x: 0.16, y: 0.72 },
     linkedStars: ["two-hundred-three-days"],
   },
@@ -71,7 +67,6 @@ export const memories = [
     approximateDate: "Every night",
     location: "Between us",
     status: "past",
-    // Far Upper Right
     constellationPosition: { x: 0.82, y: 0.22 },
     linkedStars: ["movie-night-01", "someday-first-photo"],
   },
@@ -85,7 +80,6 @@ export const memories = [
     approximateDate: "Someday",
     location: "Where we meet",
     status: "future",
-    // Lower Right (Reserved place)
     constellationPosition: { x: 0.76, y: 0.74 },
     linkedStars: ["distance-thread"],
   },

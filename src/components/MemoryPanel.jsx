@@ -3,7 +3,7 @@ import { siteSettings, countdownSettings } from '../data/settings'
 import { getLiveTimeTogether } from '../utils/countdown'
 
 /**
- * Stylish Live Counter Widget rendered specifically inside the Days Together card
+ * Stylish Live Counter Widget rendered specifically for the main Days Together card
  */
 function DaysTogetherLiveCard() {
   const [liveTime, setLiveTime] = useState(() => 
@@ -20,7 +20,7 @@ function DaysTogetherLiveCard() {
 
   return (
     <div className="my-5 p-5 rounded-2xl bg-elsewhere-surface/80 border border-elsewhere-gold/30 shadow-clay-card shadow-glow-gold/10 text-center select-none">
-      <p className="text-[10px] font-sans tracking-[0.25em] uppercase text-elsewhere-gold mb-1">
+      <p className="text-[10px] font-sans tracking-[0.25em] uppercase text-elsewhere-gold mb-1 font-semibold">
         Live Relationship Counter
       </p>
 
@@ -29,26 +29,26 @@ function DaysTogetherLiveCard() {
         {liveTime.days} <span className="italic text-elsewhere-gold font-normal">Days</span>
       </h3>
 
-      {/* Live Digital Ticking Bar (Days : Hours : Minutes : Seconds) */}
+      {/* Live Digital Ticking Bar */}
       <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 font-sans tabular-nums text-xs sm:text-sm my-2">
         <div className="flex items-baseline gap-0.5">
           <span className="font-bold text-elsewhere-textPrimary">{liveTime.days}</span>
-          <span className="text-[10px] text-elsewhere-gold">d</span>
+          <span className="text-[10px] text-elsewhere-gold font-semibold">d</span>
         </div>
         <span className="text-white/20">:</span>
         <div className="flex items-baseline gap-0.5">
           <span className="font-bold text-elsewhere-textPrimary">{String(liveTime.hours).padStart(2, '0')}</span>
-          <span className="text-[10px] text-elsewhere-gold">h</span>
+          <span className="text-[10px] text-elsewhere-gold font-semibold">h</span>
         </div>
         <span className="text-white/20">:</span>
         <div className="flex items-baseline gap-0.5">
           <span className="font-bold text-elsewhere-textPrimary">{String(liveTime.minutes).padStart(2, '0')}</span>
-          <span className="text-[10px] text-elsewhere-gold">m</span>
+          <span className="text-[10px] text-elsewhere-gold font-semibold">m</span>
         </div>
         <span className="text-white/20">:</span>
         <div className="flex items-baseline gap-0.5">
-          <span className="font-bold text-elsewhere-gold">{String(liveTime.seconds).padStart(2, '0')}</span>
-          <span className="text-[10px] text-elsewhere-gold">s</span>
+          <span className="font-bold text-elsewhere-gold font-semibold">{String(liveTime.seconds).padStart(2, '0')}</span>
+          <span className="text-[10px] text-elsewhere-gold font-semibold">s</span>
         </div>
       </div>
 
@@ -59,9 +59,6 @@ function DaysTogetherLiveCard() {
   )
 }
 
-/**
- * MemoryPanel Component
- */
 export default function MemoryPanel({
   isOpen,
   onClose,
@@ -84,24 +81,23 @@ export default function MemoryPanel({
   if (!isOpen) return null
 
   const isFuture = status === 'future'
-  // Check if this is the days-together card
-  const isDaysTogetherCard = title && title.includes('Days')
+
+  // ONLY render live counter for the main Today/Chapter card, NOT inside past milestone notes!
+  const isMainDaysCard = title && (title.includes('204 Days') || title.includes('Today — Choosing You Still')) && !title.includes('Day 200') && !title.includes('Day 100') && !title.includes('Day 50') && !title.includes('Day 1 ')
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 select-none">
-      {/* Atmospheric backdrop */}
       <div
         onClick={onClose}
         className="absolute inset-0 bg-elsewhere-void/85 backdrop-blur-md transition-opacity duration-500 animate-fadeIn"
       />
 
-      {/* Tactile Card */}
       <div className="relative w-full max-w-lg bg-elsewhere-surface/95 border border-elsewhere-border rounded-3xl p-6 sm:p-8 shadow-clay-card z-10 animate-slideUp">
         
         {/* Header */}
         <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-elsewhere-gold shadow-glow-gold"></span>
+            <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-glow-star"></span>
             <span className="text-[11px] font-sans uppercase tracking-widest text-elsewhere-textMuted">
               {isFuture ? 'Future Memory' : 'Letter from Elsewhere'}
             </span>
@@ -121,13 +117,13 @@ export default function MemoryPanel({
           {title}
         </h2>
         {subtitle && (
-          <p className="font-serif italic text-sm text-elsewhere-gold mb-3">
+          <p className="font-serif italic text-sm text-cyan-300 mb-3">
             {subtitle}
           </p>
         )}
 
-        {/* IF THIS IS THE DAYS CARD -> EMBED THE STYLISH LIVE COUNTER! */}
-        {isDaysTogetherCard && <DaysTogetherLiveCard />}
+        {/* Live counter rendered ONLY for the main Today card */}
+        {isMainDaysCard && <DaysTogetherLiveCard />}
 
         {/* Story Text */}
         <div className="my-4">
@@ -146,14 +142,14 @@ export default function MemoryPanel({
             {primaryActionLabel ? (
               <button
                 onClick={onPrimaryAction}
-                className="px-5 py-2 rounded-full bg-elsewhere-gold text-elsewhere-void font-sans text-xs font-semibold hover:bg-yellow-300 transition-all shadow-glow-gold flex items-center gap-1.5"
+                className="px-5 py-2 rounded-full bg-cyan-400 hover:bg-cyan-300 text-elsewhere-void font-sans text-xs font-semibold shadow-glow-star transition-all flex items-center gap-1.5"
               >
                 <span>{primaryActionLabel}</span>
               </button>
             ) : (
               <button
                 onClick={onClose}
-                className="px-5 py-2 rounded-full bg-white/10 hover:bg-elsewhere-gold/20 hover:text-elsewhere-gold border border-white/15 text-xs font-sans font-medium transition-all shadow-clay-btn"
+                className="px-5 py-2 rounded-full bg-white/10 hover:bg-cyan-500/20 hover:text-cyan-300 border border-white/15 text-xs font-sans font-medium transition-all shadow-clay-btn"
               >
                 Fold & Put Away
               </button>

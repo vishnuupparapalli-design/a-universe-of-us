@@ -3,10 +3,12 @@ import Diorama from './components/Diorama'
 import OpeningScene from './scenes/OpeningScene'
 import ShelfScene from './scenes/ShelfScene'
 import BeginningScene from './scenes/BeginningScene'
+import DaysScene from './scenes/DaysScene'
 import MemoryPanel from './components/MemoryPanel'
 import CountdownWidget from './components/CountdownWidget'
 import ConstellationLayer from './components/ConstellationLayer'
 import WarpTransition from './components/WarpTransition'
+import SpiralTransition from './components/SpiralTransition'
 import { siteSettings } from './data/settings'
 import { letters } from './data/letters'
 import { memories } from './data/memories'
@@ -16,11 +18,12 @@ import { useDiscoveryState } from './hooks/useDiscoveryState'
 export default function App() {
   const { discoveredCount, discover, isDiscovered, resetDiscovery } = useDiscoveryState()
   
-  // Experience Views: 'arrival' | 'shelf' | 'sky' | 'beginning'
+  // Experience Views: 'arrival' | 'shelf' | 'sky' | 'beginning' | 'days'
   const [viewMode, setViewMode] = useState('arrival')
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
-  const [isWarping, setIsWarping] = useState(false) // Wormhole trigger!
+  const [isWarping, setIsWarping] = useState(false)   // Wormhole to Beginning
+  const [isSpiraling, setIsSpiraling] = useState(false) // Spiral Vortex to Days Galaxy
   const [activeMemory, setActiveMemory] = useState(null)
   const [hoveredId, setHoveredId] = useState(null)
 
@@ -53,9 +56,16 @@ export default function App() {
 
   // Handle selecting any memory/chapter
   const handleSelectMemory = (id) => {
-    // If "Where It Started" is clicked -> TRIGGER THE CINEMATIC WORMHOLE!
+    // 1. Where It Started -> Cinematic Wormhole into Chapter 1
     if (id === 'the-beginning') {
       setIsWarping(true)
+      return
+    }
+
+    // 2. Days Together Medallion -> Cinematic Golden Spiral Vortex into Days Galaxy!
+    if (id === 'two-hundred-three-days') {
+      setIsSpiraling(true)
+      discover('two-hundred-three-days')
       return
     }
 
@@ -71,19 +81,21 @@ export default function App() {
   return (
     <div className="relative w-screen h-screen bg-elsewhere-void overflow-hidden text-elsewhere-textPrimary font-sans select-none">
       
-      {/* 1. Cinematic Starlight Wormhole Overlay */}
+      {/* 1. Cinematic Starlight Wormhole Overlay (to Beginning) */}
       <WarpTransition
         isActive={isWarping}
-        onMidpoint={() => {
-          // Switch scene to Beginning at the height of the warp flash
-          setViewMode('beginning')
-        }}
-        onComplete={() => {
-          setIsWarping(false)
-        }}
+        onMidpoint={() => setViewMode('beginning')}
+        onComplete={() => setIsWarping(false)}
       />
 
-      {/* 2. Memory Constellation (Hidden during arrival) */}
+      {/* 2. Golden Starlight Spiral Vortex Overlay (to Days Galaxy!) */}
+      <SpiralTransition
+        isActive={isSpiraling}
+        onMidpoint={() => setViewMode('days')}
+        onComplete={() => setIsSpiraling(false)}
+      />
+
+      {/* 3. Memory Constellation (Hidden during arrival) */}
       {viewMode !== 'arrival' && (
         <ConstellationLayer
           items={allContent}
@@ -100,7 +112,7 @@ export default function App() {
         }`}
       />
 
-      {/* 3. Top HUD Bar */}
+      {/* 4. Top HUD Bar */}
       <header className="absolute top-0 left-0 right-0 z-30 p-6 md:p-8 flex items-center justify-between pointer-events-none">
         <div className="flex items-center gap-3 pointer-events-auto">
           <span className="w-2.5 h-2.5 rounded-full bg-elsewhere-gold shadow-glow-gold animate-pulse"></span>
@@ -111,7 +123,9 @@ export default function App() {
             {viewMode === 'arrival'
               ? 'Arrival'
               : viewMode === 'beginning'
-              ? 'Origin: The Beginning'
+              ? 'Chapter 1: The Beginning'
+              : viewMode === 'days'
+              ? 'Chapter 2: 204 Days Galaxy'
               : viewMode === 'sky'
               ? 'The Sky Between Us'
               : 'The Shelf (Living Hub)'}
@@ -122,7 +136,8 @@ export default function App() {
         <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
           {viewMode !== 'arrival' && (
             <>
-              {viewMode === 'beginning' ? (
+              {/* Shelf / Sky / Chapter Switcher */}
+              {viewMode === 'beginning' || viewMode === 'days' ? (
                 <button
                   onClick={() => setViewMode('shelf')}
                   className="text-xs font-sans px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-elsewhere-textPrimary border border-white/10 transition-all flex items-center gap-1.5 shadow-clay-btn"
@@ -171,7 +186,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* 4. Main 3D Diorama Stage */}
+      {/* 5. Main 3D Diorama Stage */}
       <main className="w-full h-full relative z-10">
         {viewMode === 'arrival' ? (
           <Diorama>
@@ -194,10 +209,24 @@ export default function App() {
               onMerged={() => discover('the-beginning')}
             />
           </Diorama>
+        ) : viewMode === 'days' ? (
+          <Diorama>
+            <DaysScene
+              currentDays={204}
+              onSelectMilestone={(milestone) => {
+                setActiveMemory({
+                  title: milestone.title,
+                  approximateDate: milestone.date,
+                  text: milestone.text,
+                  location: '204 Days Galaxy',
+                })
+              }}
+            />
+          </Diorama>
         ) : null}
       </main>
 
-      {/* 5. Bottom Guidance & Direct Sky Payoff Button */}
+      {/* 6. Bottom Guidance & Prompts */}
       <footer className="absolute bottom-0 left-0 right-0 z-30 pb-6 sm:pb-8 flex flex-col items-center justify-center text-center pointer-events-none">
         {viewMode === 'arrival' ? (
           <>
@@ -235,6 +264,14 @@ export default function App() {
                 <span>🌌 See Your Star in the Sky →</span>
               </button>
             )}
+          </div>
+        ) : viewMode === 'days' ? (
+          <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
+            <span className="text-elsewhere-gold text-xs">✦</span>
+            <span className="font-serif text-sm text-elsewhere-textPrimary">
+              204 Days Galaxy — Every star is a real day. Click glowing milestone stars to explore memories
+            </span>
+            <span className="text-elsewhere-gold text-xs">✦</span>
           </div>
         ) : viewMode === 'sky' ? (
           <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
