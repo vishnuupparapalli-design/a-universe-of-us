@@ -1,6 +1,8 @@
 import React, { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { RoundedBox, Line } from '@react-three/drei'
+import * as THREE from 'three'
+import gsap from 'gsap'
 import InteractiveObject from '../components/InteractiveObject'
 
 const OBJECT_COORDINATES = {
@@ -15,13 +17,80 @@ const OBJECT_COORDINATES = {
 
 export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered }) {
   const groupRef = useRef()
+  const isPlungingRef = useRef(false)
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime()
-    if (groupRef.current) {
+    if (groupRef.current && !isPlungingRef.current) {
       groupRef.current.position.y = -0.12 + Math.sin(t * 0.9) * 0.02
     }
   })
+
+  // 1. PLUNGE INTO THE BEGINNING (Dives straight into the twin lights!)
+  const handleBeginningClick = () => {
+    if (isPlungingRef.current || !groupRef.current) return
+    isPlungingRef.current = true
+
+    gsap.to(groupRef.current.position, {
+      x: 1.85,  // Centers the Beginning stand in your view
+      y: -0.65, // Centers vertically
+      z: 3.8,   // Rushes straight into the twin lights!
+      duration: 0.42,
+      ease: 'power2.in',
+      onComplete: () => {
+        onSelectObject('the-beginning')
+
+        setTimeout(() => {
+          if (groupRef.current) {
+            groupRef.current.position.set(0, -0.12, 0)
+            groupRef.current.scale.set(1, 1, 1)
+            isPlungingRef.current = false
+          }
+        }, 900)
+      },
+    })
+
+    gsap.to(groupRef.current.scale, {
+      x: 2.8,
+      y: 2.8,
+      z: 2.8,
+      duration: 0.42,
+      ease: 'power2.in',
+    })
+  }
+
+  // 2. PLUNGE INTO THE 206 DAYS MEDALLION (Dives straight into the galaxy vortex!)
+  const handleMedallionClick = () => {
+    if (isPlungingRef.current || !groupRef.current) return
+    isPlungingRef.current = true
+
+    gsap.to(groupRef.current.position, {
+      x: 0.85,
+      y: 0.32,
+      z: 3.6,
+      duration: 0.42,
+      ease: 'power2.in',
+      onComplete: () => {
+        onSelectObject('two-hundred-three-days')
+
+        setTimeout(() => {
+          if (groupRef.current) {
+            groupRef.current.position.set(0, -0.12, 0)
+            groupRef.current.scale.set(1, 1, 1)
+            isPlungingRef.current = false
+          }
+        }, 900)
+      },
+    })
+
+    gsap.to(groupRef.current.scale, {
+      x: 2.8,
+      y: 2.8,
+      z: 2.8,
+      duration: 0.42,
+      ease: 'power2.in',
+    })
+  }
 
   const threadLines = useMemo(() => {
     const ids = Object.keys(OBJECT_COORDINATES).filter((id) => isDiscovered(id))
@@ -48,24 +117,21 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
 
   return (
     <group ref={groupRef} position={[0, -0.12, 0]}>
-      {/* ================= OPEN-BACK FLOATING SHELF PLANKS ================= */}
-      {/* Top Plank */}
+      {/* Floating Shelf Planks */}
       <RoundedBox args={[3.8, 0.08, 1.2]} radius={0.03} smoothness={3} position={[0, 0.65, 0]}>
         <meshStandardMaterial color="#232a3d" roughness={0.75} metalness={0.05} />
       </RoundedBox>
 
-      {/* Bottom Plank */}
       <RoundedBox args={[4.2, 0.09, 1.4]} radius={0.03} smoothness={3} position={[0, -0.2, 0]}>
         <meshStandardMaterial color="#202638" roughness={0.75} metalness={0.05} />
       </RoundedBox>
 
-      {/* Soft Contact Shadow below the bottom shelf */}
       <mesh position={[0, -0.32, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[4.6, 2.0]} />
         <meshBasicMaterial color="#000000" transparent opacity={0.35} />
       </mesh>
 
-      {/* ================= 3D CONNECTING THREADS ON SHELF ================= */}
+      {/* 3D Connecting Threads */}
       {threadLines.map((pair, index) => (
         <Line
           key={index}
@@ -77,12 +143,10 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         />
       ))}
 
-      {/* ================= TOP SHELF OBJECTS ================= */}
-
-      {/* 1. The Beginning */}
+      {/* 1. The Beginning (WITH SUCTION PLUNGE!) */}
       <group position={[-1.2, 0.74, 0]}>
         <InteractiveObject
-          onOpen={() => onSelectObject('the-beginning')}
+          onOpen={handleBeginningClick}
           onHover={(hovered) => handleHover('the-beginning', hovered)}
           isDiscovered={isBeginningLit}
           showAura={true}
@@ -142,8 +206,6 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* ================= BOTTOM SHELF OBJECTS ================= */}
-
       {/* 4. The Hard Days */}
       <group position={[-1.4, -0.11, 0]}>
         <InteractiveObject
@@ -154,13 +216,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
           auraColor="#ffd68a"
           auraScale={0.9}
         >
-          <pointLight
-            color="#ffd68a"
-            intensity={isHardDaysLit ? 1.2 : 0.6}
-            distance={1.4}
-            decay={2}
-            position={[0, 0.22, 0.1]}
-          />
+          <pointLight color="#ffd68a" intensity={isHardDaysLit ? 1.2 : 0.6} distance={1.4} decay={2} position={[0, 0.22, 0.1]} />
           <mesh position={[0, 0.015, 0]}>
             <cylinderGeometry args={[0.22, 0.24, 0.02, 32]} />
             <meshStandardMaterial color="#283145" roughness={0.7} />
@@ -180,10 +236,10 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* 5. 203 Days Medallion */}
+      {/* 5. 206 Days Medallion (WITH SUCTION PLUNGE!) */}
       <group position={[-0.45, -0.11, 0]}>
         <InteractiveObject
-          onOpen={() => onSelectObject('two-hundred-three-days')}
+          onOpen={handleMedallionClick}
           onHover={(hovered) => handleHover('two-hundred-three-days', hovered)}
           isDiscovered={is203Lit}
           showAura={true}

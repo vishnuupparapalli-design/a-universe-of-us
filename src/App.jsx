@@ -9,21 +9,26 @@ import CountdownWidget from './components/CountdownWidget'
 import ConstellationLayer from './components/ConstellationLayer'
 import WarpTransition from './components/WarpTransition'
 import SpiralTransition from './components/SpiralTransition'
-import { siteSettings } from './data/settings'
+import { siteSettings, countdownSettings } from './data/settings'
 import { letters } from './data/letters'
 import { memories } from './data/memories'
 import { movies } from './data/movies'
 import { useDiscoveryState } from './hooks/useDiscoveryState'
+import { getLiveTimeTogether } from './utils/countdown'
 
 export default function App() {
   const { discoveredCount, discover, isDiscovered, resetDiscovery } = useDiscoveryState()
   
+  // Real live day count synced to Hanoi time
+  const liveTime = getLiveTimeTogether(siteSettings.relationshipStartDate, countdownSettings.timezone)
+  const currentDays = liveTime.days
+
   // Experience Views: 'arrival' | 'shelf' | 'sky' | 'beginning' | 'days'
   const [viewMode, setViewMode] = useState('arrival')
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
-  const [isWarping, setIsWarping] = useState(false)   // Wormhole to Beginning
-  const [isSpiraling, setIsSpiraling] = useState(false) // Spiral Vortex to Days Galaxy
+  const [isWarping, setIsWarping] = useState(false)
+  const [isSpiraling, setIsSpiraling] = useState(false)
   const [activeMemory, setActiveMemory] = useState(null)
   const [hoveredId, setHoveredId] = useState(null)
 
@@ -54,15 +59,12 @@ export default function App() {
     }, 400)
   }
 
-  // Handle selecting any memory/chapter
   const handleSelectMemory = (id) => {
-    // 1. Where It Started -> Cinematic Wormhole into Chapter 1
     if (id === 'the-beginning') {
       setIsWarping(true)
       return
     }
 
-    // 2. Days Together Medallion -> Cinematic Golden Spiral Vortex into Days Galaxy!
     if (id === 'two-hundred-three-days') {
       setIsSpiraling(true)
       discover('two-hundred-three-days')
@@ -81,21 +83,21 @@ export default function App() {
   return (
     <div className="relative w-screen h-screen bg-elsewhere-void overflow-hidden text-elsewhere-textPrimary font-sans select-none">
       
-      {/* 1. Cinematic Starlight Wormhole Overlay (to Beginning) */}
+      {/* 1. Cinematic Starlight Wormhole Overlay */}
       <WarpTransition
         isActive={isWarping}
         onMidpoint={() => setViewMode('beginning')}
         onComplete={() => setIsWarping(false)}
       />
 
-      {/* 2. Golden Starlight Spiral Vortex Overlay (to Days Galaxy!) */}
+      {/* 2. Rainbow Spiral Vortex Overlay on Pure Black */}
       <SpiralTransition
         isActive={isSpiraling}
         onMidpoint={() => setViewMode('days')}
         onComplete={() => setIsSpiraling(false)}
       />
 
-      {/* 3. Memory Constellation (Hidden during arrival) */}
+      {/* 3. Memory Constellation */}
       {viewMode !== 'arrival' && (
         <ConstellationLayer
           items={allContent}
@@ -125,7 +127,7 @@ export default function App() {
               : viewMode === 'beginning'
               ? 'Chapter 1: The Beginning'
               : viewMode === 'days'
-              ? 'Chapter 2: 204 Days Galaxy'
+              ? `Chapter 2: ${currentDays} Days Galaxy`
               : viewMode === 'sky'
               ? 'The Sky Between Us'
               : 'The Shelf (Living Hub)'}
@@ -136,7 +138,6 @@ export default function App() {
         <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
           {viewMode !== 'arrival' && (
             <>
-              {/* Shelf / Sky / Chapter Switcher */}
               {viewMode === 'beginning' || viewMode === 'days' ? (
                 <button
                   onClick={() => setViewMode('shelf')}
@@ -212,13 +213,13 @@ export default function App() {
         ) : viewMode === 'days' ? (
           <Diorama>
             <DaysScene
-              currentDays={204}
+              currentDays={currentDays}
               onSelectMilestone={(milestone) => {
                 setActiveMemory({
                   title: milestone.title,
                   approximateDate: milestone.date,
                   text: milestone.text,
-                  location: '204 Days Galaxy',
+                  location: `${currentDays} Days Galaxy`,
                 })
               }}
             />
@@ -226,7 +227,7 @@ export default function App() {
         ) : null}
       </main>
 
-      {/* 6. Bottom Guidance & Prompts */}
+      {/* 6. Bottom Guidance */}
       <footer className="absolute bottom-0 left-0 right-0 z-30 pb-6 sm:pb-8 flex flex-col items-center justify-center text-center pointer-events-none">
         {viewMode === 'arrival' ? (
           <>
@@ -269,7 +270,7 @@ export default function App() {
           <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
             <span className="text-elsewhere-gold text-xs">✦</span>
             <span className="font-serif text-sm text-elsewhere-textPrimary">
-              204 Days Galaxy — Every star is a real day. Click glowing milestone stars to explore memories
+              {currentDays} Days Galaxy — Every star is a real day. Click glowing milestone stars to explore memories
             </span>
             <span className="text-elsewhere-gold text-xs">✦</span>
           </div>

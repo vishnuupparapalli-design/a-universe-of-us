@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react'
 
 /**
- * SpiralTransition — Robust Ocean Blue Gravitational Vortex
- * Fixed: Auto-resizes to window, solid dark backdrop, guaranteed visible spiral time.
+ * SpiralTransition — Frame-Guaranteed Ocean Blue & Rainbow Vortex
+ * Fixed: Uses a guaranteed frame counter so particles NEVER skip or disappear!
  */
 export default function SpiralTransition({ isActive, onMidpoint, onComplete }) {
   const canvasRef = useRef(null)
@@ -21,32 +21,29 @@ export default function SpiralTransition({ isActive, onMidpoint, onComplete }) {
     let height = (canvas.height = window.innerHeight)
     let cx = width / 2
     let cy = height / 2
-    let maxDist = Math.hypot(cx, cy) * 1.1
+    let maxDist = Math.hypot(cx, cy) * 1.15
 
-    // Update dimensions if user resizes or snaps the window!
     const handleResize = () => {
       if (!canvas) return
       width = canvas.width = window.innerWidth
       height = canvas.height = window.innerHeight
       cx = width / 2
       cy = height / 2
-      maxDist = Math.hypot(cx, cy) * 1.1
+      maxDist = Math.hypot(cx, cy) * 1.15
     }
     window.addEventListener('resize', handleResize)
 
-    // Solid dark space fill on frame 0 to prevent any background bleed-through
-    ctx.fillStyle = '#030814'
-    ctx.fillRect(0, 0, width, height)
-
-    // Ocean Blue Palette
-    const colors = [
-      '#ffffff',
-      '#00f2fe', // Electric Aquamarine
-      '#38bdf8', // Ocean Cyan
-      '#0ea5e9', // Azure
-      '#2563eb', // Sapphire Blue
-      '#2dd4bf', // Seafoam Teal
-      '#5eead4', // Light Turquoise
+    // Vibrant Rainbow Starlight Particles
+    const rainbowColors = [
+      '#ffffff', // White
+      '#f87171', // Red
+      '#fb923c', // Orange
+      '#facc15', // Gold
+      '#4ade80', // Green
+      '#22d3ee', // Cyan
+      '#38bdf8', // Ocean Blue
+      '#a855f7', // Purple
+      '#f472b6', // Pink
     ]
 
     const count = width < 768 ? 160 : 260
@@ -60,39 +57,41 @@ export default function SpiralTransition({ isActive, onMidpoint, onComplete }) {
         dist,
         speed: Math.random() * 4 + 3,
         rotSpeed: Math.random() * 0.045 + 0.025,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        size: Math.random() * 2.0 + 1.2,
+        color: rainbowColors[Math.floor(Math.random() * rainbowColors.length)],
+        size: Math.random() * 2.2 + 1.2,
       })
     }
 
-    const startTime = performance.now()
-    const DURATION = 1600 // 1.6s smooth duration
+    // GUARANTEED FRAME COUNTER (75 frames = smooth 1.25s, NEVER SKIPS!)
+    const TOTAL_FRAMES = 75
+    let currentFrame = 0
     let midpointFired = false
 
-    const render = (now) => {
-      const elapsed = now - startTime
-      const progress = Math.min(elapsed / DURATION, 1.0)
+    const render = () => {
+      currentFrame++
+      const progress = Math.min(currentFrame / TOTAL_FRAMES, 1.0)
 
-      // 1. Deep space trail fade
+      // 1. SOLID PURE BLACK BACKGROUND (Zero color bleeding)
       ctx.globalCompositeOperation = 'source-over'
-      ctx.fillStyle = 'rgba(3, 8, 20, 0.28)'
+      ctx.shadowBlur = 0
+      ctx.clearRect(0, 0, width, height)
+      ctx.fillStyle = '#000000'
       ctx.fillRect(0, 0, width, height)
 
-      // 2. Additive Starlight Blending
+      // 2. Additive Starlight Glow for Rainbow Particles
       ctx.globalCompositeOperation = 'lighter'
 
-      // Suction acceleration ramping smoothly
-      const suctionRamp = 1.0 + Math.pow(progress, 2.0) * 5.5
-      const spinRamp = 1.0 + Math.pow(progress, 1.8) * 4.5
+      const suctionRamp = 1.0 + Math.pow(progress, 2.2) * 6.5
+      const spinRamp = 1.0 + Math.pow(progress, 2.0) * 5.0
 
       for (let p of particles) {
         const prevAngle = p.angle
         const prevDist = p.dist
 
         // Pull inward toward center
-        const distRatio = Math.max(0.25, p.dist / maxDist)
-        p.dist -= (p.speed / distRatio) * suctionRamp * 0.25
-        p.angle += (p.rotSpeed / Math.sqrt(distRatio)) * spinRamp * 0.22
+        const distRatio = Math.max(0.2, p.dist / maxDist)
+        p.dist -= (p.speed / distRatio) * suctionRamp * 0.28
+        p.angle += (p.rotSpeed / Math.sqrt(distRatio)) * spinRamp * 0.24
 
         const prevX = cx + Math.cos(prevAngle) * prevDist
         const prevY = cy + Math.sin(prevAngle) * prevDist
@@ -106,52 +105,54 @@ export default function SpiralTransition({ isActive, onMidpoint, onComplete }) {
         ctx.strokeStyle = p.color
         ctx.lineWidth = p.size
         ctx.lineCap = 'round'
-        ctx.shadowBlur = 12
+        ctx.shadowBlur = 8
         ctx.shadowColor = p.color
         ctx.stroke()
 
-        // Respawn if swallowed into the center
         if (p.dist <= 10) {
           p.dist = maxDist * (0.8 + Math.random() * 0.25)
           p.angle = Math.random() * Math.PI * 2
         }
       }
 
-      // 3. Central Event Horizon Eye
-      if (progress > 0.2 && progress < 0.85) {
-        const eyeRadius = Math.min(width, height) * 0.16 * Math.min(1.0, (progress - 0.2) / 0.3)
+      // 3. CENTER EYE: LOCKED TO PURE OCEAN BLUE
+      if (progress > 0.15 && progress < 0.85) {
+        const eyeRadius = Math.min(width, height) * 0.16 * Math.min(1.0, (progress - 0.15) / 0.3)
         const eyeGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, eyeRadius)
-        eyeGrad.addColorStop(0, 'rgba(255, 255, 255, 0.95)')
-        eyeGrad.addColorStop(0.35, 'rgba(0, 242, 254, 0.8)')
-        eyeGrad.addColorStop(0.7, 'rgba(37, 99, 235, 0.4)')
-        eyeGrad.addColorStop(1, 'rgba(3, 8, 20, 0)')
+        eyeGrad.addColorStop(0, 'rgba(255, 255, 255, 1.0)')   // White hot center
+        eyeGrad.addColorStop(0.35, 'rgba(0, 210, 255, 0.95)') // Bright Ocean Cyan
+        eyeGrad.addColorStop(0.7, 'rgba(0, 102, 255, 0.6)')   // Deep Ocean Blue
+        eyeGrad.addColorStop(1, 'rgba(0, 0, 0, 0)')
 
+        ctx.shadowBlur = 0
         ctx.fillStyle = eyeGrad
         ctx.beginPath()
         ctx.arc(cx, cy, eyeRadius, 0, Math.PI * 2)
         ctx.fill()
       }
 
-      // 4. Midpoint: Swap scene at 68% (guaranteeing the user sees the spiral for over 1 full second!)
-      if (progress >= 0.68 && !midpointFired) {
+      // 4. Midpoint: Switch scene at frame 48 (64% through)
+      if (currentFrame >= 48 && !midpointFired) {
         midpointFired = true
         if (callbacksRef.current.onMidpoint) {
           callbacksRef.current.onMidpoint()
         }
       }
 
-      // 5. Pure Celestial White Flash (Starts at 65% so it never cuts the spiral short)
-      if (progress > 0.65) {
-        const bloomProgress = progress < 0.84
-          ? (progress - 0.65) / 0.19 // Quick flash
-          : 1.0 - (progress - 0.84) / 0.16 // Smooth dissolve
+      // 5. SOLID WHITE FLASH (Starts at frame 50 to finish into the galaxy)
+      if (currentFrame > 50) {
+        const whiteProgress = (currentFrame - 50) / 25 // 25 frames for clean flash
+        const whiteAlpha = whiteProgress < 0.5
+          ? whiteProgress / 0.5 // Ramps up to pure white
+          : 1.0 - (whiteProgress - 0.5) / 0.5 // Dissolves into galaxy
 
         ctx.globalCompositeOperation = 'source-over'
-        ctx.fillStyle = `rgba(255, 255, 255, ${bloomProgress * 0.98})`
+        ctx.shadowBlur = 0
+        ctx.fillStyle = `rgba(255, 255, 255, ${whiteAlpha})`
         ctx.fillRect(0, 0, width, height)
       }
 
-      if (progress < 1.0) {
+      if (currentFrame < TOTAL_FRAMES) {
         animationFrameId = requestAnimationFrame(render)
       } else {
         if (callbacksRef.current.onComplete) {

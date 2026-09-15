@@ -1,7 +1,8 @@
-/**
- * Milestones for the 204 Days Galaxy Swarm
- * 100% honest to your real texting journey
- */
+import { siteSettings, countdownSettings } from './settings';
+import { getLiveTimeTogether } from '../utils/countdown';
+
+const liveTime = getLiveTimeTogether(siteSettings.relationshipStartDate, countdownSettings.timezone);
+const currentDays = liveTime.days;
 
 export const dayMilestones = [
   {
@@ -29,9 +30,10 @@ export const dayMilestones = [
     text: "Two hundred days of quiet trust. Even on the busiest student days, you were always the first and last person I texted.",
   },
   {
-    day: 204,
+    day: currentDays,
     title: "Today — Choosing You Still",
     date: "Present",
-    text: "204 days together. Every single point of light in this galaxy is one real day we stood by each other.",
+    // Automatically uses the live number (206 today, 207 tomorrow!)
+    text: `${currentDays} days together. Every single point of light in this galaxy is one real day we stood by each other.`,
   },
 ];
