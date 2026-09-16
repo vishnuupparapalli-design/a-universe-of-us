@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Diorama from './components/Diorama'
 import OpeningScene from './scenes/OpeningScene'
 import ShelfScene from './scenes/ShelfScene'
@@ -21,6 +21,60 @@ export default function App() {
   const liveTime = getLiveTimeTogether(siteSettings.relationshipStartDate, countdownSettings.timezone)
   const currentDays = liveTime.days
 
+  // ================= SMART PHOTO DETECTOR =================
+  const [photoUrl, setPhotoUrl] = useState(() => {
+    return localStorage.getItem('elsewhere_first_photo') || null
+  })
+
+  // INSTANT UPDATE FIX: Updates the open card immediately on upload!
+  const handleUploadPhoto = (base64) => {
+    setPhotoUrl(base64)
+    localStorage.setItem('elsewhere_first_photo', base64)
+    discover('someday-first-photo')
+
+    // Immediately update the currently open card so it transforms instantly!
+    setActiveMemory((prev) => prev ? {
+      ...prev,
+      status: 'past',
+      image: base64,
+      text: 'Our first photograph together. The day Elsewhere finally became here.'
+    } : null)
+  }
+
+  useEffect(() => {
+    if (photoUrl) return
+
+    const commonNames = [
+      './photos/first-photo.jpg',
+      './photos/first-photo.png',
+      './photos/photo.jpg',
+      './photos/photo.png',
+      './photos/us.jpg',
+      './photos/us.png',
+    ]
+
+    for (let path of commonNames) {
+      const img = new Image()
+      img.src = path
+      img.onload = () => setPhotoUrl(path)
+    }
+  }, [photoUrl])
+
+  const processedMemories = memories.map((m) => {
+    if (m.id === 'someday-first-photo') {
+      const hasPhoto = Boolean(photoUrl)
+      return {
+        ...m,
+        status: hasPhoto ? 'past' : 'future',
+        image: photoUrl,
+        text: hasPhoto
+          ? 'Our first photograph together. The day Elsewhere finally became here.'
+          : m.text,
+      }
+    }
+    return m
+  })
+
   // Experience Views: 'arrival' | 'shelf' | 'sky' | 'beginning' | 'days'
   const [viewMode, setViewMode] = useState('arrival')
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false)
@@ -31,7 +85,7 @@ export default function App() {
   const [hoveredId, setHoveredId] = useState(null)
 
   const openingLetter = letters[0]
-  const allContent = [...memories, ...movies]
+  const allContent = [...processedMemories, ...movies]
 
   const handleOpenEnvelope = () => {
     setIsEnvelopeOpen(true)
@@ -66,24 +120,21 @@ export default function App() {
   }
 
   const handleSelectMemory = (id) => {
-    // 1. Where It Started -> Wormhole into Chapter 1
+    // 1. Where It Started
     if (id === 'the-beginning') {
       setIsWarping(true)
       return
     }
 
-    // 2. Days Together Medallion -> INSTANT White Light on click (0ms)!
+    // 2. Days Together Medallion
     if (id === 'two-hundred-three-days') {
-      // Step A: Trigger pure white light IMMEDIATELY on click (0ms!)
       setWhiteFlash(true)
 
-      // Step B: In 280ms, screen is already 100% solid white! Swap scene invisibly.
       setTimeout(() => {
         setViewMode('days')
         discover('two-hundred-three-days')
       }, 280)
 
-      // Step C: Dissolve the white light smoothly to reveal the galaxy fly-in!
       setTimeout(() => {
         setWhiteFlash(false)
       }, 500)
@@ -102,14 +153,14 @@ export default function App() {
   return (
     <div className="relative w-screen h-screen bg-elsewhere-void overflow-hidden text-elsewhere-textPrimary font-sans select-none">
       
-      {/* 1. Cinematic Starlight Wormhole Overlay (for Chapter 1) */}
+      {/* 1. Cinematic Starlight Wormhole Overlay */}
       <WarpTransition
         isActive={isWarping}
         onMidpoint={() => setViewMode('beginning')}
         onComplete={() => setIsWarping(false)}
       />
 
-      {/* 2. PURE WHITE LIGHT BRIDGE (Fast 180ms ramp: floods screen instantly on click!) */}
+      {/* 2. Instant Pure White Light Bridge */}
       <div 
         className={`fixed inset-0 z-50 bg-white pointer-events-none transition-opacity duration-200 ease-out ${
           whiteFlash ? 'opacity-100' : 'opacity-0'
@@ -195,9 +246,14 @@ export default function App() {
             <span className="text-elsewhere-gold font-serif">★ {discoveredCount}</span>
             {discoveredCount > 1 && (
               <button
-                onClick={resetDiscovery}
+                onClick={() => {
+                  resetDiscovery()
+                  localStorage.removeItem('elsewhere_first_photo')
+                  setPhotoUrl(null)
+                  setActiveMemory(null)
+                }}
                 className="text-[10px] text-elsewhere-textMuted hover:text-rose-400 underline transition-colors"
-                title="Reset discovery state"
+                title="Reset discovery state and photo"
               >
                 reset
               </button>
@@ -327,7 +383,7 @@ export default function App() {
         onPrimaryAction={handleEnterWorld}
       />
 
-      {/* Keepsake Story Modal */}
+      {/* Keepsake Story Modal (Now transforms instantly on upload!) */}
       {activeMemory && (
         <MemoryPanel
           isOpen={Boolean(activeMemory)}
@@ -337,6 +393,8 @@ export default function App() {
           text={activeMemory.text}
           date={activeMemory.location || 'Elsewhere'}
           status={activeMemory.status}
+          image={activeMemory.image}
+          onUploadPhoto={handleUploadPhoto}
         />
       )}
     </div>
