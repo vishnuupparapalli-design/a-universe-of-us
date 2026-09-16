@@ -22,34 +22,30 @@ function createStarTexture() {
   return new THREE.CanvasTexture(canvas)
 }
 
-/**
- * DaysScene — Ocean Blue Galaxy with Dramatic Fly-In Zoom
- */
 export default function DaysScene({ currentDays = 206, onSelectMilestone }) {
-  const flyInContainerRef = useRef()
+  const containerRef = useRef()
   const galaxyRef = useRef()
   const coreGlowRef = useRef()
   const starTexture = useMemo(() => createStarTexture(), [])
   const [hoveredDay, setHoveredDay] = useState(null)
 
-  // DRAMATIC FLY-IN: Galaxy zooms forward from deep space right as you arrive!
+  // Smooth Galaxy Arrival Glide (Feel the momentum of exiting the vortex!)
   useEffect(() => {
-    if (flyInContainerRef.current) {
-      // Start deep in space and small
+    if (containerRef.current) {
       gsap.fromTo(
-        flyInContainerRef.current.position,
-        { z: -5.5, y: -0.8 },
-        { z: 0, y: 0.05, duration: 1.6, ease: 'power2.out', delay: 0.15 }
+        containerRef.current.position,
+        { z: -3.8, y: -0.4 },
+        { z: 0, y: 0.05, duration: 1.3, ease: 'power2.out', delay: 0.1 }
       )
       gsap.fromTo(
-        flyInContainerRef.current.scale,
-        { x: 0.2, y: 0.2, z: 0.2 },
-        { x: 1.0, y: 1.0, z: 1.0, duration: 1.6, ease: 'power2.out', delay: 0.15 }
+        containerRef.current.scale,
+        { x: 0.45, y: 0.45, z: 0.45 },
+        { x: 1.0, y: 1.0, z: 1.0, duration: 1.3, ease: 'power2.out', delay: 0.1 }
       )
     }
   }, [])
 
-  // 1. The 204/206 Stars following a clean spiral disc
+  // 1. The 204/206 Stars following clean spiral disc
   const [starPositions, starColors] = useMemo(() => {
     const pos = new Float32Array(currentDays * 3)
     const col = new Float32Array(currentDays * 3)
@@ -116,20 +112,20 @@ export default function DaysScene({ currentDays = 206, onSelectMilestone }) {
 
   // 3. Exact 5 Milestone Coordinates
   const milestones = useMemo(() => [
-    { day: 1, label: 'Day 1 • Feb 22', pos: [-2.0, 0.05, -0.8], color: '#00f2fe' },
-    { day: 50, label: 'Day 50', pos: [-1.4, 0.05, 0.9], color: '#2dd4bf' },
-    { day: 100, label: 'Day 100', pos: [1.4, 0.05, -0.8], color: '#38bdf8' },
-    { day: 200, label: 'Day 200', pos: [1.0, 0.05, 0.7], color: '#60a5fa' },
+    { day: 1, label: 'Day 1 • Feb 22', pos: [-2.1, 0.05, -0.7], color: '#00f2fe' },
+    { day: 50, label: 'Day 50', pos: [-1.4, 0.05, 0.85], color: '#2dd4bf' },
+    { day: 100, label: 'Day 100', pos: [1.3, 0.05, 0.75], color: '#38bdf8' },
+    { day: 200, label: 'Day 200', pos: [1.1, 0.05, -0.55], color: '#60a5fa' },
     { day: currentDays, label: `Today (${currentDays})`, pos: [0, 0.08, 0], color: '#ffffff' },
   ], [currentDays])
 
-  // Luminous line connecting directly through each milestone star
   const curvePoints = useMemo(() => [
-    [-2.0, 0.05, -0.8], // Day 1
-    [-1.4, 0.05, 0.9],  // Day 50
-    [1.0, 0.05, 0.7],   // Day 200
-    [1.4, 0.05, -0.8],  // Day 100
-    [0, 0.08, 0],       // Today
+    [-2.1, 0.05, -0.7],
+    [-1.4, 0.05, 0.85],
+    [0.2, 0.06, 1.1],
+    [1.3, 0.05, 0.75],
+    [1.1, 0.05, -0.55],
+    [0, 0.08, 0],
   ], [])
 
   useFrame((state) => {
@@ -143,7 +139,7 @@ export default function DaysScene({ currentDays = 206, onSelectMilestone }) {
   })
 
   return (
-    <group ref={flyInContainerRef} position={[0, 0.05, 0]} rotation={[0.42, 0, 0]}>
+    <group ref={containerRef} position={[0, 0.05, 0]} rotation={[0.42, 0, 0]}>
       <pointLight color="#ffffff" intensity={3.5} distance={6} />
       <pointLight color="#00f2fe" intensity={2.0} distance={4} position={[0, 0.3, 0]} />
       <ambientLight color="#061224" intensity={0.9} />
@@ -167,12 +163,12 @@ export default function DaysScene({ currentDays = 206, onSelectMilestone }) {
         </points>
       </group>
 
-      {/* Steady Milestones & Connecting Line */}
+      {/* Steady Milestones & Clean Curved Path */}
       <group>
         <Line
           points={curvePoints}
           color="#38bdf8"
-          lineWidth={1.5}
+          lineWidth={1.6}
           transparent
           opacity={0.65}
         />
@@ -213,13 +209,12 @@ export default function DaysScene({ currentDays = 206, onSelectMilestone }) {
                 }
               }}
             >
-              {/* Invisible Hitbox */}
+              {/* Hitbox */}
               <mesh>
                 <sphereGeometry args={[0.24, 16, 16]} />
                 <meshBasicMaterial transparent opacity={0} />
               </mesh>
 
-              {/* Glowing Star Core */}
               {!isToday && (
                 <mesh scale={isHovered ? 1.4 : 1.0}>
                   <sphereGeometry args={[0.085, 24, 24]} />
@@ -227,13 +222,11 @@ export default function DaysScene({ currentDays = 206, onSelectMilestone }) {
                 </mesh>
               )}
 
-              {/* Radiant Halo */}
               <mesh position={[0, 0, 0]}>
                 <circleGeometry args={[isToday ? 0.26 : 0.18, 24]} />
                 <meshBasicMaterial color={m.color} transparent opacity={isHovered ? 0.7 : 0.35} side={THREE.DoubleSide} />
               </mesh>
 
-              {/* Clean Steady Badge Tag */}
               <Html
                 position={[0, 0.22, 0]}
                 center

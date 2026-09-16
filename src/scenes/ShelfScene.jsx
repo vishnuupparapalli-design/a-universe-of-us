@@ -26,20 +26,19 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
     }
   })
 
-  // 1. PLUNGE INTO THE BEGINNING (Dives straight into the twin lights!)
+  // 1. PLUNGE SUCTION INTO THE BEGINNING
   const handleBeginningClick = () => {
     if (isPlungingRef.current || !groupRef.current) return
     isPlungingRef.current = true
 
     gsap.to(groupRef.current.position, {
-      x: 1.85,  // Centers the Beginning stand in your view
-      y: -0.65, // Centers vertically
-      z: 3.8,   // Rushes straight into the twin lights!
-      duration: 0.42,
+      x: 1.7,
+      y: -0.55,
+      z: 3.4,
+      duration: 0.38,
       ease: 'power2.in',
       onComplete: () => {
         onSelectObject('the-beginning')
-
         setTimeout(() => {
           if (groupRef.current) {
             groupRef.current.position.set(0, -0.12, 0)
@@ -51,28 +50,27 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
     })
 
     gsap.to(groupRef.current.scale, {
-      x: 2.8,
-      y: 2.8,
-      z: 2.8,
-      duration: 0.42,
+      x: 2.5,
+      y: 2.5,
+      z: 2.5,
+      duration: 0.38,
       ease: 'power2.in',
     })
   }
 
-  // 2. PLUNGE INTO THE 206 DAYS MEDALLION (Dives straight into the galaxy vortex!)
+  // 2. PLUNGE SUCTION INTO THE 206 DAYS MEDALLION
   const handleMedallionClick = () => {
     if (isPlungingRef.current || !groupRef.current) return
     isPlungingRef.current = true
 
     gsap.to(groupRef.current.position, {
-      x: 0.85,
-      y: 0.32,
-      z: 3.6,
-      duration: 0.42,
+      x: 0.8,
+      y: 0.28,
+      z: 3.4,
+      duration: 0.38,
       ease: 'power2.in',
       onComplete: () => {
         onSelectObject('two-hundred-three-days')
-
         setTimeout(() => {
           if (groupRef.current) {
             groupRef.current.position.set(0, -0.12, 0)
@@ -84,10 +82,10 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
     })
 
     gsap.to(groupRef.current.scale, {
-      x: 2.8,
-      y: 2.8,
-      z: 2.8,
-      duration: 0.42,
+      x: 2.5,
+      y: 2.5,
+      z: 2.5,
+      duration: 0.38,
       ease: 'power2.in',
     })
   }
@@ -143,7 +141,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         />
       ))}
 
-      {/* 1. The Beginning (WITH SUCTION PLUNGE!) */}
+      {/* 1. The Beginning (WITH SUCTION PULL-IN!) */}
       <group position={[-1.2, 0.74, 0]}>
         <InteractiveObject
           onOpen={handleBeginningClick}
@@ -236,7 +234,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* 5. 206 Days Medallion (WITH SUCTION PLUNGE!) */}
+      {/* 5. 206 Days Medallion (WITH SUCTION PULL-IN!) */}
       <group position={[-0.45, -0.11, 0]}>
         <InteractiveObject
           onOpen={handleMedallionClick}
