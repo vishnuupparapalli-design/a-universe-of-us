@@ -8,6 +8,7 @@ import MemoryPanel from './components/MemoryPanel'
 import CountdownWidget from './components/CountdownWidget'
 import ConstellationLayer from './components/ConstellationLayer'
 import WarpTransition from './components/WarpTransition'
+import Timeline from './components/Timeline'
 import { siteSettings, countdownSettings } from './data/settings'
 import { letters } from './data/letters'
 import { memories } from './data/memories'
@@ -26,13 +27,11 @@ export default function App() {
     return localStorage.getItem('elsewhere_first_photo') || null
   })
 
-  // INSTANT UPDATE FIX: Updates the open card immediately on upload!
   const handleUploadPhoto = (base64) => {
     setPhotoUrl(base64)
     localStorage.setItem('elsewhere_first_photo', base64)
     discover('someday-first-photo')
 
-    // Immediately update the currently open card so it transforms instantly!
     setActiveMemory((prev) => prev ? {
       ...prev,
       status: 'past',
@@ -75,7 +74,7 @@ export default function App() {
     return m
   })
 
-  // Experience Views: 'arrival' | 'shelf' | 'sky' | 'beginning' | 'days'
+  // Experience Views: 'arrival' | 'shelf' | 'sky' | 'beginning' | 'days' | 'timeline'
   const [viewMode, setViewMode] = useState('arrival')
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
@@ -141,6 +140,19 @@ export default function App() {
       return
     }
 
+    // 3. Someday destination node
+    if (id === 'someday-meeting') {
+      setActiveMemory({
+        id: 'someday-meeting',
+        title: 'The Day We Finally Meet',
+        approximateDate: 'When the time comes',
+        text: 'The destination of this entire universe. When Elsewhere quietly becomes here.',
+        location: 'In person',
+        status: 'future',
+      })
+      return
+    }
+
     const found = allContent.find((item) => item.id === id)
     if (found) {
       setActiveMemory(found)
@@ -167,7 +179,7 @@ export default function App() {
         }`}
       />
 
-      {/* 3. Memory Constellation */}
+      {/* 3. Memory Constellation (Enabled in background during Timeline for soft stardust!) */}
       {viewMode !== 'arrival' && (
         <ConstellationLayer
           items={allContent}
@@ -198,6 +210,8 @@ export default function App() {
               ? 'Chapter 1: The Beginning'
               : viewMode === 'days'
               ? `Chapter 2: ${currentDays} Days Galaxy`
+              : viewMode === 'timeline'
+              ? 'Storyline: Timeline'
               : viewMode === 'sky'
               ? 'The Sky Between Us'
               : 'The Shelf (Living Hub)'}
@@ -208,25 +222,41 @@ export default function App() {
         <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
           {viewMode !== 'arrival' && (
             <>
-              {viewMode === 'beginning' || viewMode === 'days' ? (
-                <button
-                  onClick={handleReturnToShelf}
-                  className="text-xs font-sans px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-elsewhere-textPrimary border border-white/10 transition-all flex items-center gap-1.5 shadow-clay-btn"
-                >
-                  <span>📚 Return to Shelf</span>
-                </button>
-              ) : (
-                <button
-                  onClick={() => setViewMode(viewMode === 'sky' ? 'shelf' : 'sky')}
-                  className={`text-xs font-sans px-3.5 py-1.5 rounded-full border transition-all flex items-center gap-1.5 ${
-                    viewMode === 'sky'
-                      ? 'bg-elsewhere-gold text-elsewhere-void border-elsewhere-gold font-semibold shadow-glow-gold'
-                      : 'bg-white/5 hover:bg-white/10 text-elsewhere-textSecondary border-white/10'
-                  }`}
-                  title="Toggle constellation night sky"
-                >
-                  <span>{viewMode === 'sky' ? '📚 Return to Shelf' : '🌌 The Sky'}</span>
-                </button>
+              {/* Timeline Toggle Button */}
+              <button
+                onClick={() => setViewMode(viewMode === 'timeline' ? 'shelf' : 'timeline')}
+                className={`text-xs font-sans px-3.5 py-1.5 rounded-full border transition-all flex items-center gap-1.5 ${
+                  viewMode === 'timeline'
+                    ? 'bg-cyan-400 text-elsewhere-void border-cyan-400 font-semibold shadow-glow-star'
+                    : 'bg-white/5 hover:bg-white/10 text-elsewhere-textSecondary border-white/10'
+                }`}
+                title="Toggle chronological timeline"
+              >
+                <span>{viewMode === 'timeline' ? '📚 Shelf' : '📜 Timeline'}</span>
+              </button>
+
+              {/* Sky View Switcher */}
+              {viewMode !== 'timeline' && (
+                viewMode === 'beginning' || viewMode === 'days' ? (
+                  <button
+                    onClick={handleReturnToShelf}
+                    className="text-xs font-sans px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-elsewhere-textPrimary border border-white/10 transition-all flex items-center gap-1.5 shadow-clay-btn"
+                  >
+                    <span>📚 Return to Shelf</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setViewMode(viewMode === 'sky' ? 'shelf' : 'sky')}
+                    className={`text-xs font-sans px-3.5 py-1.5 rounded-full border transition-all flex items-center gap-1.5 ${
+                      viewMode === 'sky'
+                        ? 'bg-elsewhere-gold text-elsewhere-void border-elsewhere-gold font-semibold shadow-glow-gold'
+                        : 'bg-white/5 hover:bg-white/10 text-elsewhere-textSecondary border-white/10'
+                    }`}
+                    title="Toggle constellation night sky"
+                  >
+                    <span>{viewMode === 'sky' ? '📚 Shelf' : '🌌 The Sky'}</span>
+                  </button>
+                )
               )}
 
               <button
@@ -262,7 +292,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* 6. Main 3D Diorama Stage */}
+      {/* 6. Main Stage / Timeline View */}
       <main className="w-full h-full relative z-10">
         {viewMode === 'arrival' ? (
           <Diorama>
@@ -299,76 +329,84 @@ export default function App() {
               }}
             />
           </Diorama>
+        ) : viewMode === 'timeline' ? (
+          <Timeline
+            isDiscovered={isDiscovered}
+            onSelectMemory={handleSelectMemory}
+            currentDays={currentDays}
+          />
         ) : null}
       </main>
 
       {/* 7. Bottom Guidance */}
-      <footer className="absolute bottom-0 left-0 right-0 z-30 pb-6 sm:pb-8 flex flex-col items-center justify-center text-center pointer-events-none">
-        {viewMode === 'arrival' ? (
-          <>
-            <p className="text-sm md:text-base font-serif italic text-elsewhere-textSecondary max-w-md mb-3 pointer-events-auto">
-              "One meeting became a memory. Memories became stars. Stars became a little universe."
-            </p>
-            <div
-              onClick={handleOpenEnvelope}
-              className="cursor-pointer pointer-events-auto group bg-elsewhere-surface/80 hover:bg-elsewhere-surface hover:border-elsewhere-gold/40 backdrop-blur-md border border-elsewhere-border px-4 py-1.5 rounded-full shadow-clay-btn transition-all flex items-center gap-2 text-xs"
-            >
-              <span className="text-elsewhere-gold animate-bounce">✉</span>
-              <span className="text-elsewhere-textSecondary group-hover:text-elsewhere-textPrimary">
-                Click the envelope to read your letter
-              </span>
-              <span className="text-elsewhere-gold">✦</span>
+      {viewMode !== 'timeline' && (
+        <footer className="absolute bottom-0 left-0 right-0 z-30 pb-6 sm:pb-8 flex flex-col items-center justify-center text-center pointer-events-none">
+          {viewMode === 'arrival' ? (
+            <>
+              <p className="text-sm md:text-base font-serif italic text-elsewhere-textSecondary max-w-md mb-3 pointer-events-auto">
+                "One meeting became a memory. Memories became stars. Stars became a little universe."
+              </p>
+              <div
+                onClick={handleOpenEnvelope}
+                className="cursor-pointer pointer-events-auto group bg-elsewhere-surface/80 hover:bg-elsewhere-surface hover:border-elsewhere-gold/40 backdrop-blur-md border border-elsewhere-border px-4 py-1.5 rounded-full shadow-clay-btn transition-all flex items-center gap-2 text-xs"
+              >
+                <span className="text-elsewhere-gold animate-bounce">✉</span>
+                <span className="text-elsewhere-textSecondary group-hover:text-elsewhere-textPrimary">
+                  Click the envelope to read your letter
+                </span>
+                <span className="text-elsewhere-gold">✦</span>
+              </div>
+            </>
+          ) : viewMode === 'beginning' ? (
+            <div className="pointer-events-auto flex flex-col sm:flex-row items-center gap-3">
+              <div className="bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-2.5">
+                <span className="text-elsewhere-star text-xs">✦</span>
+                <span className="font-serif text-sm text-elsewhere-textPrimary">
+                  {isDiscovered('the-beginning')
+                    ? 'Two people, two screens, one small world between them.'
+                    : 'Click anywhere on the island to bring the lights together'}
+                </span>
+                <span className="text-elsewhere-gold text-xs">✦</span>
+              </div>
+
+              {isDiscovered('the-beginning') && (
+                <button
+                  onClick={() => setViewMode('sky')}
+                  className="px-5 py-2.5 rounded-full bg-elsewhere-gold hover:bg-yellow-300 text-elsewhere-void font-sans text-xs font-semibold shadow-glow-gold transition-all animate-bounce flex items-center gap-1.5"
+                >
+                  <span>🌌 See Your Star in the Sky →</span>
+                </button>
+              )}
             </div>
-          </>
-        ) : viewMode === 'beginning' ? (
-          <div className="pointer-events-auto flex flex-col sm:flex-row items-center gap-3">
-            <div className="bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-2.5">
-              <span className="text-elsewhere-star text-xs">✦</span>
+          ) : viewMode === 'days' ? (
+            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
+              <span className="text-elsewhere-gold text-xs">✦</span>
               <span className="font-serif text-sm text-elsewhere-textPrimary">
-                {isDiscovered('the-beginning')
-                  ? 'Two people, two screens, one small world between them.'
-                  : 'Click anywhere on the island to bring the lights together'}
+                {currentDays} Days Galaxy — Every star is a real day. Click glowing milestone stars to explore memories
               </span>
               <span className="text-elsewhere-gold text-xs">✦</span>
             </div>
-
-            {isDiscovered('the-beginning') && (
-              <button
-                onClick={() => setViewMode('sky')}
-                className="px-5 py-2.5 rounded-full bg-elsewhere-gold hover:bg-yellow-300 text-elsewhere-void font-sans text-xs font-semibold shadow-glow-gold transition-all animate-bounce flex items-center gap-1.5"
-              >
-                <span>🌌 See Your Star in the Sky →</span>
-              </button>
-            )}
-          </div>
-        ) : viewMode === 'days' ? (
-          <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
-            <span className="text-elsewhere-gold text-xs">✦</span>
-            <span className="font-serif text-sm text-elsewhere-textPrimary">
-              {currentDays} Days Galaxy — Every star is a real day. Click glowing milestone stars to explore memories
-            </span>
-            <span className="text-elsewhere-gold text-xs">✦</span>
-          </div>
-        ) : viewMode === 'sky' ? (
-          <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
-            <span className="text-elsewhere-gold text-xs">✦</span>
-            <span className="font-serif text-sm text-elsewhere-textPrimary">
-              The Sky Between Us — Click any star or hollow ring to explore
-            </span>
-            <span className="text-elsewhere-gold text-xs">✦</span>
-          </div>
-        ) : (
-          <div className="pointer-events-auto transition-all duration-300 bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3 max-w-lg mx-4">
-            <span className="text-elsewhere-gold text-xs">✦</span>
-            <span className="font-serif text-sm text-elsewhere-textPrimary truncate">
-              {hoveredItem 
-                ? `${hoveredItem.title} — ${hoveredItem.approximateDate || 'Keepsake'}`
-                : 'Hover or tap any keepsake to explore'}
-            </span>
-            <span className="text-elsewhere-gold text-xs">✦</span>
-          </div>
-        )}
-      </footer>
+          ) : viewMode === 'sky' ? (
+            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
+              <span className="text-elsewhere-gold text-xs">✦</span>
+              <span className="font-serif text-sm text-elsewhere-textPrimary">
+                The Sky Between Us — Click any star or hollow ring to explore
+              </span>
+              <span className="text-elsewhere-gold text-xs">✦</span>
+            </div>
+          ) : (
+            <div className="pointer-events-auto transition-all duration-300 bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3 max-w-lg mx-4">
+              <span className="text-elsewhere-gold text-xs">✦</span>
+              <span className="font-serif text-sm text-elsewhere-textPrimary truncate">
+                {hoveredItem 
+                  ? `${hoveredItem.title} — ${hoveredItem.approximateDate || 'Keepsake'}`
+                  : 'Hover or tap any keepsake to explore'}
+              </span>
+              <span className="text-elsewhere-gold text-xs">✦</span>
+            </div>
+          )}
+        </footer>
+      )}
 
       {/* Opening Letter Modal */}
       <MemoryPanel
@@ -383,7 +421,7 @@ export default function App() {
         onPrimaryAction={handleEnterWorld}
       />
 
-      {/* Keepsake Story Modal (Now transforms instantly on upload!) */}
+      {/* Keepsake Story Modal */}
       {activeMemory && (
         <MemoryPanel
           isOpen={Boolean(activeMemory)}
