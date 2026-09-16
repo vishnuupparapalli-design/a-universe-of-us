@@ -4,6 +4,7 @@ import OpeningScene from './scenes/OpeningScene'
 import ShelfScene from './scenes/ShelfScene'
 import BeginningScene from './scenes/BeginningScene'
 import DaysScene from './scenes/DaysScene'
+import MovieScene from './scenes/MovieScene'
 import MemoryPanel from './components/MemoryPanel'
 import CountdownWidget from './components/CountdownWidget'
 import ConstellationLayer from './components/ConstellationLayer'
@@ -74,7 +75,7 @@ export default function App() {
     return m
   })
 
-  // Experience Views: 'arrival' | 'shelf' | 'sky' | 'beginning' | 'days' | 'timeline'
+  // Experience Views: 'arrival' | 'shelf' | 'sky' | 'beginning' | 'days' | 'movie' | 'timeline'
   const [viewMode, setViewMode] = useState('arrival')
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
@@ -119,14 +120,14 @@ export default function App() {
   }
 
   const handleSelectMemory = (id) => {
-    // 1. Where It Started
-    if (id === 'the-beginning') {
+    // 1. Where It Started -> Wormhole into Chapter 1 (from Shelf or Sky)
+    if (id === 'the-beginning' && viewMode !== 'beginning') {
       setIsWarping(true)
       return
     }
 
-    // 2. Days Together Medallion
-    if (id === 'two-hundred-three-days') {
+    // 2. Days Together Medallion -> White Light Bridge into Days Galaxy (from Shelf or Sky)
+    if (id === 'two-hundred-three-days' && viewMode !== 'days') {
       setWhiteFlash(true)
 
       setTimeout(() => {
@@ -140,7 +141,22 @@ export default function App() {
       return
     }
 
-    // 3. Someday destination node
+    // 3. Movie Corner Projector -> White Light Bridge into Movie Corner (ONLY from Shelf or Sky!)
+    if (id === 'movie-night-01' && viewMode === 'shelf') {
+      setWhiteFlash(true)
+
+      setTimeout(() => {
+        setViewMode('movie')
+        discover('movie-night-01')
+      }, 280)
+
+      setTimeout(() => {
+        setWhiteFlash(false)
+      }, 500)
+      return
+    }
+
+    // 4. Someday destination node
     if (id === 'someday-meeting') {
       setActiveMemory({
         id: 'someday-meeting',
@@ -153,6 +169,7 @@ export default function App() {
       return
     }
 
+    // Standard memory modal opener (Works inside rooms, on timeline, and in sky!)
     const found = allContent.find((item) => item.id === id)
     if (found) {
       setActiveMemory(found)
@@ -179,8 +196,8 @@ export default function App() {
         }`}
       />
 
-      {/* 3. Memory Constellation (Enabled in background during Timeline for soft stardust!) */}
-      {viewMode !== 'arrival' && (
+      {/* 3. Memory Constellation */}
+      {viewMode !== 'arrival' && viewMode !== 'timeline' && (
         <ConstellationLayer
           items={allContent}
           isDiscovered={isDiscovered}
@@ -210,6 +227,8 @@ export default function App() {
               ? 'Chapter 1: The Beginning'
               : viewMode === 'days'
               ? `Chapter 2: ${currentDays} Days Galaxy`
+              : viewMode === 'movie'
+              ? 'Chapter 3: Movie Corner'
               : viewMode === 'timeline'
               ? 'Storyline: Timeline'
               : viewMode === 'sky'
@@ -235,9 +254,9 @@ export default function App() {
                 <span>{viewMode === 'timeline' ? '📚 Shelf' : '📜 Timeline'}</span>
               </button>
 
-              {/* Sky View Switcher */}
+              {/* View Mode Switcher */}
               {viewMode !== 'timeline' && (
-                viewMode === 'beginning' || viewMode === 'days' ? (
+                viewMode === 'beginning' || viewMode === 'days' || viewMode === 'movie' ? (
                   <button
                     onClick={handleReturnToShelf}
                     className="text-xs font-sans px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-elsewhere-textPrimary border border-white/10 transition-all flex items-center gap-1.5 shadow-clay-btn"
@@ -251,12 +270,12 @@ export default function App() {
                       viewMode === 'sky'
                         ? 'bg-elsewhere-gold text-elsewhere-void border-elsewhere-gold font-semibold shadow-glow-gold'
                         : 'bg-white/5 hover:bg-white/10 text-elsewhere-textSecondary border-white/10'
-                    }`}
-                    title="Toggle constellation night sky"
-                  >
-                    <span>{viewMode === 'sky' ? '📚 Shelf' : '🌌 The Sky'}</span>
-                  </button>
-                )
+                  }`}
+                  title="Toggle constellation night sky"
+                >
+                  <span>{viewMode === 'sky' ? '📚 Shelf' : '🌌 The Sky'}</span>
+                </button>
+              )
               )}
 
               <button
@@ -292,7 +311,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* 6. Main Stage / Timeline View */}
+      {/* 6. Main Stage View */}
       <main className="w-full h-full relative z-10">
         {viewMode === 'arrival' ? (
           <Diorama>
@@ -326,6 +345,26 @@ export default function App() {
                   text: milestone.text,
                   location: `${currentDays} Days Galaxy`,
                 })
+              }}
+            />
+          </Diorama>
+        ) : viewMode === 'movie' ? (
+          <Diorama>
+            <MovieScene
+              onSelectTicket={(ticketKey) => {
+                if (ticketKey === 'first-film') {
+                  const found = allContent.find((it) => it.id === 'movie-night-01')
+                  if (found) {
+                    setActiveMemory(found)
+                    discover('movie-night-01')
+                  }
+                } else {
+                  const found = allContent.find((it) => it.id === 'midnight-movies')
+                  if (found) {
+                    setActiveMemory(found)
+                    discover('midnight-movies')
+                  }
+                }
               }}
             />
           </Diorama>
@@ -383,6 +422,14 @@ export default function App() {
               <span className="text-elsewhere-gold text-xs">✦</span>
               <span className="font-serif text-sm text-elsewhere-textPrimary">
                 {currentDays} Days Galaxy — Every star is a real day. Click glowing milestone stars to explore memories
+              </span>
+              <span className="text-elsewhere-gold text-xs">✦</span>
+            </div>
+          ) : viewMode === 'movie' ? (
+            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
+              <span className="text-elsewhere-gold text-xs">✦</span>
+              <span className="font-serif text-sm text-elsewhere-textPrimary">
+                Movie Corner — Click either ticket or its name tag to read movie memories
               </span>
               <span className="text-elsewhere-gold text-xs">✦</span>
             </div>

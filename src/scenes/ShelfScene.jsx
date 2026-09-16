@@ -19,7 +19,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
   const groupRef = useRef()
   const isPlungingRef = useRef(false)
 
-  // GUARANTEED RESET ON MOUNT: Never gets stuck at giant size when returning!
+  // Guaranteed clean reset when returning to the shelf
   useEffect(() => {
     if (groupRef.current) {
       gsap.killTweensOf(groupRef.current.position)
@@ -48,9 +48,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
       z: 3.2,
       duration: 0.38,
       ease: 'power2.in',
-      onComplete: () => {
-        onSelectObject('the-beginning')
-      },
+      onComplete: () => onSelectObject('the-beginning'),
     })
 
     gsap.to(groupRef.current.scale, {
@@ -62,7 +60,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
     })
   }
 
-  // 2. PULL-IN SUCTION INTO THE 206 DAYS MEDALLION
+  // 2. PULL-IN SUCTION INTO 206 DAYS MEDALLION
   const handleMedallionClick = () => {
     if (isPlungingRef.current || !groupRef.current) return
     isPlungingRef.current = true
@@ -73,9 +71,30 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
       z: 3.2,
       duration: 0.38,
       ease: 'power2.in',
-      onComplete: () => {
-        onSelectObject('two-hundred-three-days')
-      },
+      onComplete: () => onSelectObject('two-hundred-three-days'),
+    })
+
+    gsap.to(groupRef.current.scale, {
+      x: 2.4,
+      y: 2.4,
+      z: 2.4,
+      duration: 0.38,
+      ease: 'power2.in',
+    })
+  }
+
+  // 3. PULL-IN SUCTION INTO MOVIE CORNER PROJECTOR!
+  const handleProjectorClick = () => {
+    if (isPlungingRef.current || !groupRef.current) return
+    isPlungingRef.current = true
+
+    gsap.to(groupRef.current.position, {
+      x: -1.35, // Centers projector in view
+      y: -0.55,
+      z: 3.2,   // Zooms straight into the golden lens!
+      duration: 0.38,
+      ease: 'power2.in',
+      onComplete: () => onSelectObject('movie-night-01'),
     })
 
     gsap.to(groupRef.current.scale, {
@@ -138,7 +157,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         />
       ))}
 
-      {/* 1. The Beginning (WITH PULL-IN SUCTION!) */}
+      {/* 1. The Beginning */}
       <group position={[-1.2, 0.74, 0]}>
         <InteractiveObject
           onOpen={handleBeginningClick}
@@ -181,10 +200,10 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* 3. Movie Corner */}
+      {/* 3. Movie Corner (WITH SUCTION PULL-IN ZOOM!) */}
       <group position={[1.2, 0.74, 0]}>
         <InteractiveObject
-          onOpen={() => onSelectObject('movie-night-01')}
+          onOpen={handleProjectorClick}
           onHover={(hovered) => handleHover('movie-night-01', hovered)}
           isDiscovered={isMoviesLit}
           showAura={true}
@@ -196,7 +215,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
           </RoundedBox>
           <mesh position={[0, 0.14, 0.19]} rotation={[Math.PI / 2, 0, 0]}>
             <cylinderGeometry args={[0.09, 0.09, 0.06, 24]} />
-            <meshStandardMaterial color="#dfb76c" roughness={0.3} emissive="#fcd34d" emissiveIntensity={isMoviesLit ? 1.3 : 0.3} />
+            <meshStandardMaterial color="#dfb76c" roughness={0.3} emissive="#fcd34d" emissiveIntensity={1.3} />
           </mesh>
         </InteractiveObject>
       </group>
@@ -231,7 +250,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* 5. 206 Days Medallion (WITH PULL-IN SUCTION!) */}
+      {/* 5. 206 Days Medallion */}
       <group position={[-0.45, -0.11, 0]}>
         <InteractiveObject
           onOpen={handleMedallionClick}
