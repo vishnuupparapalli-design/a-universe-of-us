@@ -1,8 +1,7 @@
-import React, { useMemo, useRef, useState, useEffect } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Line, Html } from '@react-three/drei'
 import * as THREE from 'three'
-import gsap from 'gsap'
 import { dayMilestones } from '../data/milestones'
 
 function createStarTexture() {
@@ -22,41 +21,27 @@ function createStarTexture() {
   return new THREE.CanvasTexture(canvas)
 }
 
+/**
+ * DaysScene — Clean Ocean Blue Starlight Galaxy (Nebula Gas Removed)
+ */
 export default function DaysScene({ currentDays = 206, onSelectMilestone }) {
-  const containerRef = useRef()
   const galaxyRef = useRef()
   const coreGlowRef = useRef()
   const starTexture = useMemo(() => createStarTexture(), [])
   const [hoveredDay, setHoveredDay] = useState(null)
 
-  // Smooth Galaxy Arrival Glide (Feel the momentum of exiting the vortex!)
-  useEffect(() => {
-    if (containerRef.current) {
-      gsap.fromTo(
-        containerRef.current.position,
-        { z: -3.8, y: -0.4 },
-        { z: 0, y: 0.05, duration: 1.3, ease: 'power2.out', delay: 0.1 }
-      )
-      gsap.fromTo(
-        containerRef.current.scale,
-        { x: 0.45, y: 0.45, z: 0.45 },
-        { x: 1.0, y: 1.0, z: 1.0, duration: 1.3, ease: 'power2.out', delay: 0.1 }
-      )
-    }
-  }, [])
-
-  // 1. The 204/206 Stars following clean spiral disc
+  // 1. The 204/206 Main Stars
   const [starPositions, starColors] = useMemo(() => {
     const pos = new Float32Array(currentDays * 3)
     const col = new Float32Array(currentDays * 3)
 
     const oceanPalette = [
-      '#00f2fe',
-      '#38bdf8',
-      '#0ea5e9',
-      '#3b82f6',
-      '#2dd4bf',
-      '#ffffff',
+      '#00f2fe', // Aquamarine
+      '#38bdf8', // Cyan
+      '#0ea5e9', // Blue
+      '#3b82f6', // Sapphire
+      '#2dd4bf', // Seafoam
+      '#ffffff', // White
     ]
 
     for (let i = 0; i < currentDays; i++) {
@@ -68,7 +53,7 @@ export default function DaysScene({ currentDays = 206, onSelectMilestone }) {
       const spread = 0.16 * (1 + t * 0.7)
       const x = Math.cos(angle) * radius + (Math.random() - 0.5) * spread
       const z = Math.sin(angle) * radius + (Math.random() - 0.5) * spread
-      const y = (Math.random() - 0.5) * 0.12
+      const y = (Math.random() - 0.5) * 0.14
 
       pos[i * 3 + 0] = x
       pos[i * 3 + 1] = y
@@ -83,7 +68,7 @@ export default function DaysScene({ currentDays = 206, onSelectMilestone }) {
     return [pos, col]
   }, [currentDays])
 
-  // 2. 1,000 Micro-Stars along spiral arms
+  // 2. 1,000 Micro-Stars along the spiral arms
   const [densePositions, denseColors] = useMemo(() => {
     const count = 1000
     const pos = new Float32Array(count * 3)
@@ -110,7 +95,26 @@ export default function DaysScene({ currentDays = 206, onSelectMilestone }) {
     return [pos, col]
   }, [])
 
-  // 3. Exact 5 Milestone Coordinates
+  // 3. Ambient Stardust Field (Deep background stars)
+  const [ambientPositions, ambientColors] = useMemo(() => {
+    const count = 400
+    const pos = new Float32Array(count * 3)
+    const col = new Float32Array(count * 3)
+
+    for (let i = 0; i < count; i++) {
+      pos[i * 3 + 0] = (Math.random() - 0.5) * 8
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 4
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 7
+
+      const c = new THREE.Color(Math.random() > 0.4 ? '#38bdf8' : '#ffffff')
+      col[i * 3 + 0] = c.r
+      col[i * 3 + 1] = c.g
+      col[i * 3 + 2] = c.b
+    }
+    return [pos, col]
+  }, [])
+
+  // 4. Exact 5 Milestone Coordinates
   const milestones = useMemo(() => [
     { day: 1, label: 'Day 1 • Feb 22', pos: [-2.1, 0.05, -0.7], color: '#00f2fe' },
     { day: 50, label: 'Day 50', pos: [-1.4, 0.05, 0.85], color: '#2dd4bf' },
@@ -119,13 +123,14 @@ export default function DaysScene({ currentDays = 206, onSelectMilestone }) {
     { day: currentDays, label: `Today (${currentDays})`, pos: [0, 0.08, 0], color: '#ffffff' },
   ], [currentDays])
 
+  // Luminous line connecting directly through each milestone star
   const curvePoints = useMemo(() => [
-    [-2.1, 0.05, -0.7],
-    [-1.4, 0.05, 0.85],
-    [0.2, 0.06, 1.1],
-    [1.3, 0.05, 0.75],
-    [1.1, 0.05, -0.55],
-    [0, 0.08, 0],
+    [-2.1, 0.05, -0.7], // Day 1
+    [-1.4, 0.05, 0.85], // Day 50
+    [0.2, 0.06, 1.1],   // Smooth curve along bottom arm
+    [1.3, 0.05, 0.75],  // Day 100
+    [1.1, 0.05, -0.55], // Day 200
+    [0, 0.08, 0],       // Today
   ], [])
 
   useFrame((state) => {
@@ -139,13 +144,23 @@ export default function DaysScene({ currentDays = 206, onSelectMilestone }) {
   })
 
   return (
-    <group ref={containerRef} position={[0, 0.05, 0]} rotation={[0.42, 0, 0]}>
+    <group position={[0, 0, 0]}>
       <pointLight color="#ffffff" intensity={3.5} distance={6} />
       <pointLight color="#00f2fe" intensity={2.0} distance={4} position={[0, 0.3, 0]} />
       <ambientLight color="#061224" intensity={0.9} />
 
-      {/* Swirling Galaxy Body */}
+      {/* Ambient background stars */}
+      <points>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" count={400} array={ambientPositions} itemSize={3} />
+          <bufferAttribute attach="attributes-color" count={400} array={ambientColors} itemSize={3} />
+        </bufferGeometry>
+        <pointsMaterial size={0.045} map={starTexture} vertexColors transparent opacity={0.6} blending={THREE.AdditiveBlending} depthWrite={false} />
+      </points>
+
+      {/* Swirling Galaxy Body (Clean Starlight Points Only) */}
       <group ref={galaxyRef}>
+        {/* 1,000 Micro-Stars along the spiral arms */}
         <points>
           <bufferGeometry>
             <bufferAttribute attach="attributes-position" count={1000} array={densePositions} itemSize={3} />
@@ -154,6 +169,7 @@ export default function DaysScene({ currentDays = 206, onSelectMilestone }) {
           <pointsMaterial size={0.06} map={starTexture} vertexColors transparent opacity={0.85} blending={THREE.AdditiveBlending} depthWrite={false} />
         </points>
 
+        {/* The 204/206 Main Stars */}
         <points>
           <bufferGeometry>
             <bufferAttribute attach="attributes-position" count={currentDays} array={starPositions} itemSize={3} />
@@ -215,6 +231,7 @@ export default function DaysScene({ currentDays = 206, onSelectMilestone }) {
                 <meshBasicMaterial transparent opacity={0} />
               </mesh>
 
+              {/* Glowing Star Core */}
               {!isToday && (
                 <mesh scale={isHovered ? 1.4 : 1.0}>
                   <sphereGeometry args={[0.085, 24, 24]} />
@@ -222,11 +239,13 @@ export default function DaysScene({ currentDays = 206, onSelectMilestone }) {
                 </mesh>
               )}
 
+              {/* Radiant Halo */}
               <mesh position={[0, 0, 0]}>
                 <circleGeometry args={[isToday ? 0.26 : 0.18, 24]} />
                 <meshBasicMaterial color={m.color} transparent opacity={isHovered ? 0.7 : 0.35} side={THREE.DoubleSide} />
               </mesh>
 
+              {/* Clean Steady Badge Tag */}
               <Html
                 position={[0, 0.22, 0]}
                 center

@@ -19,7 +19,6 @@ import { getLiveTimeTogether } from './utils/countdown'
 export default function App() {
   const { discoveredCount, discover, isDiscovered, resetDiscovery } = useDiscoveryState()
   
-  // Real live day count synced to Hanoi time
   const liveTime = getLiveTimeTogether(siteSettings.relationshipStartDate, countdownSettings.timezone)
   const currentDays = liveTime.days
 
@@ -55,19 +54,33 @@ export default function App() {
       setViewMode('arrival')
       setIsEnvelopeOpen(false)
       setActiveMemory(null)
+      setIsSpiraling(false)
+      setIsWarping(false)
       setTransitioning(false)
     }, 400)
   }
 
+  const handleReturnToShelf = () => {
+    // Clean reset of all transition states!
+    setIsSpiraling(false)
+    setIsWarping(false)
+    setViewMode('shelf')
+  }
+
   const handleSelectMemory = (id) => {
+    // 1. Where It Started
     if (id === 'the-beginning') {
       setIsWarping(true)
       return
     }
 
+    // 2. Days Together Medallion
     if (id === 'two-hundred-three-days') {
-      setIsSpiraling(true)
-      discover('two-hundred-three-days')
+      setIsSpiraling(false) // Force clean reset first!
+      setTimeout(() => {
+        setIsSpiraling(true)
+        discover('two-hundred-three-days')
+      }, 10)
       return
     }
 
@@ -83,14 +96,14 @@ export default function App() {
   return (
     <div className="relative w-screen h-screen bg-elsewhere-void overflow-hidden text-elsewhere-textPrimary font-sans select-none">
       
-      {/* 1. Cinematic Starlight Wormhole Overlay */}
+      {/* 1. Cinematic Starlight Wormhole */}
       <WarpTransition
         isActive={isWarping}
         onMidpoint={() => setViewMode('beginning')}
         onComplete={() => setIsWarping(false)}
       />
 
-      {/* 2. Rainbow Spiral Vortex Overlay on Pure Black */}
+      {/* 2. Rainbow Spiral Vortex on Pure Black */}
       <SpiralTransition
         isActive={isSpiraling}
         onMidpoint={() => setViewMode('days')}
@@ -140,7 +153,7 @@ export default function App() {
             <>
               {viewMode === 'beginning' || viewMode === 'days' ? (
                 <button
-                  onClick={() => setViewMode('shelf')}
+                  onClick={handleReturnToShelf}
                   className="text-xs font-sans px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-elsewhere-textPrimary border border-white/10 transition-all flex items-center gap-1.5 shadow-clay-btn"
                 >
                   <span>📚 Return to Shelf</span>
