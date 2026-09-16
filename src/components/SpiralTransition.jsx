@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react'
 
 /**
- * SpiralTransition — Silky Smooth Rainbow Starlight Ribbons on Pure Black
+ * SpiralTransition — Pure Jet-Black Space with Sharp Rainbow Starlight Needles
+ * Fixed: Removed shadowBlur fog so the background stays 100% JET BLACK!
  */
 export default function SpiralTransition({ isActive, onMidpoint, onComplete }) {
   const canvasRef = useRef(null)
@@ -34,30 +35,30 @@ export default function SpiralTransition({ isActive, onMidpoint, onComplete }) {
 
     // Vibrant Rainbow Starlight Palette
     const rainbowColors = [
-      '#ffffff',
-      '#f87171', // Red
-      '#fb923c', // Orange
-      '#facc15', // Gold
-      '#4ade80', // Green
-      '#22d3ee', // Cyan
-      '#38bdf8', // Blue
-      '#a855f7', // Purple
-      '#f472b6', // Pink
+      '#ffffff', // Starlight White
+      '#f87171', // Coral Red
+      '#fb923c', // Sunset Orange
+      '#facc15', // Radiant Gold
+      '#4ade80', // Emerald Green
+      '#22d3ee', // Electric Cyan
+      '#38bdf8', // Ocean Blue
+      '#a855f7', // Royal Violet
+      '#f472b6', // Cosmic Pink
     ]
 
-    const count = width < 768 ? 140 : 220
+    const count = width < 768 ? 160 : 260
     const particles = []
 
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2
-      const dist = Math.random() * (maxDist - 40) + 40
+      const dist = Math.random() * (maxDist - 30) + 30
       particles.push({
         angle,
         dist,
-        speed: Math.random() * 4 + 3.5,
-        rotSpeed: Math.random() * 0.04 + 0.025,
+        speed: Math.random() * 5 + 4,
+        rotSpeed: Math.random() * 0.05 + 0.03,
         color: rainbowColors[Math.floor(Math.random() * rainbowColors.length)],
-        size: Math.random() * 2.2 + 1.2,
+        size: Math.random() * 1.8 + 1.0,
       })
     }
 
@@ -69,14 +70,13 @@ export default function SpiralTransition({ isActive, onMidpoint, onComplete }) {
       currentFrame++
       const progress = Math.min(currentFrame / TOTAL_FRAMES, 1.0)
 
-      // 1. SOLID PURE BLACK BACKGROUND
+      // 1. PURE 100% JET-BLACK BACKGROUND (No teal tint ever!)
       ctx.globalCompositeOperation = 'source-over'
       ctx.shadowBlur = 0
-      ctx.clearRect(0, 0, width, height)
-      ctx.fillStyle = '#000000'
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.38)'
       ctx.fillRect(0, 0, width, height)
 
-      // 2. Additive Glow for Smooth Flowing Ribbons
+      // 2. Additive Starlight Glow for Rainbow Needles
       ctx.globalCompositeOperation = 'lighter'
 
       const suctionRamp = 1.0 + Math.pow(progress, 2.2) * 6.5
@@ -85,34 +85,27 @@ export default function SpiralTransition({ isActive, onMidpoint, onComplete }) {
       for (let p of particles) {
         const distRatio = Math.max(0.18, p.dist / maxDist)
 
-        // Draw a silky smooth curving starlight arc (5 connected curved steps)
+        const prevAngle = p.angle
+        const prevDist = p.dist
+
+        // Accelerate inward toward center
+        p.dist -= (p.speed / distRatio) * suctionRamp * 0.28
+        p.angle += (p.rotSpeed / Math.sqrt(distRatio)) * spinRamp * 0.24
+
+        const prevX = cx + Math.cos(prevAngle) * prevDist
+        const prevY = cy + Math.sin(prevAngle) * prevDist
+
+        const x = cx + Math.cos(p.angle) * p.dist
+        const y = cy + Math.sin(p.angle) * p.dist
+
+        // Draw crisp, sharp starlight needle (ZERO fuzzy shadow blur fog!)
         ctx.beginPath()
-        const steps = 5
-        for (let s = 0; s <= steps; s++) {
-          const stepOffset = s / steps
-          const arcAngle = p.angle - stepOffset * (p.rotSpeed / Math.sqrt(distRatio)) * spinRamp * 0.9
-          const arcDist = p.dist + stepOffset * (p.speed / distRatio) * suctionRamp * 0.85
-
-          const px = cx + Math.cos(arcAngle) * arcDist
-          const py = cy + Math.sin(arcAngle) * arcDist
-
-          if (s === 0) {
-            ctx.moveTo(px, py)
-          } else {
-            ctx.lineTo(px, py)
-          }
-        }
-
+        ctx.moveTo(prevX, prevY)
+        ctx.lineTo(x, y)
         ctx.strokeStyle = p.color
         ctx.lineWidth = p.size
         ctx.lineCap = 'round'
-        ctx.shadowBlur = 10
-        ctx.shadowColor = p.color
         ctx.stroke()
-
-        // Move particle forward along the vortex
-        p.dist -= (p.speed / distRatio) * suctionRamp * 0.26
-        p.angle += (p.rotSpeed / Math.sqrt(distRatio)) * spinRamp * 0.22
 
         if (p.dist <= 10) {
           p.dist = maxDist * (0.8 + Math.random() * 0.25)
@@ -120,7 +113,7 @@ export default function SpiralTransition({ isActive, onMidpoint, onComplete }) {
         }
       }
 
-      // 3. CENTER EYE: LOCKED TO OCEAN BLUE
+      // 3. Central Ocean Blue Singularity Eye
       if (progress > 0.15 && progress < 0.85) {
         const eyeRadius = Math.min(width, height) * 0.16 * Math.min(1.0, (progress - 0.15) / 0.3)
         const eyeGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, eyeRadius)
@@ -129,14 +122,13 @@ export default function SpiralTransition({ isActive, onMidpoint, onComplete }) {
         eyeGrad.addColorStop(0.7, 'rgba(0, 102, 255, 0.6)')
         eyeGrad.addColorStop(1, 'rgba(0, 0, 0, 0)')
 
-        ctx.shadowBlur = 0
         ctx.fillStyle = eyeGrad
         ctx.beginPath()
         ctx.arc(cx, cy, eyeRadius, 0, Math.PI * 2)
         ctx.fill()
       }
 
-      // 4. Midpoint: Swap scene behind white light
+      // 4. Midpoint: Swap scene at frame 50
       if (currentFrame >= 50 && !midpointFired) {
         midpointFired = true
         if (callbacksRef.current.onMidpoint) {
@@ -144,16 +136,20 @@ export default function SpiralTransition({ isActive, onMidpoint, onComplete }) {
         }
       }
 
-      // 5. Clean White Flash
+      // 5. Clean Radiant White Starlight Bloom
       if (currentFrame > 42) {
-        const whiteProgress = (currentFrame - 42) / 33
-        const whiteAlpha = whiteProgress < 0.4
-          ? whiteProgress / 0.4
-          : 1.0 - (whiteProgress - 0.4) / 0.6
+        const bloomProgress = currentFrame < 54
+          ? (currentFrame - 42) / 12
+          : 1.0 - (currentFrame - 54) / 18
 
-        ctx.globalCompositeOperation = 'source-over'
-        ctx.shadowBlur = 0
-        ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1.0, whiteAlpha)})`
+        const maxRadius = Math.max(width, height) * 1.05
+        const bloomGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxRadius)
+        bloomGrad.addColorStop(0, `rgba(255, 255, 255, ${bloomProgress * 1.0})`)
+        bloomGrad.addColorStop(0.35, `rgba(255, 255, 255, ${bloomProgress * 0.95})`)
+        bloomGrad.addColorStop(0.7, `rgba(0, 210, 255, ${bloomProgress * 0.45})`)
+        bloomGrad.addColorStop(1, 'rgba(0, 0, 0, 0)')
+
+        ctx.fillStyle = bloomGrad
         ctx.fillRect(0, 0, width, height)
       }
 
@@ -179,6 +175,7 @@ export default function SpiralTransition({ isActive, onMidpoint, onComplete }) {
   return (
     <canvas
       ref={canvasRef}
+      style={{ backgroundColor: '#000000' }}
       className="fixed inset-0 z-50 pointer-events-none w-full h-full select-none"
     />
   )
