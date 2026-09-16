@@ -8,7 +8,6 @@ import MemoryPanel from './components/MemoryPanel'
 import CountdownWidget from './components/CountdownWidget'
 import ConstellationLayer from './components/ConstellationLayer'
 import WarpTransition from './components/WarpTransition'
-import SpiralTransition from './components/SpiralTransition'
 import { siteSettings, countdownSettings } from './data/settings'
 import { letters } from './data/letters'
 import { memories } from './data/memories'
@@ -26,8 +25,8 @@ export default function App() {
   const [viewMode, setViewMode] = useState('arrival')
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
+  const [whiteFlash, setWhiteFlash] = useState(false)
   const [isWarping, setIsWarping] = useState(false)
-  const [isSpiraling, setIsSpiraling] = useState(false)
   const [activeMemory, setActiveMemory] = useState(null)
   const [hoveredId, setHoveredId] = useState(null)
 
@@ -54,33 +53,40 @@ export default function App() {
       setViewMode('arrival')
       setIsEnvelopeOpen(false)
       setActiveMemory(null)
-      setIsSpiraling(false)
       setIsWarping(false)
+      setWhiteFlash(false)
       setTransitioning(false)
     }, 400)
   }
 
   const handleReturnToShelf = () => {
-    // Clean reset of all transition states!
-    setIsSpiraling(false)
     setIsWarping(false)
+    setWhiteFlash(false)
     setViewMode('shelf')
   }
 
   const handleSelectMemory = (id) => {
-    // 1. Where It Started
+    // 1. Where It Started -> Wormhole into Chapter 1
     if (id === 'the-beginning') {
       setIsWarping(true)
       return
     }
 
-    // 2. Days Together Medallion
+    // 2. Days Together Medallion -> INSTANT White Light on click (0ms)!
     if (id === 'two-hundred-three-days') {
-      setIsSpiraling(false) // Force clean reset first!
+      // Step A: Trigger pure white light IMMEDIATELY on click (0ms!)
+      setWhiteFlash(true)
+
+      // Step B: In 280ms, screen is already 100% solid white! Swap scene invisibly.
       setTimeout(() => {
-        setIsSpiraling(true)
+        setViewMode('days')
         discover('two-hundred-three-days')
-      }, 10)
+      }, 280)
+
+      // Step C: Dissolve the white light smoothly to reveal the galaxy fly-in!
+      setTimeout(() => {
+        setWhiteFlash(false)
+      }, 500)
       return
     }
 
@@ -96,18 +102,18 @@ export default function App() {
   return (
     <div className="relative w-screen h-screen bg-elsewhere-void overflow-hidden text-elsewhere-textPrimary font-sans select-none">
       
-      {/* 1. Cinematic Starlight Wormhole */}
+      {/* 1. Cinematic Starlight Wormhole Overlay (for Chapter 1) */}
       <WarpTransition
         isActive={isWarping}
         onMidpoint={() => setViewMode('beginning')}
         onComplete={() => setIsWarping(false)}
       />
 
-      {/* 2. Rainbow Spiral Vortex on Pure Black */}
-      <SpiralTransition
-        isActive={isSpiraling}
-        onMidpoint={() => setViewMode('days')}
-        onComplete={() => setIsSpiraling(false)}
+      {/* 2. PURE WHITE LIGHT BRIDGE (Fast 180ms ramp: floods screen instantly on click!) */}
+      <div 
+        className={`fixed inset-0 z-50 bg-white pointer-events-none transition-opacity duration-200 ease-out ${
+          whiteFlash ? 'opacity-100' : 'opacity-0'
+        }`}
       />
 
       {/* 3. Memory Constellation */}
@@ -120,14 +126,14 @@ export default function App() {
         />
       )}
 
-      {/* Atmospheric Transition Bloom */}
+      {/* 4. Atmospheric Transition Bloom */}
       <div 
-        className={`fixed inset-0 z-40 bg-amber-100/10 pointer-events-none transition-opacity duration-700 ${
+        className={`fixed inset-0 z-40 bg-cyan-100/10 pointer-events-none transition-opacity duration-500 ${
           transitioning ? 'opacity-100' : 'opacity-0'
         }`}
       />
 
-      {/* 4. Top HUD Bar */}
+      {/* 5. Top HUD Bar */}
       <header className="absolute top-0 left-0 right-0 z-30 p-6 md:p-8 flex items-center justify-between pointer-events-none">
         <div className="flex items-center gap-3 pointer-events-auto">
           <span className="w-2.5 h-2.5 rounded-full bg-elsewhere-gold shadow-glow-gold animate-pulse"></span>
@@ -200,7 +206,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* 5. Main 3D Diorama Stage */}
+      {/* 6. Main 3D Diorama Stage */}
       <main className="w-full h-full relative z-10">
         {viewMode === 'arrival' ? (
           <Diorama>
@@ -240,7 +246,7 @@ export default function App() {
         ) : null}
       </main>
 
-      {/* 6. Bottom Guidance */}
+      {/* 7. Bottom Guidance */}
       <footer className="absolute bottom-0 left-0 right-0 z-30 pb-6 sm:pb-8 flex flex-col items-center justify-center text-center pointer-events-none">
         {viewMode === 'arrival' ? (
           <>

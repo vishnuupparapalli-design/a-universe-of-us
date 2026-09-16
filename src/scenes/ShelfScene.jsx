@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react'
+import React, { useRef, useMemo, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { RoundedBox, Line } from '@react-three/drei'
 import * as THREE from 'three'
@@ -19,6 +19,17 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
   const groupRef = useRef()
   const isPlungingRef = useRef(false)
 
+  // GUARANTEED RESET ON MOUNT: Never gets stuck at giant size when returning!
+  useEffect(() => {
+    if (groupRef.current) {
+      gsap.killTweensOf(groupRef.current.position)
+      gsap.killTweensOf(groupRef.current.scale)
+      groupRef.current.position.set(0, -0.12, 0)
+      groupRef.current.scale.set(1, 1, 1)
+      isPlungingRef.current = false
+    }
+  }, [])
+
   useFrame((state) => {
     const t = state.clock.getElapsedTime()
     if (groupRef.current && !isPlungingRef.current) {
@@ -26,65 +37,51 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
     }
   })
 
-  // 1. PLUNGE SUCTION INTO THE BEGINNING
+  // 1. PULL-IN SUCTION INTO THE BEGINNING
   const handleBeginningClick = () => {
     if (isPlungingRef.current || !groupRef.current) return
     isPlungingRef.current = true
 
     gsap.to(groupRef.current.position, {
-      x: 1.7,
-      y: -0.55,
-      z: 3.4,
+      x: 1.6,
+      y: -0.5,
+      z: 3.2,
       duration: 0.38,
       ease: 'power2.in',
       onComplete: () => {
         onSelectObject('the-beginning')
-        setTimeout(() => {
-          if (groupRef.current) {
-            groupRef.current.position.set(0, -0.12, 0)
-            groupRef.current.scale.set(1, 1, 1)
-            isPlungingRef.current = false
-          }
-        }, 900)
       },
     })
 
     gsap.to(groupRef.current.scale, {
-      x: 2.5,
-      y: 2.5,
-      z: 2.5,
+      x: 2.4,
+      y: 2.4,
+      z: 2.4,
       duration: 0.38,
       ease: 'power2.in',
     })
   }
 
-  // 2. PLUNGE SUCTION INTO THE 206 DAYS MEDALLION
+  // 2. PULL-IN SUCTION INTO THE 206 DAYS MEDALLION
   const handleMedallionClick = () => {
     if (isPlungingRef.current || !groupRef.current) return
     isPlungingRef.current = true
 
     gsap.to(groupRef.current.position, {
-      x: 0.8,
-      y: 0.28,
-      z: 3.4,
+      x: 0.75,
+      y: 0.25,
+      z: 3.2,
       duration: 0.38,
       ease: 'power2.in',
       onComplete: () => {
         onSelectObject('two-hundred-three-days')
-        setTimeout(() => {
-          if (groupRef.current) {
-            groupRef.current.position.set(0, -0.12, 0)
-            groupRef.current.scale.set(1, 1, 1)
-            isPlungingRef.current = false
-          }
-        }, 900)
       },
     })
 
     gsap.to(groupRef.current.scale, {
-      x: 2.5,
-      y: 2.5,
-      z: 2.5,
+      x: 2.4,
+      y: 2.4,
+      z: 2.4,
       duration: 0.38,
       ease: 'power2.in',
     })
@@ -114,7 +111,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
   }
 
   return (
-    <group ref={groupRef} position={[0, -0.12, 0]}>
+    <group ref={groupRef} position={[0, -0.12, 0]} scale={[1, 1, 1]}>
       {/* Floating Shelf Planks */}
       <RoundedBox args={[3.8, 0.08, 1.2]} radius={0.03} smoothness={3} position={[0, 0.65, 0]}>
         <meshStandardMaterial color="#232a3d" roughness={0.75} metalness={0.05} />
@@ -141,7 +138,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         />
       ))}
 
-      {/* 1. The Beginning (WITH SUCTION PULL-IN!) */}
+      {/* 1. The Beginning (WITH PULL-IN SUCTION!) */}
       <group position={[-1.2, 0.74, 0]}>
         <InteractiveObject
           onOpen={handleBeginningClick}
@@ -234,7 +231,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* 5. 206 Days Medallion (WITH SUCTION PULL-IN!) */}
+      {/* 5. 206 Days Medallion (WITH PULL-IN SUCTION!) */}
       <group position={[-0.45, -0.11, 0]}>
         <InteractiveObject
           onOpen={handleMedallionClick}
