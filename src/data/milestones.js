@@ -15,7 +15,7 @@ export const dayMilestones = [
     day: 50,
     title: "Day 50 — Finding Our Rhythm",
     date: "April 13, 2026",
-    text: "Fifty days of late-night texts, adjusting to the 1.5 hour time gap between New Delhi and Hanoi, and learning how easily we could talk about everything.",
+    text: "Fifty days of late-night texts, adjusting to the 1.5 hour time gap between Dharmavaram and near Hanoi, and learning how easily we could talk about everything.",
   },
   {
     day: 100,
@@ -33,7 +33,6 @@ export const dayMilestones = [
     day: currentDays,
     title: "Today — Choosing You Still",
     date: "Present",
-    // Automatically uses the live number (206 today, 207 tomorrow!)
     text: `${currentDays} days together. Every single point of light in this galaxy is one real day we stood by each other.`,
   },
 ];

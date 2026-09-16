@@ -19,7 +19,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
   const groupRef = useRef()
   const isPlungingRef = useRef(false)
 
-  // Guaranteed clean reset when returning to the shelf
+  // Guaranteed clean reset when returning to shelf
   useEffect(() => {
     if (groupRef.current) {
       gsap.killTweensOf(groupRef.current.position)
@@ -60,18 +60,18 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
     })
   }
 
-  // 2. PULL-IN SUCTION INTO 206 DAYS MEDALLION
-  const handleMedallionClick = () => {
+  // 2. PULL-IN SUCTION INTO OUR STORIES (THE TWO BOOKS!)
+  const handleStoriesClick = () => {
     if (isPlungingRef.current || !groupRef.current) return
     isPlungingRef.current = true
 
     gsap.to(groupRef.current.position, {
-      x: 0.75,
-      y: 0.25,
-      z: 3.2,
+      x: 0.0,   // Centered horizontally on the books
+      y: -0.55, // Centers vertically
+      z: 3.2,   // Zooms straight into the books!
       duration: 0.38,
       ease: 'power2.in',
-      onComplete: () => onSelectObject('two-hundred-three-days'),
+      onComplete: () => onSelectObject('our-stories'),
     })
 
     gsap.to(groupRef.current.scale, {
@@ -83,18 +83,41 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
     })
   }
 
-  // 3. PULL-IN SUCTION INTO MOVIE CORNER PROJECTOR!
+  // 3. PULL-IN SUCTION INTO MOVIE CORNER PROJECTOR
   const handleProjectorClick = () => {
     if (isPlungingRef.current || !groupRef.current) return
     isPlungingRef.current = true
 
     gsap.to(groupRef.current.position, {
-      x: -1.35, // Centers projector in view
+      x: -1.35,
       y: -0.55,
-      z: 3.2,   // Zooms straight into the golden lens!
+      z: 3.2,
       duration: 0.38,
       ease: 'power2.in',
       onComplete: () => onSelectObject('movie-night-01'),
+    })
+
+    gsap.to(groupRef.current.scale, {
+      x: 2.4,
+      y: 2.4,
+      z: 2.4,
+      duration: 0.38,
+      ease: 'power2.in',
+    })
+  }
+
+  // 4. PULL-IN SUCTION INTO 206 DAYS MEDALLION
+  const handleMedallionClick = () => {
+    if (isPlungingRef.current || !groupRef.current) return
+    isPlungingRef.current = true
+
+    gsap.to(groupRef.current.position, {
+      x: 0.75,
+      y: 0.25,
+      z: 3.2,
+      duration: 0.38,
+      ease: 'power2.in',
+      onComplete: () => onSelectObject('two-hundred-three-days'),
     })
 
     gsap.to(groupRef.current.scale, {
@@ -181,10 +204,10 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* 2. Our Stories */}
+      {/* 2. Our Stories (WITH PULL-IN ZOOM!) */}
       <group position={[0, 0.74, 0]}>
         <InteractiveObject
-          onOpen={() => onSelectObject('our-stories')}
+          onOpen={handleStoriesClick}
           onHover={(hovered) => handleHover('our-stories', hovered)}
           isDiscovered={isStoriesLit}
           showAura={true}
@@ -200,7 +223,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* 3. Movie Corner (WITH SUCTION PULL-IN ZOOM!) */}
+      {/* 3. Movie Corner */}
       <group position={[1.2, 0.74, 0]}>
         <InteractiveObject
           onOpen={handleProjectorClick}
