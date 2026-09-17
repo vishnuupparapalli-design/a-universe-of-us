@@ -19,7 +19,6 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
   const groupRef = useRef()
   const isPlungingRef = useRef(false)
 
-  // Guaranteed clean reset when returning to shelf
   useEffect(() => {
     if (groupRef.current) {
       gsap.killTweensOf(groupRef.current.position)
@@ -37,7 +36,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
     }
   })
 
-  // 1. PULL-IN SUCTION INTO THE BEGINNING
+  // 1. PULL-IN: THE BEGINNING
   const handleBeginningClick = () => {
     if (isPlungingRef.current || !groupRef.current) return
     isPlungingRef.current = true
@@ -60,15 +59,15 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
     })
   }
 
-  // 2. PULL-IN SUCTION INTO OUR STORIES (THE TWO BOOKS!)
+  // 2. PULL-IN: OUR STORIES
   const handleStoriesClick = () => {
     if (isPlungingRef.current || !groupRef.current) return
     isPlungingRef.current = true
 
     gsap.to(groupRef.current.position, {
-      x: 0.0,   // Centered horizontally on the books
-      y: -0.55, // Centers vertically
-      z: 3.2,   // Zooms straight into the books!
+      x: 0.0,
+      y: -0.55,
+      z: 3.2,
       duration: 0.38,
       ease: 'power2.in',
       onComplete: () => onSelectObject('our-stories'),
@@ -83,7 +82,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
     })
   }
 
-  // 3. PULL-IN SUCTION INTO MOVIE CORNER PROJECTOR
+  // 3. PULL-IN: MOVIE CORNER
   const handleProjectorClick = () => {
     if (isPlungingRef.current || !groupRef.current) return
     isPlungingRef.current = true
@@ -106,7 +105,30 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
     })
   }
 
-  // 4. PULL-IN SUCTION INTO 206 DAYS MEDALLION
+  // 4. PULL-IN: THE HARD DAYS (THE STONE)
+  const handleHardDaysClick = () => {
+    if (isPlungingRef.current || !groupRef.current) return
+    isPlungingRef.current = true
+
+    gsap.to(groupRef.current.position, {
+      x: 1.8,
+      y: 0.25,
+      z: 3.2,
+      duration: 0.38,
+      ease: 'power2.in',
+      onComplete: () => onSelectObject('hard-days-01'),
+    })
+
+    gsap.to(groupRef.current.scale, {
+      x: 2.4,
+      y: 2.4,
+      z: 2.4,
+      duration: 0.38,
+      ease: 'power2.in',
+    })
+  }
+
+  // 5. PULL-IN: 206 DAYS MEDALLION
   const handleMedallionClick = () => {
     if (isPlungingRef.current || !groupRef.current) return
     isPlungingRef.current = true
@@ -204,7 +226,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* 2. Our Stories (WITH PULL-IN ZOOM!) */}
+      {/* 2. Our Stories */}
       <group position={[0, 0.74, 0]}>
         <InteractiveObject
           onOpen={handleStoriesClick}
@@ -243,10 +265,10 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* 4. The Hard Days */}
+      {/* 4. The Hard Days (WITH PULL-IN!) */}
       <group position={[-1.4, -0.11, 0]}>
         <InteractiveObject
-          onOpen={() => onSelectObject('hard-days-01')}
+          onOpen={handleHardDaysClick}
           onHover={(hovered) => handleHover('hard-days-01', hovered)}
           isDiscovered={isHardDaysLit}
           showAura={true}

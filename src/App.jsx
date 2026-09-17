@@ -6,6 +6,7 @@ import BeginningScene from './scenes/BeginningScene'
 import DaysScene from './scenes/DaysScene'
 import MovieScene from './scenes/MovieScene'
 import StoriesScene from './scenes/StoriesScene'
+import HardDaysScene from './scenes/HardDaysScene'
 import MemoryPanel from './components/MemoryPanel'
 import CountdownWidget from './components/CountdownWidget'
 import ConstellationLayer from './components/ConstellationLayer'
@@ -76,7 +77,7 @@ export default function App() {
     return m
   })
 
-  // Experience Views: 'arrival' | 'shelf' | 'sky' | 'beginning' | 'days' | 'movie' | 'stories' | 'timeline'
+  // Experience Views: 'arrival' | 'shelf' | 'sky' | 'beginning' | 'days' | 'movie' | 'stories' | 'hard-days' | 'timeline'
   const [viewMode, setViewMode] = useState('arrival')
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
@@ -121,13 +122,13 @@ export default function App() {
   }
 
   const handleSelectMemory = (id) => {
-    // 1. Where It Started -> Wormhole into Chapter 1
+    // 1. Where It Started
     if (id === 'the-beginning' && viewMode !== 'beginning') {
       setIsWarping(true)
       return
     }
 
-    // 2. Days Together Medallion -> Days Galaxy
+    // 2. Days Together Medallion
     if (id === 'two-hundred-three-days' && viewMode !== 'days') {
       setWhiteFlash(true)
 
@@ -142,7 +143,7 @@ export default function App() {
       return
     }
 
-    // 3. Movie Corner Projector -> Movie Corner
+    // 3. Movie Corner Projector
     if (id === 'movie-night-01' && viewMode === 'shelf') {
       setWhiteFlash(true)
 
@@ -157,7 +158,7 @@ export default function App() {
       return
     }
 
-    // 4. Our Stories (Two Books) -> Our Stories Chapter!
+    // 4. Our Stories (Two Books)
     if (id === 'our-stories' && viewMode === 'shelf') {
       setWhiteFlash(true)
 
@@ -172,7 +173,22 @@ export default function App() {
       return
     }
 
-    // 5. Someday destination node
+    // 5. The Hard Days (Stone with Candle Ember)
+    if (id === 'hard-days-01' && viewMode === 'shelf') {
+      setWhiteFlash(true)
+
+      setTimeout(() => {
+        setViewMode('hard-days')
+        discover('hard-days-01')
+      }, 280)
+
+      setTimeout(() => {
+        setWhiteFlash(false)
+      }, 500)
+      return
+    }
+
+    // 6. Someday destination node
     if (id === 'someday-meeting') {
       setActiveMemory({
         id: 'someday-meeting',
@@ -194,6 +210,9 @@ export default function App() {
   }
 
   const hoveredItem = allContent.find((item) => item.id === hoveredId)
+
+  // Countdown is deliberately HIDDEN during Arrival AND during The Hard Days (Master Plan Section F2)
+  const showCountdown = viewMode !== 'arrival' && viewMode !== 'hard-days'
 
   return (
     <div className="relative w-screen h-screen bg-elsewhere-void overflow-hidden text-elsewhere-textPrimary font-sans select-none">
@@ -247,6 +266,8 @@ export default function App() {
               ? 'Chapter 3: Movie Corner'
               : viewMode === 'stories'
               ? 'Chapter 4: Our Stories'
+              : viewMode === 'hard-days'
+              ? 'Chapter 5: The Hard Days'
               : viewMode === 'timeline'
               ? 'Storyline: Timeline'
               : viewMode === 'sky'
@@ -274,7 +295,7 @@ export default function App() {
 
               {/* View Mode Switcher */}
               {viewMode !== 'timeline' && (
-                viewMode === 'beginning' || viewMode === 'days' || viewMode === 'movie' || viewMode === 'stories' ? (
+                viewMode === 'beginning' || viewMode === 'days' || viewMode === 'movie' || viewMode === 'stories' || viewMode === 'hard-days' ? (
                   <button
                     onClick={handleReturnToShelf}
                     className="text-xs font-sans px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-elsewhere-textPrimary border border-white/10 transition-all flex items-center gap-1.5 shadow-clay-btn"
@@ -304,7 +325,8 @@ export default function App() {
                 ✉ Re-read letter
               </button>
 
-              <CountdownWidget isVisible={true} />
+              {/* Countdown: HELD SACRED & HIDDEN during Arrival & Hard Days! */}
+              <CountdownWidget isVisible={showCountdown} />
             </>
           )}
 
@@ -406,6 +428,18 @@ export default function App() {
               }}
             />
           </Diorama>
+        ) : viewMode === 'hard-days' ? (
+          <Diorama>
+            <HardDaysScene
+              onOpenMemory={() => {
+                const found = allContent.find((it) => it.id === 'hard-days-01')
+                if (found) {
+                  setActiveMemory(found)
+                  discover('hard-days-01')
+                }
+              }}
+            />
+          </Diorama>
         ) : viewMode === 'timeline' ? (
           <Timeline
             isDiscovered={isDiscovered}
@@ -478,6 +512,14 @@ export default function App() {
                 Our Stories — Click either book or its name tag to read about learning each other's worlds
               </span>
               <span className="text-amber-400 text-xs">✦</span>
+            </div>
+          ) : viewMode === 'hard-days' ? (
+            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-2.5">
+              <span className="text-amber-200 text-xs">🕯</span>
+              <span className="font-serif text-sm text-elsewhere-textPrimary">
+                The Hard Days — Click the warm candle stone to read
+              </span>
+              <span className="text-amber-200 text-xs">🕯</span>
             </div>
           ) : viewMode === 'sky' ? (
             <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
