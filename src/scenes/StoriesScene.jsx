@@ -6,7 +6,6 @@ import gsap from 'gsap'
 
 /**
  * Handcrafted 3D Hardcover Book Model
- * Authentic book anatomy: Leather covers with overhang, cream paper block, rounded spine, and gold emblem!
  */
 function SculptedBook({ coverColor, ribbonColor, emblemType = 'star' }) {
   return (
@@ -16,7 +15,7 @@ function SculptedBook({ coverColor, ribbonColor, emblemType = 'star' }) {
         <meshStandardMaterial color={coverColor} roughness={0.65} />
       </RoundedBox>
 
-      {/* 2. Thick Block of Cream Paper Pages (Tucked inside with realistic overhang!) */}
+      {/* 2. Thick Block of Cream Paper Pages */}
       <RoundedBox args={[0.66, 0.09, 0.92]} radius={0.008} position={[0.015, 0, 0]}>
         <meshStandardMaterial color="#f7f1e6" roughness={0.85} />
       </RoundedBox>
@@ -42,29 +41,27 @@ function SculptedBook({ coverColor, ribbonColor, emblemType = 'star' }) {
         <meshStandardMaterial color="#dfb76c" metalness={0.4} roughness={0.35} />
       </mesh>
 
-      {/* 5. Embossed Gold Celestial Emblem in center of cover (NO hollow picture frame!) */}
+      {/* 5. Embossed Gold Celestial Emblem in center of cover */}
       <group position={[0.02, 0.068, 0]}>
-        {/* Outer Gold Ring */}
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
           <ringGeometry args={[0.13, 0.16, 24]} />
-          <meshStandardMaterial color="#dfb76c" metalness={0.4} roughness={0.35} emissive="#dfb76c" emissiveIntensity={0.2} />
+          <meshStandardMaterial color="#dfb76c" metalness={0.4} roughness={0.35} emissive="#dfb76c" emissiveIntensity={0.25} />
         </mesh>
-        {/* Center Emblem Core */}
         {emblemType === 'star' ? (
           <mesh rotation={[-Math.PI / 2, 0, 0]}>
             <octahedronGeometry args={[0.08, 0]} />
-            <meshStandardMaterial color="#dfb76c" metalness={0.4} roughness={0.35} emissive="#dfb76c" emissiveIntensity={0.25} />
+            <meshStandardMaterial color="#dfb76c" metalness={0.4} roughness={0.35} emissive="#dfb76c" emissiveIntensity={0.3} />
           </mesh>
         ) : (
           <mesh rotation={[-Math.PI / 2, 0, 0]}>
             <circleGeometry args={[0.065, 16]} />
-            <meshStandardMaterial color="#dfb76c" metalness={0.4} roughness={0.35} emissive="#dfb76c" emissiveIntensity={0.25} />
+            <meshStandardMaterial color="#dfb76c" metalness={0.4} roughness={0.35} emissive="#dfb76c" emissiveIntensity={0.3} />
           </mesh>
         )}
       </group>
 
-      {/* 6. Silk Bookmark Ribbon hanging gracefully from between the pages */}
-      <mesh position={[0.05, 0.01, 0.54]} rotation={[0.22, 0, 0]}>
+      {/* 6. Silk Bookmark Ribbon hanging gracefully over the front */}
+      <mesh position={[0.05, 0.01, 0.52]} rotation={[0.22, 0, 0]}>
         <boxGeometry args={[0.06, 0.006, 0.22]} />
         <meshStandardMaterial color={ribbonColor} emissive={ribbonColor} emissiveIntensity={0.5} roughness={0.4} />
       </mesh>
@@ -73,7 +70,7 @@ function SculptedBook({ coverColor, ribbonColor, emblemType = 'star' }) {
 }
 
 /**
- * StoriesScene — Master Plan Section J
+ * StoriesScene — Elevated & Perfectly Positioned Books
  */
 export default function StoriesScene({ onSelectStory }) {
   const containerRef = useRef()
@@ -112,7 +109,7 @@ export default function StoriesScene({ onSelectStory }) {
         
         {/* Warm Reading Desk Lighting */}
         <ambientLight color="#1f1610" intensity={0.9} />
-        <pointLight color="#fff0d0" intensity={1.6} position={[0, 2.8, 1.5]} />
+        <pointLight color="#fff0d0" intensity={1.8} position={[0, 2.8, 1.5]} />
 
         {/* 1. Base Mahogany Desk Slab */}
         <RoundedBox args={[3.8, 0.24, 2.6]} radius={0.12} smoothness={4} position={[0, -0.12, 0]}>
@@ -157,22 +154,24 @@ export default function StoriesScene({ onSelectStory }) {
           />
         </group>
 
-        {/* 3. Angled Wooden Reading Bookstand */}
-        <group position={[0.05, 0.05, 0]} rotation={[-0.2, 0, 0]}>
-          <RoundedBox args={[2.0, 0.06, 1.25]} radius={0.02} position={[0, 0.14, 0]}>
+        {/* 3. Angled Wooden Reading Bookstand (With Low Subtle Ledge) */}
+        <group position={[0.05, 0.08, 0]} rotation={[-0.24, 0, 0]}>
+          {/* Main Bookstand Board */}
+          <RoundedBox args={[2.1, 0.06, 1.35]} radius={0.02} position={[0, 0.18, 0]}>
             <meshStandardMaterial color="#382518" roughness={0.7} />
           </RoundedBox>
-          <RoundedBox args={[2.0, 0.08, 0.08]} radius={0.015} position={[0, 0.2, 0.6]}>
+          {/* Low Front Lip (Never blocks the books!) */}
+          <RoundedBox args={[2.1, 0.03, 0.04]} radius={0.01} position={[0, 0.22, 0.65]}>
             <meshStandardMaterial color="#2d1c12" roughness={0.7} />
           </RoundedBox>
         </group>
 
-        {/* ================= 4. THE TWO SCULPTED BOOKS ================= */}
+        {/* ================= 4. THE TWO BOOKS (ELEVATED & PROUD!) ================= */}
 
-        {/* BOOK 1: Her Story (Near Hanoi) — Indigo Leather with Cyan Bookmark */}
+        {/* BOOK 1: Her Story (Near Hanoi) — Cleanly Elevated! */}
         <group
-          position={[-0.44, 0.22, 0.05]}
-          rotation={[-0.2, 0.04, -0.02]}
+          position={[-0.46, 0.34, 0.02]} // LIFTED UP from 0.21 to 0.34!
+          rotation={[-0.24, 0.03, -0.02]}
         >
           <group
             onClick={(e) => {
@@ -195,7 +194,7 @@ export default function StoriesScene({ onSelectStory }) {
             />
           </group>
 
-          {/* Clickable Floating Badge Tag */}
+          {/* Floating Clickable Badge Tag */}
           <Html position={[0, 0.22, -0.48]} center distanceFactor={4.5} className="select-none z-20">
             <button
               onClick={(e) => {
@@ -209,10 +208,10 @@ export default function StoriesScene({ onSelectStory }) {
           </Html>
         </group>
 
-        {/* BOOK 2: My Story (Dharmavaram) — Amber Leather with Gold Bookmark */}
+        {/* BOOK 2: My Story (Dharmavaram) — Cleanly Elevated! */}
         <group
-          position={[0.54, 0.22, 0.05]}
-          rotation={[-0.2, -0.04, 0.02]}
+          position={[0.52, 0.34, 0.02]} // LIFTED UP from 0.21 to 0.34!
+          rotation={[-0.24, -0.03, 0.02]}
         >
           <group
             onClick={(e) => {
@@ -235,7 +234,7 @@ export default function StoriesScene({ onSelectStory }) {
             />
           </group>
 
-          {/* Clickable Floating Badge Tag */}
+          {/* Floating Clickable Badge Tag */}
           <Html position={[0, 0.22, -0.48]} center distanceFactor={4.5} className="select-none z-20">
             <button
               onClick={(e) => {
@@ -249,7 +248,7 @@ export default function StoriesScene({ onSelectStory }) {
           </Html>
         </group>
 
-        {/* Vintage Brass Pen resting on the desk */}
+        {/* Vintage Brass Pen */}
         <mesh position={[1.2, 0.03, 0.35]} rotation={[0, 0.2, Math.PI / 2]}>
           <cylinderGeometry args={[0.015, 0.015, 0.45, 16]} />
           <meshStandardMaterial color="#dfb76c" metalness={0.6} roughness={0.35} />
