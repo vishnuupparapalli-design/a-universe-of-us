@@ -7,6 +7,7 @@ import DaysScene from './scenes/DaysScene'
 import MovieScene from './scenes/MovieScene'
 import StoriesScene from './scenes/StoriesScene'
 import HardDaysScene from './scenes/HardDaysScene'
+import DistanceScene from './scenes/DistanceScene'
 import MemoryPanel from './components/MemoryPanel'
 import CountdownWidget from './components/CountdownWidget'
 import ConstellationLayer from './components/ConstellationLayer'
@@ -77,7 +78,7 @@ export default function App() {
     return m
   })
 
-  // Experience Views: 'arrival' | 'shelf' | 'sky' | 'beginning' | 'days' | 'movie' | 'stories' | 'hard-days' | 'timeline'
+  // Experience Views: 'arrival' | 'shelf' | 'sky' | 'beginning' | 'days' | 'movie' | 'stories' | 'hard-days' | 'distance' | 'timeline'
   const [viewMode, setViewMode] = useState('arrival')
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
@@ -188,7 +189,22 @@ export default function App() {
       return
     }
 
-    // 6. Someday destination node
+    // 6. Across the Distance (Cyan Thread)
+    if (id === 'distance-thread' && viewMode === 'shelf') {
+      setWhiteFlash(true)
+
+      setTimeout(() => {
+        setViewMode('distance')
+        discover('distance-thread')
+      }, 280)
+
+      setTimeout(() => {
+        setWhiteFlash(false)
+      }, 500)
+      return
+    }
+
+    // 7. Someday destination node
     if (id === 'someday-meeting') {
       setActiveMemory({
         id: 'someday-meeting',
@@ -210,8 +226,6 @@ export default function App() {
   }
 
   const hoveredItem = allContent.find((item) => item.id === hoveredId)
-
-  // Countdown is deliberately HIDDEN during Arrival AND during The Hard Days (Master Plan Section F2)
   const showCountdown = viewMode !== 'arrival' && viewMode !== 'hard-days'
 
   return (
@@ -268,6 +282,8 @@ export default function App() {
               ? 'Chapter 4: Our Stories'
               : viewMode === 'hard-days'
               ? 'Chapter 5: The Hard Days'
+              : viewMode === 'distance'
+              ? 'Chapter 6: Across the Distance'
               : viewMode === 'timeline'
               ? 'Storyline: Timeline'
               : viewMode === 'sky'
@@ -295,7 +311,7 @@ export default function App() {
 
               {/* View Mode Switcher */}
               {viewMode !== 'timeline' && (
-                viewMode === 'beginning' || viewMode === 'days' || viewMode === 'movie' || viewMode === 'stories' || viewMode === 'hard-days' ? (
+                viewMode === 'beginning' || viewMode === 'days' || viewMode === 'movie' || viewMode === 'stories' || viewMode === 'hard-days' || viewMode === 'distance' ? (
                   <button
                     onClick={handleReturnToShelf}
                     className="text-xs font-sans px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-elsewhere-textPrimary border border-white/10 transition-all flex items-center gap-1.5 shadow-clay-btn"
@@ -325,7 +341,6 @@ export default function App() {
                 ✉ Re-read letter
               </button>
 
-              {/* Countdown: HELD SACRED & HIDDEN during Arrival & Hard Days! */}
               <CountdownWidget isVisible={showCountdown} />
             </>
           )}
@@ -440,6 +455,18 @@ export default function App() {
               }}
             />
           </Diorama>
+        ) : viewMode === 'distance' ? (
+          <Diorama>
+            <DistanceScene
+              onOpenMemory={() => {
+                const found = allContent.find((it) => it.id === 'distance-thread')
+                if (found) {
+                  setActiveMemory(found)
+                  discover('distance-thread')
+                }
+              }}
+            />
+          </Diorama>
         ) : viewMode === 'timeline' ? (
           <Timeline
             isDiscovered={isDiscovered}
@@ -520,6 +547,14 @@ export default function App() {
                 The Hard Days — Click the warm candle stone to read
               </span>
               <span className="text-amber-200 text-xs">🕯</span>
+            </div>
+          ) : viewMode === 'distance' ? (
+            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
+              <span className="text-cyan-300 text-xs">✦</span>
+              <span className="font-serif text-sm text-elsewhere-textPrimary">
+                Across the Distance — Click either beacon or the thread connecting Dharmavaram & Near Hanoi
+              </span>
+              <span className="text-cyan-300 text-xs">✦</span>
             </div>
           ) : viewMode === 'sky' ? (
             <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">

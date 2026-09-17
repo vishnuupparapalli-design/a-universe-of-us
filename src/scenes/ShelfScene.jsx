@@ -49,14 +49,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
       ease: 'power2.in',
       onComplete: () => onSelectObject('the-beginning'),
     })
-
-    gsap.to(groupRef.current.scale, {
-      x: 2.4,
-      y: 2.4,
-      z: 2.4,
-      duration: 0.38,
-      ease: 'power2.in',
-    })
+    gsap.to(groupRef.current.scale, { x: 2.4, y: 2.4, z: 2.4, duration: 0.38, ease: 'power2.in' })
   }
 
   // 2. PULL-IN: OUR STORIES
@@ -72,14 +65,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
       ease: 'power2.in',
       onComplete: () => onSelectObject('our-stories'),
     })
-
-    gsap.to(groupRef.current.scale, {
-      x: 2.4,
-      y: 2.4,
-      z: 2.4,
-      duration: 0.38,
-      ease: 'power2.in',
-    })
+    gsap.to(groupRef.current.scale, { x: 2.4, y: 2.4, z: 2.4, duration: 0.38, ease: 'power2.in' })
   }
 
   // 3. PULL-IN: MOVIE CORNER
@@ -95,17 +81,10 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
       ease: 'power2.in',
       onComplete: () => onSelectObject('movie-night-01'),
     })
-
-    gsap.to(groupRef.current.scale, {
-      x: 2.4,
-      y: 2.4,
-      z: 2.4,
-      duration: 0.38,
-      ease: 'power2.in',
-    })
+    gsap.to(groupRef.current.scale, { x: 2.4, y: 2.4, z: 2.4, duration: 0.38, ease: 'power2.in' })
   }
 
-  // 4. PULL-IN: THE HARD DAYS (THE STONE)
+  // 4. PULL-IN: THE HARD DAYS
   const handleHardDaysClick = () => {
     if (isPlungingRef.current || !groupRef.current) return
     isPlungingRef.current = true
@@ -118,14 +97,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
       ease: 'power2.in',
       onComplete: () => onSelectObject('hard-days-01'),
     })
-
-    gsap.to(groupRef.current.scale, {
-      x: 2.4,
-      y: 2.4,
-      z: 2.4,
-      duration: 0.38,
-      ease: 'power2.in',
-    })
+    gsap.to(groupRef.current.scale, { x: 2.4, y: 2.4, z: 2.4, duration: 0.38, ease: 'power2.in' })
   }
 
   // 5. PULL-IN: 206 DAYS MEDALLION
@@ -141,14 +113,23 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
       ease: 'power2.in',
       onComplete: () => onSelectObject('two-hundred-three-days'),
     })
+    gsap.to(groupRef.current.scale, { x: 2.4, y: 2.4, z: 2.4, duration: 0.38, ease: 'power2.in' })
+  }
 
-    gsap.to(groupRef.current.scale, {
-      x: 2.4,
-      y: 2.4,
-      z: 2.4,
+  // 6. PULL-IN: ACROSS THE DISTANCE
+  const handleDistanceClick = () => {
+    if (isPlungingRef.current || !groupRef.current) return
+    isPlungingRef.current = true
+
+    gsap.to(groupRef.current.position, {
+      x: -0.65,
+      y: 0.25,
+      z: 3.2,
       duration: 0.38,
       ease: 'power2.in',
+      onComplete: () => onSelectObject('distance-thread'),
     })
+    gsap.to(groupRef.current.scale, { x: 2.4, y: 2.4, z: 2.4, duration: 0.38, ease: 'power2.in' })
   }
 
   const threadLines = useMemo(() => {
@@ -265,7 +246,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* 4. The Hard Days (WITH PULL-IN!) */}
+      {/* 4. The Hard Days */}
       <group position={[-1.4, -0.11, 0]}>
         <InteractiveObject
           onOpen={handleHardDaysClick}
@@ -286,6 +267,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
           </mesh>
           <mesh position={[0, 0.185, 0]}>
             <sphereGeometry args={[0.042, 16, 16]} />
+            {/* FIXED TYPO: isHardDaysLit ? 2.2 : 1.0 */}
             <meshStandardMaterial color="#fff0d0" emissive="#ffbe42" emissiveIntensity={isHardDaysLit ? 2.2 : 1.0} />
           </mesh>
           <mesh position={[0, 0.185, 0]}>
@@ -316,10 +298,10 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* 6. Across the Distance */}
+      {/* 6. Across the Distance (WITH PULL-IN ZOOM!) */}
       <group position={[0.5, -0.11, 0]}>
         <InteractiveObject
-          onOpen={() => onSelectObject('distance-thread')}
+          onOpen={handleDistanceClick}
           onHover={(hovered) => handleHover('distance-thread', hovered)}
           isDiscovered={isDistanceLit}
           showAura={true}
