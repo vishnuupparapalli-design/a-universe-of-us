@@ -1,24 +1,18 @@
-import React, { useRef, useMemo, useEffect } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { RoundedBox, Line } from '@react-three/drei'
+import { RoundedBox } from '@react-three/drei'
 import * as THREE from 'three'
 import gsap from 'gsap'
 import InteractiveObject from '../components/InteractiveObject'
 
-const OBJECT_COORDINATES = {
-  'the-beginning': [-1.2, 0.86, 0],
-  'our-stories': [0, 0.86, 0],
-  'movie-night-01': [1.2, 0.86, 0],
-  'hard-days-01': [-1.4, 0.0, 0],
-  'two-hundred-three-days': [-0.45, 0.0, 0],
-  'distance-thread': [0.5, 0.0, 0],
-  'someday-first-photo': [1.45, 0.0, 0],
-}
-
+/**
+ * ShelfScene — Clean Living Hub (Thread Lines Removed, Cinematic Pull-In Active!)
+ */
 export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered }) {
   const groupRef = useRef()
   const isPlungingRef = useRef(false)
 
+  // Guaranteed clean reset when returning to the shelf
   useEffect(() => {
     if (groupRef.current) {
       gsap.killTweensOf(groupRef.current.position)
@@ -36,113 +30,39 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
     }
   })
 
-  // 1. PULL-IN: THE BEGINNING
-  const handleBeginningClick = () => {
+  // Smooth Suction Pull-In Zoom into the clicked keepsake
+  const triggerPullIn = (targetX, targetY, callbackId) => {
     if (isPlungingRef.current || !groupRef.current) return
     isPlungingRef.current = true
 
     gsap.to(groupRef.current.position, {
-      x: 1.6,
-      y: -0.5,
+      x: -targetX * 1.35,
+      y: -targetY * 0.75,
       z: 3.2,
       duration: 0.38,
       ease: 'power2.in',
-      onComplete: () => onSelectObject('the-beginning'),
+      onComplete: () => {
+        onSelectObject(callbackId)
+        setTimeout(() => {
+          if (groupRef.current) {
+            groupRef.current.position.set(0, -0.12, 0)
+            groupRef.current.scale.set(1, 1, 1)
+            isPlungingRef.current = false
+          }
+        }, 800)
+      },
     })
-    gsap.to(groupRef.current.scale, { x: 2.4, y: 2.4, z: 2.4, duration: 0.38, ease: 'power2.in' })
-  }
 
-  // 2. PULL-IN: OUR STORIES
-  const handleStoriesClick = () => {
-    if (isPlungingRef.current || !groupRef.current) return
-    isPlungingRef.current = true
-
-    gsap.to(groupRef.current.position, {
-      x: 0.0,
-      y: -0.55,
-      z: 3.2,
+    gsap.to(groupRef.current.scale, {
+      x: 2.4,
+      y: 2.4,
+      z: 2.4,
       duration: 0.38,
       ease: 'power2.in',
-      onComplete: () => onSelectObject('our-stories'),
     })
-    gsap.to(groupRef.current.scale, { x: 2.4, y: 2.4, z: 2.4, duration: 0.38, ease: 'power2.in' })
   }
 
-  // 3. PULL-IN: MOVIE CORNER
-  const handleProjectorClick = () => {
-    if (isPlungingRef.current || !groupRef.current) return
-    isPlungingRef.current = true
-
-    gsap.to(groupRef.current.position, {
-      x: -1.35,
-      y: -0.55,
-      z: 3.2,
-      duration: 0.38,
-      ease: 'power2.in',
-      onComplete: () => onSelectObject('movie-night-01'),
-    })
-    gsap.to(groupRef.current.scale, { x: 2.4, y: 2.4, z: 2.4, duration: 0.38, ease: 'power2.in' })
-  }
-
-  // 4. PULL-IN: THE HARD DAYS
-  const handleHardDaysClick = () => {
-    if (isPlungingRef.current || !groupRef.current) return
-    isPlungingRef.current = true
-
-    gsap.to(groupRef.current.position, {
-      x: 1.8,
-      y: 0.25,
-      z: 3.2,
-      duration: 0.38,
-      ease: 'power2.in',
-      onComplete: () => onSelectObject('hard-days-01'),
-    })
-    gsap.to(groupRef.current.scale, { x: 2.4, y: 2.4, z: 2.4, duration: 0.38, ease: 'power2.in' })
-  }
-
-  // 5. PULL-IN: 206 DAYS MEDALLION
-  const handleMedallionClick = () => {
-    if (isPlungingRef.current || !groupRef.current) return
-    isPlungingRef.current = true
-
-    gsap.to(groupRef.current.position, {
-      x: 0.75,
-      y: 0.25,
-      z: 3.2,
-      duration: 0.38,
-      ease: 'power2.in',
-      onComplete: () => onSelectObject('two-hundred-three-days'),
-    })
-    gsap.to(groupRef.current.scale, { x: 2.4, y: 2.4, z: 2.4, duration: 0.38, ease: 'power2.in' })
-  }
-
-  // 6. PULL-IN: ACROSS THE DISTANCE
-  const handleDistanceClick = () => {
-    if (isPlungingRef.current || !groupRef.current) return
-    isPlungingRef.current = true
-
-    gsap.to(groupRef.current.position, {
-      x: -0.65,
-      y: 0.25,
-      z: 3.2,
-      duration: 0.38,
-      ease: 'power2.in',
-      onComplete: () => onSelectObject('distance-thread'),
-    })
-    gsap.to(groupRef.current.scale, { x: 2.4, y: 2.4, z: 2.4, duration: 0.38, ease: 'power2.in' })
-  }
-
-  const threadLines = useMemo(() => {
-    const ids = Object.keys(OBJECT_COORDINATES).filter((id) => isDiscovered(id))
-    if (ids.length < 2) return []
-
-    const pairs = []
-    for (let i = 0; i < ids.length - 1; i++) {
-      pairs.push([OBJECT_COORDINATES[ids[i]], OBJECT_COORDINATES[ids[i + 1]]])
-    }
-    return pairs
-  }, [isDiscovered])
-
+  // Check discovery states for keepsakes
   const isBeginningLit = isDiscovered('the-beginning')
   const isStoriesLit = isDiscovered('our-stories')
   const isMoviesLit = isDiscovered('movie-night-01')
@@ -171,22 +91,10 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         <meshBasicMaterial color="#000000" transparent opacity={0.35} />
       </mesh>
 
-      {/* 3D Connecting Threads */}
-      {threadLines.map((pair, index) => (
-        <Line
-          key={index}
-          points={pair}
-          color="#dfb76c"
-          lineWidth={1.2}
-          transparent
-          opacity={0.45}
-        />
-      ))}
-
-      {/* 1. The Beginning */}
+      {/* ================= 1. THE BEGINNING ================= */}
       <group position={[-1.2, 0.74, 0]}>
         <InteractiveObject
-          onOpen={handleBeginningClick}
+          onOpen={() => triggerPullIn(-1.2, 0.74, 'the-beginning')}
           onHover={(hovered) => handleHover('the-beginning', hovered)}
           isDiscovered={isBeginningLit}
           showAura={true}
@@ -207,10 +115,10 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* 2. Our Stories */}
+      {/* ================= 2. OUR STORIES ================= */}
       <group position={[0, 0.74, 0]}>
         <InteractiveObject
-          onOpen={handleStoriesClick}
+          onOpen={() => triggerPullIn(0, 0.74, 'our-stories')}
           onHover={(hovered) => handleHover('our-stories', hovered)}
           isDiscovered={isStoriesLit}
           showAura={true}
@@ -226,10 +134,10 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* 3. Movie Corner */}
+      {/* ================= 3. MOVIE CORNER ================= */}
       <group position={[1.2, 0.74, 0]}>
         <InteractiveObject
-          onOpen={handleProjectorClick}
+          onOpen={() => triggerPullIn(1.2, 0.74, 'movie-night-01')}
           onHover={(hovered) => handleHover('movie-night-01', hovered)}
           isDiscovered={isMoviesLit}
           showAura={true}
@@ -246,10 +154,10 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* 4. The Hard Days */}
+      {/* ================= 4. THE HARD DAYS ================= */}
       <group position={[-1.4, -0.11, 0]}>
         <InteractiveObject
-          onOpen={handleHardDaysClick}
+          onOpen={() => triggerPullIn(-1.4, -0.11, 'hard-days-01')}
           onHover={(hovered) => handleHover('hard-days-01', hovered)}
           isDiscovered={isHardDaysLit}
           showAura={true}
@@ -267,8 +175,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
           </mesh>
           <mesh position={[0, 0.185, 0]}>
             <sphereGeometry args={[0.042, 16, 16]} />
-            {/* FIXED TYPO: isHardDaysLit ? 2.2 : 1.0 */}
-            <meshStandardMaterial color="#fff0d0" emissive="#ffbe42" emissiveIntensity={isHardDaysLit ? 2.2 : 1.0} />
+            <meshStandardMaterial color="#fff0d0" emissive="#ffbe42" emissiveIntensity={2.2} />
           </mesh>
           <mesh position={[0, 0.185, 0]}>
             <ringGeometry args={[0.05, 0.08, 24]} />
@@ -277,10 +184,10 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* 5. 206 Days Medallion */}
+      {/* ================= 5. 206 DAYS MEDALLION ================= */}
       <group position={[-0.45, -0.11, 0]}>
         <InteractiveObject
-          onOpen={handleMedallionClick}
+          onOpen={() => triggerPullIn(-0.45, -0.11, 'two-hundred-three-days')}
           onHover={(hovered) => handleHover('two-hundred-three-days', hovered)}
           isDiscovered={is203Lit}
           showAura={true}
@@ -289,7 +196,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         >
           <mesh position={[0, 0.14, 0]} rotation={[0.15, 0, 0]}>
             <cylinderGeometry args={[0.18, 0.19, 0.04, 32]} />
-            <meshStandardMaterial color="#dfb76c" roughness={0.4} metalness={0.25} emissive="#dfb76c" emissiveIntensity={is203Lit ? 0.8 : 0.2} />
+            <meshStandardMaterial color="#dfb76c" roughness={0.4} metalness={0.25} emissive="#dfb76c" emissiveIntensity={0.8} />
           </mesh>
           <mesh position={[0, 0.14, 0.025]} rotation={[0.15, 0, 0]}>
             <cylinderGeometry args={[0.11, 0.11, 0.01, 24]} />
@@ -298,10 +205,10 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         </InteractiveObject>
       </group>
 
-      {/* 6. Across the Distance (WITH PULL-IN ZOOM!) */}
+      {/* ================= 6. ACROSS THE DISTANCE ================= */}
       <group position={[0.5, -0.11, 0]}>
         <InteractiveObject
-          onOpen={handleDistanceClick}
+          onOpen={() => triggerPullIn(0.5, -0.11, 'distance-thread')}
           onHover={(hovered) => handleHover('distance-thread', hovered)}
           isDiscovered={isDistanceLit}
           showAura={true}
@@ -310,23 +217,23 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         >
           <mesh position={[-0.22, 0.12, 0]}>
             <cylinderGeometry args={[0.025, 0.035, 0.24, 16]} />
-            <meshStandardMaterial color="#38bdf8" emissive="#38bdf8" emissiveIntensity={isDistanceLit ? 1.0 : 0.3} />
+            <meshStandardMaterial color="#38bdf8" emissive="#38bdf8" emissiveIntensity={1.0} />
           </mesh>
           <mesh position={[0.22, 0.12, 0]}>
             <cylinderGeometry args={[0.025, 0.035, 0.24, 16]} />
-            <meshStandardMaterial color="#dfb76c" emissive="#dfb76c" emissiveIntensity={isDistanceLit ? 1.0 : 0.3} />
+            <meshStandardMaterial color="#dfb76c" emissive="#dfb76c" emissiveIntensity={1.0} />
           </mesh>
           <mesh position={[0, 0.18, 0]} rotation={[0, 0, Math.PI / 2]}>
             <cylinderGeometry args={[0.009, 0.009, 0.44, 12]} />
-            <meshStandardMaterial color="#ffffff" emissive="#38bdf8" emissiveIntensity={isDistanceLit ? 1.5 : 0.45} />
+            <meshStandardMaterial color="#ffffff" emissive="#38bdf8" emissiveIntensity={1.5} />
           </mesh>
         </InteractiveObject>
       </group>
 
-      {/* 7. Someday */}
+      {/* ================= 7. SOMEDAY ================= */}
       <group position={[1.45, -0.11, 0]}>
         <InteractiveObject
-          onOpen={() => onSelectObject('someday-first-photo')}
+          onOpen={() => triggerPullIn(1.45, -0.11, 'someday-first-photo')}
           onHover={(hovered) => handleHover('someday-first-photo', hovered)}
           isDiscovered={isSomedayLit}
           showAura={true}
