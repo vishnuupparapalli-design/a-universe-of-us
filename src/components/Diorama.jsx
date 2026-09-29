@@ -1,11 +1,27 @@
-import React, { Suspense, useMemo, useRef } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import React, { Suspense, useMemo, useRef, useEffect } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 
 /**
- * Creates a soft circular particle texture dynamically (no image files needed)
+ * ResponsiveCamera — Master Plan Section Z
+ * Automatically recalculates lens projection on live window resize
+ * so the scene NEVER disappears when stretching or maximizing the window!
  */
+function ResponsiveCamera() {
+  const { camera, size } = useThree()
+
+  useEffect(() => {
+    const isMobile = size.width < 768
+    // Mobile: pulled back to fit whole shelf in portrait; Desktop: intimate isometric view
+    camera.position.set(0, isMobile ? 3.8 : 2.8, isMobile ? 5.2 : 3.6)
+    camera.fov = isMobile ? 52 : 42
+    camera.updateProjectionMatrix() // CRITICAL: Updates the 3D lens immediately on resize!
+  }, [size.width, size.height, camera])
+
+  return null
+}
+
 function createCircleTexture() {
   const canvas = document.createElement('canvas')
   canvas.width = 64
@@ -20,15 +36,10 @@ function createCircleTexture() {
 
   ctx.fillStyle = gradient
   ctx.fillRect(0, 0, 64, 64)
-
-  const texture = new THREE.CanvasTexture(canvas)
-  return texture
+  return new THREE.CanvasTexture(canvas)
 }
 
-/**
- * Ambient floating starlight particles (dreamy round motes)
- */
-function SoftParticles({ count = 50 }) {
+function SoftParticles({ count = 45 }) {
   const pointsRef = useRef()
   const circleTexture = useMemo(() => createCircleTexture(), [])
 
@@ -67,12 +78,7 @@ function SoftParticles({ count = 50 }) {
   return (
     <points ref={pointsRef}>
       <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={count}
-          array={positions}
-          itemSize={3}
-        />
+        <bufferAttribute attach="attributes-position" count={count} array={positions} itemSize={3} />
       </bufferGeometry>
       <pointsMaterial
         size={0.08}
@@ -97,6 +103,9 @@ export default function Diorama({ children }) {
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         className="w-full h-full"
       >
+        {/* Real-time Lens Recalculation on Resize */}
+        <ResponsiveCamera />
+
         <ambientLight color="#182238" intensity={1.1} />
 
         <directionalLight
@@ -111,7 +120,7 @@ export default function Diorama({ children }) {
           color="#8595c2"
         />
 
-        <SoftParticles count={50} />
+        <SoftParticles count={45} />
 
         <Suspense fallback={null}>
           {children}
@@ -126,7 +135,7 @@ export default function Diorama({ children }) {
           maxAzimuthAngle={Math.PI / 4.5}
           minAzimuthAngle={-Math.PI / 4.5}
           dampingFactor={0.06}
-          rotateSpeed={0.65}
+          rotateSpeed={0.7}
         />
       </Canvas>
     </div>
