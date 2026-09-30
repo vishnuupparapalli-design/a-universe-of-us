@@ -131,8 +131,8 @@ export default function App() {
     setTimeout(() => {
       setViewMode(chapterView)
       if (memoryId) discover(memoryId)
-    }, 280)
-    setTimeout(() => setWhiteFlash(false), 550)
+    }, 450)
+    setTimeout(() => setWhiteFlash(false), 650)
   }
 
   const handleSelectMemory = (id) => {
@@ -204,7 +204,7 @@ export default function App() {
       />
 
       <div 
-        className={`fixed inset-0 z-50 bg-white pointer-events-none transition-opacity duration-200 ease-out ${
+        className={`fixed inset-0 z-50 bg-white pointer-events-none transition-opacity duration-150 ease-out ${
           whiteFlash ? 'opacity-100' : 'opacity-0'
         }`}
       />
