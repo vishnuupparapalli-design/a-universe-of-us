@@ -139,8 +139,71 @@ export default function Timeline({
     }
   }, []) // Empty brackets [] = Runs once on load, NEVER resets your hover!
 
+  // SCROLL DETECTOR FOR PHONES: Glides the star down as your thumb scrolls!
+  const scrollContainerRef = useRef(null)
+
+  const handleScroll = () => {
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    const containerRect = container.getBoundingClientRect()
+    const targetY = containerRect.top + containerRect.height * 0.45 // Middle of your screen
+
+    let closestIdx = 0
+    let minDistance = Infinity
+
+    rowRefs.current.forEach((row, i) => {
+      if (!row) return
+      const rect = row.getBoundingClientRect()
+      const rowCenter = rect.top + rect.height / 2
+      const dist = Math.abs(targetY - rowCenter)
+      if (dist < minDistance) {
+        minDistance = dist
+        closestIdx = i
+      }
+    })
+
+    moveToRow(closestIdx)
+  }
+
+  // Listens to both window resizing AND finger scrolling!
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const firstRow = rowRefs.current[0]
+      if (firstRow) {
+        setOrbY(firstRow.offsetTop + 16)
+      }
+    }, 100)
+
+    const handleResize = () => {
+      const currentRow = rowRefs.current[activeIdx]
+      if (currentRow) {
+        setOrbY(currentRow.offsetTop + 16)
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+
+    const container = scrollContainerRef.current
+    if (container) {
+      container.addEventListener('scroll', handleScroll, { passive: true })
+    }
+
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('resize', handleResize)
+      if (container) {
+        container.removeEventListener('scroll', handleScroll)
+      }
+    }
+  }, [])
+
   return (
-    <div className="w-full h-full overflow-y-auto pt-24 pb-36 px-4 sm:px-6 md:px-12 select-none relative z-10">
+    <div 
+      ref={scrollContainerRef}
+      onScroll={handleScroll}
+      className="w-full h-full overflow-y-auto pt-24 pb-36 px-4 sm:px-6 md:px-12 select-none relative z-10"
+    >
       <div className="max-w-3xl mx-auto">
         
         {/* Header Title */}
