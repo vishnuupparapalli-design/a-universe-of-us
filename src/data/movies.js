@@ -1,6 +1,5 @@
 /**
- * Movie Corner Data (Master Plan Section I)
- * Focusing on what it felt like to watch together across two different rooms.
+ * Movie Corner Data — Dispersed so stars never collide!
  */
 
 export const movies = [
@@ -12,9 +11,10 @@ export const movies = [
     text: "Pressing play at the exact same second across two different rooms. We weren't in the same room, but we watched the exact same light.",
     date: null,
     approximateDate: "Movie Night",
-    location: "New Delhi ↔ Hanoi",
+    location: "Dharmavaram ↔ Near Hanoi",
     status: "past",
-    constellationPosition: { x: 0.64, y: 0.32 },
+    // Dispersed Mid-Right (x: 0.68, y: 0.42)
+    constellationPosition: { x: 0.68, y: 0.42 },
     linkedStars: ["the-beginning", "distance-thread"],
   },
   {
@@ -22,12 +22,13 @@ export const movies = [
     chapter: "movie-corner",
     title: "Midnight Movie Nights",
     filmTitle: "Synchronized Streams",
-    text: "Keeping each other company with synchronized movies across the 1.5-hour time gap. Pausing at the exact same time when one of us needed water, laughing at the exact same second.",
+    text: "Keeping each other company with synchronized movies across the 1.5-hour time gap.",
     date: null,
     approximateDate: "Late evenings",
     location: "Across the screens",
     status: "past",
-    constellationPosition: { x: 0.56, y: 0.26 },
+    // Dispersed FAR RIGHT (x: 0.82, y: 0.25) — 320px away from the center star!
+    constellationPosition: { x: 0.82, y: 0.25 },
     linkedStars: ["movie-night-01"],
   }
 ];

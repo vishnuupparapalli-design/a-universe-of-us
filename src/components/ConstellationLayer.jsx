@@ -1,22 +1,19 @@
 import React, { useMemo, useState } from 'react'
 
-/**
- * ConstellationLayer — Master Plan Section U
- * - In Background (The Shelf): Quiet, clean stardust in deep space (NO clutter lines across furniture)
- * - In Full Sky (The Sky Between Us): The full constellation map with golden lines, stars, and stories!
- */
 export default function ConstellationLayer({
   items = [],
   isDiscovered,
   onSelectStar,
   fullScreen = false,
+  finalStarLit = false,
+  onSelectFinalStar,
 }) {
   const VIEW_WIDTH = 1000
   const VIEW_HEIGHT = 700
 
   const [hoveredId, setHoveredId] = useState(null)
 
-  // 1. Ambient Stardust Field (Always visible in deep space)
+  // 1. Ambient Stardust
   const ambientStars = useMemo(() => {
     const stars = []
     for (let i = 0; i < 95; i++) {
@@ -31,7 +28,7 @@ export default function ConstellationLayer({
     return stars
   }, [])
 
-  // 2. Build Connection Lines (Only shown in full-sky mode)
+  // 2. Build Connection Lines
   const lines = useMemo(() => {
     if (!fullScreen) return []
 
@@ -62,6 +59,10 @@ export default function ConstellationLayer({
     return connectionPairs
   }, [items, isDiscovered, fullScreen])
 
+  // Final Closing Star lowered to y = 210 (COMPLETELY BELOW all header buttons!)
+  const finalStarX = 500
+  const finalStarY = 210
+
   return (
     <div
       className={`absolute inset-0 transition-opacity duration-700 select-none ${
@@ -89,26 +90,24 @@ export default function ConstellationLayer({
             <stop offset="80%" stopColor="#a5b4fc" stopOpacity="0.25" />
             <stop offset="100%" stopColor="#a5b4fc" stopOpacity="0" />
           </radialGradient>
+
+          {/* Crown Apex Starlight Glow */}
+          <radialGradient id="finalStarGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
+            <stop offset="30%" stopColor="#fef08a" stopOpacity="0.9" />
+            <stop offset="65%" stopColor="#dfb76c" stopOpacity="0.4" />
+            <stop offset="100%" stopColor="#dfb76c" stopOpacity="0" />
+          </radialGradient>
         </defs>
 
-        {/* Ambient Stardust Field (Always visible in deep space) */}
         <g className="ambient-stars">
           {ambientStars.map((s) => (
-            <circle
-              key={s.id}
-              cx={s.x}
-              cy={s.y}
-              r={s.r}
-              fill="#ffffff"
-              opacity={s.opacity}
-            />
+            <circle key={s.id} cx={s.x} cy={s.y} r={s.r} fill="#ffffff" opacity={s.opacity} />
           ))}
         </g>
 
-        {/* ================= ONLY RENDER MAP LINES & NODES IN FULL SKY VIEW ================= */}
         {fullScreen && (
           <>
-            {/* Constellation Connection Lines */}
             <g className="constellation-lines">
               {lines.map((line) => (
                 <line
@@ -124,7 +123,6 @@ export default function ConstellationLayer({
               ))}
             </g>
 
-            {/* Constellation Star Nodes */}
             <g className="constellation-stars">
               {items.map((item) => {
                 if (!item.constellationPosition) return null
@@ -144,10 +142,8 @@ export default function ConstellationLayer({
                     onMouseEnter={() => setHoveredId(item.id)}
                     onMouseLeave={() => setHoveredId(null)}
                   >
-                    {/* Generous Hit Box */}
                     <circle cx={cx} cy={cy} r={26} fill="transparent" />
 
-                    {/* Star Glow Halo */}
                     {discovered && (
                       <circle
                         cx={cx}
@@ -159,7 +155,6 @@ export default function ConstellationLayer({
                       />
                     )}
 
-                    {/* Star Core */}
                     {isFuture ? (
                       <circle
                         cx={cx}
@@ -187,7 +182,6 @@ export default function ConstellationLayer({
                       />
                     )}
 
-                    {/* Text Label */}
                     <text
                       x={cx}
                       y={cy > VIEW_HEIGHT * 0.6 ? cy - 14 : cy + 18}
@@ -203,6 +197,45 @@ export default function ConstellationLayer({
                   </g>
                 )
               })}
+
+              {/* ================= THE FINAL CROWN STAR (LOW TO y: 210 — NO BUTTON OVERLAP!) ================= */}
+              {finalStarLit && (
+                <g
+                  className="cursor-pointer"
+                  onClick={onSelectFinalStar}
+                  onMouseEnter={() => setHoveredId('final-star')}
+                  onMouseLeave={() => setHoveredId(null)}
+                >
+                  <circle cx={finalStarX} cy={finalStarY} r={32} fill="transparent" />
+
+                  {/* Brilliant Pulsing Crown Halo */}
+                  <circle
+                    cx={finalStarX}
+                    cy={finalStarY}
+                    r={hoveredId === 'final-star' ? 44 : 34}
+                    fill="url(#finalStarGlow)"
+                    className="animate-pulse"
+                  />
+
+                  {/* Blazing Star Core */}
+                  <circle
+                    cx={finalStarX}
+                    cy={finalStarY}
+                    r={hoveredId === 'final-star' ? 8 : 6.5}
+                    fill="#ffffff"
+                    className="transition-all duration-300"
+                  />
+
+                  <text
+                    x={finalStarX}
+                    y={finalStarY + 24}
+                    textAnchor="middle"
+                    className="font-serif text-[12px] fill-amber-200 font-medium tracking-wider pointer-events-none select-none"
+                  >
+                    ★ The Final Letter (For Right Now)
+                  </text>
+                </g>
+              )}
             </g>
           </>
         )}

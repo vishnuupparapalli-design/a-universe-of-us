@@ -9,6 +9,7 @@ import StoriesScene from './scenes/StoriesScene'
 import HardDaysScene from './scenes/HardDaysScene'
 import DistanceScene from './scenes/DistanceScene'
 import SomedayScene from './scenes/SomedayScene'
+import FinalLetterScene from './scenes/FinalLetterScene'
 import MemoryPanel from './components/MemoryPanel'
 import CountdownWidget from './components/CountdownWidget'
 import ConstellationLayer from './components/ConstellationLayer'
@@ -19,6 +20,7 @@ import { siteSettings, countdownSettings } from './data/settings'
 import { letters } from './data/letters'
 import { memories } from './data/memories'
 import { movies } from './data/movies'
+import { finalLetterData } from './data/finalLetter'
 import { useDiscoveryState } from './hooks/useDiscoveryState'
 import { getLiveTimeTogether } from './utils/countdown'
 
@@ -28,61 +30,61 @@ export default function App() {
   const liveTime = getLiveTimeTogether(siteSettings.relationshipStartDate, countdownSettings.timezone)
   const currentDays = liveTime.days
 
-  // ================= SMART PHOTO DETECTOR =================
-  const [photoUrl, setPhotoUrl] = useState(() => {
-    return localStorage.getItem('elsewhere_first_photo') || null
-  })
+  // ================= 3 INDEPENDENT PHOTO SLOTS =================
+  const [photoFirst, setPhotoFirst] = useState(() => localStorage.getItem('elsewhere_photo_first') || null)
+  const [photoTrip, setPhotoTrip] = useState(() => localStorage.getItem('elsewhere_photo_trip') || null)
+  const [photoGift, setPhotoGift] = useState(() => localStorage.getItem('elsewhere_photo_gift') || null)
 
+  // Saves to the exact right slot depending on which card you are uploading to!
   const handleUploadPhoto = (base64) => {
-    setPhotoUrl(base64)
-    localStorage.setItem('elsewhere_first_photo', base64)
-    discover('someday-first-photo')
+    if (!activeMemory) return
 
+    if (activeMemory.id === 'someday-first-photo') {
+      setPhotoFirst(base64)
+      localStorage.setItem('elsewhere_photo_first', base64)
+      discover('someday-first-photo')
+    } else if (activeMemory.id === 'someday-first-trip') {
+      setPhotoTrip(base64)
+      localStorage.setItem('elsewhere_photo_trip', base64)
+      discover('someday-first-trip')
+    } else if (activeMemory.id === 'someday-gift') {
+      setPhotoGift(base64)
+      localStorage.setItem('elsewhere_photo_gift', base64)
+      discover('someday-gift')
+    }
+
+    // Immediately update open card so photo stays!
     setActiveMemory((prev) => prev ? {
       ...prev,
       status: 'past',
       image: base64,
-      text: 'Our first photograph together. The day Elsewhere finally became here.'
+      date: 'A memory made real',
     } : null)
   }
 
-  useEffect(() => {
-    if (photoUrl) return
-
-    const commonNames = [
-      './photos/first-photo.jpg',
-      './photos/first-photo.png',
-      './photos/photo.jpg',
-      './photos/photo.png',
-      './photos/us.jpg',
-      './photos/us.png',
-    ]
-
-    for (let path of commonNames) {
-      const img = new Image()
-      img.src = path
-      img.onload = () => setPhotoUrl(path)
-    }
-  }, [photoUrl])
-
+  // Update memories list dynamically with their saved photos
   const processedMemories = memories.map((m) => {
     if (m.id === 'someday-first-photo') {
-      const hasPhoto = Boolean(photoUrl)
-      return {
-        ...m,
-        status: hasPhoto ? 'past' : 'future',
-        image: photoUrl,
-        text: hasPhoto
-          ? 'Our first photograph together. The day Elsewhere finally became here.'
-          : m.text,
-      }
+      const has = Boolean(photoFirst)
+      return { ...m, status: has ? 'past' : 'future', image: photoFirst }
+    }
+    if (m.id === 'someday-first-trip') {
+      const has = Boolean(photoTrip)
+      return { ...m, status: has ? 'past' : 'future', image: photoTrip }
+    }
+    if (m.id === 'someday-gift') {
+      const has = Boolean(photoGift)
+      return { ...m, status: has ? 'past' : 'future', image: photoGift }
     }
     return m
   })
 
-  // Experience Views
+  const isFinalStarLit = isDiscovered(finalLetterData.id)
+
+  // Views
   const [viewMode, setViewMode] = useState('arrival')
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false)
+  const [isFinalEnvelopeOpen, setIsFinalEnvelopeOpen] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
   const [whiteFlash, setWhiteFlash] = useState(false)
   const [isWarping, setIsWarping] = useState(false)
@@ -130,9 +132,7 @@ export default function App() {
       setViewMode(chapterView)
       if (memoryId) discover(memoryId)
     }, 280)
-    setTimeout(() => {
-      setWhiteFlash(false)
-    }, 550)
+    setTimeout(() => setWhiteFlash(false), 550)
   }
 
   const handleSelectMemory = (id) => {
@@ -140,37 +140,30 @@ export default function App() {
       setIsWarping(true)
       return
     }
-
     if (id === 'two-hundred-three-days' && viewMode !== 'days') {
       transitionToChapter('days', 'two-hundred-three-days')
       return
     }
-
     if (id === 'movie-night-01' && viewMode === 'shelf') {
       transitionToChapter('movie', 'movie-night-01')
       return
     }
-
     if (id === 'our-stories' && viewMode === 'shelf') {
       transitionToChapter('stories', 'our-stories')
       return
     }
-
     if (id === 'hard-days-01' && viewMode === 'shelf') {
       transitionToChapter('hard-days', 'hard-days-01')
       return
     }
-
     if (id === 'distance-thread' && viewMode === 'shelf') {
       transitionToChapter('distance', 'distance-thread')
       return
     }
-
     if (id === 'someday-first-photo' && viewMode === 'shelf') {
       transitionToChapter('someday-room', 'someday-first-photo')
       return
     }
-
     if (id === 'someday-meeting') {
       setActiveMemory({
         id: 'someday-meeting',
@@ -190,50 +183,51 @@ export default function App() {
     }
   }
 
+  const handleOpenFinalLetter = () => {
+    setIsFinalEnvelopeOpen(true)
+    discover(finalLetterData.id)
+    setActiveMemory(finalLetterData)
+  }
+
   const hoveredItem = allContent.find((item) => item.id === hoveredId)
-  const showCountdown = viewMode !== 'arrival' && viewMode !== 'hard-days'
+  const showCountdown = viewMode !== 'arrival' && viewMode !== 'hard-days' && viewMode !== 'final-letter'
 
   return (
     <div className="relative w-screen h-screen overflow-hidden text-elsewhere-textPrimary font-sans select-none">
       
-      {/* 1. ATMOSPHERE CONTROLLER */}
       <AtmosphereController viewMode={viewMode} />
 
-      {/* 2. Cinematic Starlight Wormhole Overlay */}
       <WarpTransition
         isActive={isWarping}
         onMidpoint={() => setViewMode('beginning')}
         onComplete={() => setIsWarping(false)}
       />
 
-      {/* 3. PURE SOLID WHITE FLASH BRIDGE */}
       <div 
         className={`fixed inset-0 z-50 bg-white pointer-events-none transition-opacity duration-200 ease-out ${
           whiteFlash ? 'opacity-100' : 'opacity-0'
         }`}
       />
 
-      {/* 4. Memory Constellation */}
       {viewMode !== 'arrival' && viewMode !== 'timeline' && (
         <ConstellationLayer
           items={allContent}
           isDiscovered={isDiscovered}
           onSelectStar={(item) => handleSelectMemory(item.id)}
           fullScreen={viewMode === 'sky'}
+          finalStarLit={isFinalStarLit}
+          onSelectFinalStar={() => setActiveMemory(finalLetterData)}
         />
       )}
 
-      {/* 5. Atmospheric Transition Bloom */}
       <div 
         className={`fixed inset-0 z-40 bg-cyan-100/10 pointer-events-none transition-opacity duration-500 ${
           transitioning ? 'opacity-100' : 'opacity-0'
         }`}
       />
 
-      {/* 6. RESPONSIVE TOP HUD BAR (Clean on both mobile & desktop!) */}
+      {/* Top HUD */}
       <header className="absolute top-0 left-0 right-0 z-30 p-3 sm:p-6 md:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 pointer-events-none">
-        
-        {/* Top Row: Logo & Subtitle */}
         <div className="flex items-center justify-between sm:justify-start gap-2.5 pointer-events-auto">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-elsewhere-gold shadow-glow-gold animate-pulse"></span>
@@ -259,6 +253,8 @@ export default function App() {
               ? 'Across Distance'
               : viewMode === 'someday-room'
               ? 'Someday Museum'
+              : viewMode === 'final-letter'
+              ? 'The Final Letter'
               : viewMode === 'timeline'
               ? 'Timeline'
               : viewMode === 'sky'
@@ -267,11 +263,9 @@ export default function App() {
           </span>
         </div>
 
-        {/* Right HUD: Navigation Buttons & Countdown */}
         <div className="flex items-center justify-end flex-wrap gap-1.5 sm:gap-2.5 pointer-events-auto">
           {viewMode !== 'arrival' && (
             <>
-              {/* Timeline Toggle Button */}
               <button
                 onClick={() => setViewMode(viewMode === 'timeline' ? 'shelf' : 'timeline')}
                 className={`text-[11px] sm:text-xs font-sans px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border transition-all flex items-center gap-1 ${
@@ -284,9 +278,8 @@ export default function App() {
                 <span>{viewMode === 'timeline' ? '📚 Shelf' : '📜 Timeline'}</span>
               </button>
 
-              {/* View Mode Switcher */}
               {viewMode !== 'timeline' && (
-                viewMode === 'beginning' || viewMode === 'days' || viewMode === 'movie' || viewMode === 'stories' || viewMode === 'hard-days' || viewMode === 'distance' || viewMode === 'someday-room' ? (
+                viewMode !== 'shelf' && viewMode !== 'sky' ? (
                   <button
                     onClick={handleReturnToShelf}
                     className="text-[11px] sm:text-xs font-sans px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-elsewhere-textPrimary border border-white/10 transition-all flex items-center gap-1 shadow-clay-btn"
@@ -308,6 +301,16 @@ export default function App() {
                 )
               )}
 
+              {viewMode !== 'final-letter' && (
+                <button
+                  onClick={() => transitionToChapter('final-letter', null)}
+                  className="text-[11px] sm:text-xs font-sans px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-amber-400/20 hover:bg-amber-400 text-amber-200 hover:text-black border border-amber-300/60 transition-all flex items-center gap-1 shadow-glow-gold"
+                  title="Open the final personal letter"
+                >
+                  <span>✨ One More Thing...</span>
+                </button>
+              )}
+
               <button
                 onClick={handleReturnToOpening}
                 className="hidden md:block text-[11px] font-sans text-elsewhere-textMuted hover:text-elsewhere-textPrimary px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
@@ -316,24 +319,27 @@ export default function App() {
                 ✉ Re-read letter
               </button>
 
-              {/* Countdown Widget */}
               <CountdownWidget isVisible={showCountdown} />
             </>
           )}
 
-          {/* Star Counter */}
+          {/* Reset button now clears all 3 photos cleanly */}
           <div className="bg-elsewhere-surface/80 backdrop-blur-md border border-elsewhere-border rounded-full px-2.5 sm:px-3.5 py-1 sm:py-1.5 shadow-clay-card text-[11px] sm:text-xs flex items-center gap-1.5">
             <span className="text-elsewhere-gold font-serif">★ {discoveredCount}</span>
             {discoveredCount > 1 && (
               <button
                 onClick={() => {
                   resetDiscovery()
-                  localStorage.removeItem('elsewhere_first_photo')
-                  setPhotoUrl(null)
+                  localStorage.removeItem('elsewhere_photo_first')
+                  localStorage.removeItem('elsewhere_photo_trip')
+                  localStorage.removeItem('elsewhere_photo_gift')
+                  setPhotoFirst(null)
+                  setPhotoTrip(null)
+                  setPhotoGift(null)
                   setActiveMemory(null)
                 }}
                 className="text-[9px] text-elsewhere-textMuted hover:text-rose-400 underline transition-colors"
-                title="Reset discovery state"
+                title="Reset discovery and all photos"
               >
                 reset
               </button>
@@ -342,7 +348,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* 7. Main Stage View */}
+      {/* Main 3D Stage */}
       <main className="w-full h-full relative z-10">
         {viewMode === 'arrival' ? (
           <Diorama>
@@ -437,30 +443,28 @@ export default function App() {
         ) : viewMode === 'someday-room' ? (
           <Diorama>
             <SomedayScene
-              hasPhoto={Boolean(photoUrl)}
-              photoUrl={photoUrl}
+              hasPhotoFirst={Boolean(photoFirst)}
+              hasPhotoTrip={Boolean(photoTrip)}
+              hasPhotoGift={Boolean(photoGift)}
               onSelectArtifact={(key) => {
                 if (key === 'first-photo') {
                   const found = allContent.find((it) => it.id === 'someday-first-photo')
                   if (found) setActiveMemory(found)
                 } else if (key === 'first-trip') {
-                  setActiveMemory({
-                    title: 'Our First Trip Together',
-                    subtitle: 'A place we will walk together',
-                    text: 'A city neither of us has seen yet. A journey waiting for its time.',
-                    location: 'Someday',
-                    status: 'future',
-                  })
+                  const found = allContent.find((it) => it.id === 'someday-first-trip')
+                  if (found) setActiveMemory(found)
                 } else {
-                  setActiveMemory({
-                    title: 'The First Gift in Person',
-                    subtitle: 'Wrapped across the distance',
-                    text: 'A gift kept sealed until the day we stand in the same room.',
-                    location: 'Someday',
-                    status: 'future',
-                  })
+                  const found = allContent.find((it) => it.id === 'someday-gift')
+                  if (found) setActiveMemory(found)
                 }
               }}
+            />
+          </Diorama>
+        ) : viewMode === 'final-letter' ? (
+          <Diorama>
+            <FinalLetterScene
+              isOpen={isFinalEnvelopeOpen}
+              onOpen={handleOpenFinalLetter}
             />
           </Diorama>
         ) : viewMode === 'timeline' ? (
@@ -472,12 +476,12 @@ export default function App() {
         ) : null}
       </main>
 
-      {/* 8. Bottom Guidance */}
+      {/* Bottom Guidance */}
       {viewMode !== 'timeline' && (
         <footer className="absolute bottom-0 left-0 right-0 z-30 pb-4 sm:pb-8 flex flex-col items-center justify-center text-center pointer-events-none px-3">
           {viewMode === 'arrival' ? (
             <>
-              <p className="text-xs sm:text-base font-serif italic text-elsewhere-textSecondary max-w-md mb-2 sm:mb-3 pointer-events-auto">
+              <p className="text-sm md:text-base font-serif italic text-elsewhere-textSecondary max-w-md mb-2 sm:mb-3 pointer-events-auto">
                 "One meeting became a memory. Memories became stars. Stars became a little universe."
               </p>
               <div
@@ -497,7 +501,7 @@ export default function App() {
                 <span className="text-elsewhere-star text-xs">✦</span>
                 <span className="font-serif text-xs sm:text-sm text-elsewhere-textPrimary">
                   {isDiscovered('the-beginning')
-                    ? 'Two people, two screens, one small world between them.'
+                    ? 'Two people, two screens, one small world between them.Genshin Impact was the spark that brought us together, and this is where it all began.'
                     : 'Click anywhere on the island to bring the lights together'}
                 </span>
                 <span className="text-elsewhere-gold text-xs">✦</span>
@@ -537,41 +541,64 @@ export default function App() {
               <span className="text-amber-400 text-xs">✦</span>
             </div>
           ) : viewMode === 'hard-days' ? (
-            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-clay-card flex items-center gap-2">
+            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-clay-card flex items-center gap-2.5">
               <span className="text-amber-200 text-xs">🕯</span>
-              <span className="font-serif text-xs sm:text-sm text-elsewhere-textPrimary">
+              <span className="font-serif text-sm text-elsewhere-textPrimary">
                 The Hard Days — Click the warm candle stone to read
               </span>
               <span className="text-amber-200 text-xs">🕯</span>
             </div>
           ) : viewMode === 'distance' ? (
-            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-clay-card flex items-center gap-2">
+            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
               <span className="text-cyan-300 text-xs">✦</span>
-              <span className="font-serif text-xs sm:text-sm text-elsewhere-textPrimary">
+              <span className="font-serif text-sm text-elsewhere-textPrimary">
                 Across the Distance — Click either beacon or the thread connecting Dharmavaram & Near Hanoi
               </span>
               <span className="text-cyan-300 text-xs">✦</span>
             </div>
           ) : viewMode === 'someday-room' ? (
-            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-clay-card flex items-center gap-2">
+            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
               <span className="text-rose-300 text-xs">✦</span>
-              <span className="font-serif text-xs sm:text-sm text-elsewhere-textPrimary">
-                The Someday Museum — The memories and places we haven't experienced yet
+              <span className="font-serif text-sm text-elsewhere-textPrimary">
+                The Someday Museum — Click any artifact to upload and preserve its future photo
               </span>
               <span className="text-rose-300 text-xs">✦</span>
             </div>
+          ) : viewMode === 'final-letter' ? (
+            <div className="pointer-events-auto flex flex-col sm:flex-row items-center gap-2.5">
+              <div className="bg-elsewhere-surface/90 backdrop-blur-md border border-amber-300/40 px-5 py-2 rounded-full shadow-clay-card flex items-center gap-2">
+                <span className="text-amber-300 text-xs">✨</span>
+                <span className="font-serif text-xs sm:text-sm text-amber-100">
+                  {isFinalStarLit
+                    ? 'The final star is ignited — Crowns our entire universe'
+                    : 'Click the golden envelope to read your final message'}
+                </span>
+                <span className="text-amber-300 text-xs">✨</span>
+              </div>
+
+              {isFinalStarLit && (
+                <button
+                  onClick={() => setViewMode('sky')}
+                  className="px-5 py-2 rounded-full bg-elsewhere-gold hover:bg-yellow-300 text-elsewhere-void font-sans text-xs font-semibold shadow-glow-gold transition-all animate-bounce flex items-center gap-1.5"
+                >
+                  <span>🌌 See the Completed Sky →</span>
+                </button>
+              )}
+            </div>
           ) : viewMode === 'sky' ? (
-            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-clay-card flex items-center gap-2">
+            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
               <span className="text-elsewhere-gold text-xs">✦</span>
-              <span className="font-serif text-xs sm:text-sm text-elsewhere-textPrimary">
-                The Sky Between Us — Click any star or hollow ring to explore
+              <span className="font-serif text-sm text-elsewhere-textPrimary">
+                {isFinalStarLit
+                  ? 'Our story became a little world — The universe is complete'
+                  : 'The Sky Between Us — Click any star to explore memories'}
               </span>
               <span className="text-elsewhere-gold text-xs">✦</span>
             </div>
           ) : (
-            <div className="pointer-events-auto transition-all duration-300 bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-clay-card flex items-center gap-2 max-w-lg mx-3">
+            <div className="pointer-events-auto transition-all duration-300 bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-2 max-w-lg mx-3">
               <span className="text-elsewhere-gold text-xs">✦</span>
-              <span className="font-serif text-xs sm:text-sm text-elsewhere-textPrimary truncate">
+              <span className="font-serif text-sm text-elsewhere-textPrimary truncate">
                 {hoveredItem 
                   ? `${hoveredItem.title} — ${hoveredItem.approximateDate || 'Keepsake'}`
                   : 'Hover or tap any keepsake to explore'}
@@ -599,9 +626,12 @@ export default function App() {
       {activeMemory && (
         <MemoryPanel
           isOpen={Boolean(activeMemory)}
-          onClose={() => setActiveMemory(null)}
+          onClose={() => {
+            setActiveMemory(null)
+            setIsFinalEnvelopeOpen(false)
+          }}
           title={activeMemory.title}
-          subtitle={activeMemory.approximateDate || activeMemory.chapter}
+          subtitle={activeMemory.approximateDate || activeMemory.subtitle || activeMemory.chapter}
           text={activeMemory.text}
           date={activeMemory.location || 'Elsewhere'}
           status={activeMemory.status}

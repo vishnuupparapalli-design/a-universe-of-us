@@ -15,7 +15,8 @@ export const memories = [
     approximateDate: "The first meeting",
     location: "Genshin Impact",
     status: "past",
-    constellationPosition: { x: 0.50, y: 0.48 },
+    // Center Anchor (Lowered to y: 0.53)
+    constellationPosition: { x: 0.50, y: 0.53 },
     linkedStars: ["two-hundred-three-days", "movie-night-01", "our-stories"],
   },
   {
@@ -26,9 +27,10 @@ export const memories = [
     image: null,
     date: null,
     approximateDate: "Early on",
-    location: "Near Hanoi (Late night texts)",
+    location: "Late night texts",
     status: "past",
-    constellationPosition: { x: 0.35, y: 0.24 },
+    // Dispersed to Mid-Left (x: 0.28, y: 0.38)
+    constellationPosition: { x: 0.28, y: 0.38 },
     linkedStars: ["the-beginning", "my-story"],
   },
   {
@@ -39,9 +41,10 @@ export const memories = [
     image: null,
     date: null,
     approximateDate: "Getting closer",
-    location: "Dharmavaram (Late night texts)",
+    location: "Late night texts",
     status: "past",
-    constellationPosition: { x: 0.42, y: 0.18 },
+    // Dispersed FAR LEFT (x: 0.18, y: 0.25) — 300px away from the center star!
+    constellationPosition: { x: 0.18, y: 0.25 },
     linkedStars: ["our-stories"],
   },
   {
@@ -54,7 +57,8 @@ export const memories = [
     approximateDate: `${currentDays} Days`,
     location: "Dharmavaram ↔ Near Hanoi",
     status: "past",
-    constellationPosition: { x: 0.22, y: 0.42 },
+    // Dispersed Lower-Left (x: 0.18, y: 0.58)
+    constellationPosition: { x: 0.18, y: 0.58 },
     linkedStars: ["the-beginning", "hard-days-01"],
   },
   {
@@ -67,7 +71,8 @@ export const memories = [
     approximateDate: "A difficult week",
     location: "In the quiet",
     status: "past",
-    constellationPosition: { x: 0.16, y: 0.72 },
+    // Dispersed Bottom-Left (x: 0.12, y: 0.82)
+    constellationPosition: { x: 0.12, y: 0.82 },
     linkedStars: ["two-hundred-three-days"],
   },
   {
@@ -78,9 +83,10 @@ export const memories = [
     image: null,
     date: null,
     approximateDate: "Every night",
-    location: "Dharmavaram ↔ Near Hanoi",
+    location: "Between us",
     status: "past",
-    constellationPosition: { x: 0.82, y: 0.22 },
+    // Dispersed FAR UPPER RIGHT (x: 0.86, y: 0.45)
+    constellationPosition: { x: 0.86, y: 0.45 },
     linkedStars: ["movie-night-01", "someday-first-photo"],
   },
   {
@@ -93,7 +99,30 @@ export const memories = [
     approximateDate: "Someday",
     location: "Where we meet",
     status: "future",
-    constellationPosition: { x: 0.76, y: 0.74 },
+    // Dispersed Bottom-Right (x: 0.78, y: 0.82)
+    constellationPosition: { x: 0.78, y: 0.82 },
     linkedStars: ["distance-thread"],
+  },
+  {
+    id: "someday-first-trip",
+    chapter: "someday",
+    title: "Our First Trip Together",
+    text: "A city neither of us has seen yet. A journey waiting for its time.",
+    image: null,
+    date: null,
+    approximateDate: "Someday",
+    location: "A new city",
+    status: "future",
+  },
+  {
+    id: "someday-gift",
+    chapter: "someday",
+    title: "The First Gift in Person",
+    text: "A gift kept sealed until the day we stand in the same room.",
+    image: null,
+    date: null,
+    approximateDate: "Someday",
+    location: "In person",
+    status: "future",
   },
 ];
