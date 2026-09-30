@@ -136,14 +136,29 @@ export default function App() {
   }
 
   const handleSelectMemory = (id) => {
-    if (id === 'the-beginning' && viewMode !== 'beginning') {
+    // TIMELINE RULE: If reading the timeline, never fly to 3D worlds! Just open the story cards!
+    if (viewMode === 'timeline') {
+      const found = allContent.find((item) => item.id === id)
+      if (found) {
+        setActiveMemory(found)
+        discover(found.id)
+      }
+      return
+    }
+
+    // 1. Where It Started (From Shelf) -> Wormhole into Chapter 1
+    if (id === 'the-beginning') {
       setIsWarping(true)
       return
     }
-    if (id === 'two-hundred-three-days' && viewMode !== 'days') {
+
+    // 2. Days Together Medallion (From Shelf) -> Days Galaxy
+    if (id === 'two-hundred-three-days') {
       transitionToChapter('days', 'two-hundred-three-days')
       return
     }
+
+    // (EXTRA BRACKET REMOVED HERE!)
     if (id === 'movie-night-01' && viewMode === 'shelf') {
       transitionToChapter('movie', 'movie-night-01')
       return
@@ -481,12 +496,12 @@ export default function App() {
         <footer className="absolute bottom-0 left-0 right-0 z-30 pb-4 sm:pb-8 flex flex-col items-center justify-center text-center pointer-events-none px-3">
           {viewMode === 'arrival' ? (
             <>
-              <p className="text-sm md:text-base font-serif italic text-elsewhere-textSecondary max-w-md mb-2 sm:mb-3 pointer-events-auto">
+              <p className="text-sm md:text-base font-serif italic text-elsewhere-textSecondary max-w-md mb-3 pointer-events-auto">
                 "One meeting became a memory. Memories became stars. Stars became a little universe."
               </p>
               <div
                 onClick={handleOpenEnvelope}
-                className="cursor-pointer pointer-events-auto group bg-elsewhere-surface/80 hover:bg-elsewhere-surface hover:border-elsewhere-gold/40 backdrop-blur-md border border-elsewhere-border px-3.5 sm:px-4 py-1.5 rounded-full shadow-clay-btn transition-all flex items-center gap-1.5 text-xs"
+                className="cursor-pointer pointer-events-auto group bg-elsewhere-surface/80 hover:bg-elsewhere-surface hover:border-elsewhere-gold/40 backdrop-blur-md border border-elsewhere-border px-4 py-1.5 rounded-full shadow-clay-btn transition-all flex items-center gap-2 text-xs"
               >
                 <span className="text-elsewhere-gold animate-bounce">✉</span>
                 <span className="text-elsewhere-textSecondary group-hover:text-elsewhere-textPrimary">
@@ -496,13 +511,11 @@ export default function App() {
               </div>
             </>
           ) : viewMode === 'beginning' ? (
-            <div className="pointer-events-auto flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
-              <div className="bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-clay-card flex items-center gap-2">
+            <div className="pointer-events-auto flex flex-col sm:flex-row items-center gap-2.5">
+              <div className="bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-5 py-2 rounded-full shadow-clay-card flex items-center gap-2">
                 <span className="text-elsewhere-star text-xs">✦</span>
                 <span className="font-serif text-xs sm:text-sm text-elsewhere-textPrimary">
-                  {isDiscovered('the-beginning')
-                    ? 'Two people, two screens, one small world between them.Genshin Impact was the spark that brought us together, and this is where it all began.'
-                    : 'Click anywhere on the island to bring the lights together'}
+                  Two people, two screens, one small world between them — Genshin Impact
                 </span>
                 <span className="text-elsewhere-gold text-xs">✦</span>
               </div>
@@ -510,38 +523,55 @@ export default function App() {
               {isDiscovered('the-beginning') && (
                 <button
                   onClick={() => setViewMode('sky')}
-                  className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-elsewhere-gold hover:bg-yellow-300 text-elsewhere-void font-sans text-xs font-semibold shadow-glow-gold transition-all animate-bounce flex items-center gap-1.5"
+                  className="px-5 py-2.5 rounded-full bg-elsewhere-gold hover:bg-yellow-300 text-elsewhere-void font-sans text-xs font-semibold shadow-glow-gold transition-all animate-bounce flex items-center gap-1.5"
                 >
                   <span>🌌 See Your Star in the Sky →</span>
                 </button>
               )}
             </div>
+          ) : viewMode === 'final-letter' ? (
+            <div className="pointer-events-auto flex flex-col sm:flex-row items-center gap-2.5">
+              <div className="bg-elsewhere-surface/90 backdrop-blur-md border border-amber-300/40 px-5 py-2 rounded-full shadow-clay-card flex items-center gap-2">
+                <span className="text-amber-300 text-xs">✨</span>
+                <span className="font-serif text-xs sm:text-sm text-amber-100">
+                  Click the golden envelope to read your personal letter
+                </span>
+                <span className="text-amber-300 text-xs">✨</span>
+              </div>
+
+              <button
+                onClick={() => setViewMode('sky')}
+                className="px-5 py-2.5 rounded-full bg-elsewhere-gold hover:bg-yellow-300 text-elsewhere-void font-sans text-xs font-semibold shadow-glow-gold transition-all animate-bounce flex items-center gap-1.5"
+              >
+                <span>🌌 See the Completed Sky →</span>
+              </button>
+            </div>
           ) : viewMode === 'days' ? (
-            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-clay-card flex items-center gap-2">
+            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
               <span className="text-elsewhere-gold text-xs">✦</span>
-              <span className="font-serif text-xs sm:text-sm text-elsewhere-textPrimary">
-                {currentDays} Days Galaxy — Every star is a real day. Click glowing milestone stars
+              <span className="font-serif text-sm text-elsewhere-textPrimary">
+                {currentDays} Days Galaxy — Every star is a real day. Click glowing milestone stars to explore memories
               </span>
               <span className="text-elsewhere-gold text-xs">✦</span>
             </div>
           ) : viewMode === 'movie' ? (
-            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-clay-card flex items-center gap-2">
+            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
               <span className="text-elsewhere-gold text-xs">✦</span>
-              <span className="font-serif text-xs sm:text-sm text-elsewhere-textPrimary">
+              <span className="font-serif text-sm text-elsewhere-textPrimary">
                 Movie Corner — Click either ticket or its name tag to read movie memories
               </span>
               <span className="text-elsewhere-gold text-xs">✦</span>
             </div>
           ) : viewMode === 'stories' ? (
-            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-clay-card flex items-center gap-2">
+            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
               <span className="text-amber-400 text-xs">✦</span>
-              <span className="font-serif text-xs sm:text-sm text-elsewhere-textPrimary">
+              <span className="font-serif text-sm text-elsewhere-textPrimary">
                 Our Stories — Click either book or its name tag to read about learning each other's worlds
               </span>
               <span className="text-amber-400 text-xs">✦</span>
             </div>
           ) : viewMode === 'hard-days' ? (
-            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-clay-card flex items-center gap-2.5">
+            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-2.5">
               <span className="text-amber-200 text-xs">🕯</span>
               <span className="font-serif text-sm text-elsewhere-textPrimary">
                 The Hard Days — Click the warm candle stone to read
@@ -549,7 +579,7 @@ export default function App() {
               <span className="text-amber-200 text-xs">🕯</span>
             </div>
           ) : viewMode === 'distance' ? (
-            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
+            <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
               <span className="text-cyan-300 text-xs">✦</span>
               <span className="font-serif text-sm text-elsewhere-textPrimary">
                 Across the Distance — Click either beacon or the thread connecting Dharmavaram & Near Hanoi
@@ -560,30 +590,9 @@ export default function App() {
             <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
               <span className="text-rose-300 text-xs">✦</span>
               <span className="font-serif text-sm text-elsewhere-textPrimary">
-                The Someday Museum — Click any artifact to upload and preserve its future photo
+                The Someday Museum — The memories and places we haven't experienced yet
               </span>
               <span className="text-rose-300 text-xs">✦</span>
-            </div>
-          ) : viewMode === 'final-letter' ? (
-            <div className="pointer-events-auto flex flex-col sm:flex-row items-center gap-2.5">
-              <div className="bg-elsewhere-surface/90 backdrop-blur-md border border-amber-300/40 px-5 py-2 rounded-full shadow-clay-card flex items-center gap-2">
-                <span className="text-amber-300 text-xs">✨</span>
-                <span className="font-serif text-xs sm:text-sm text-amber-100">
-                  {isFinalStarLit
-                    ? 'The final star is ignited — Crowns our entire universe'
-                    : 'Click the golden envelope to read your final message'}
-                </span>
-                <span className="text-amber-300 text-xs">✨</span>
-              </div>
-
-              {isFinalStarLit && (
-                <button
-                  onClick={() => setViewMode('sky')}
-                  className="px-5 py-2 rounded-full bg-elsewhere-gold hover:bg-yellow-300 text-elsewhere-void font-sans text-xs font-semibold shadow-glow-gold transition-all animate-bounce flex items-center gap-1.5"
-                >
-                  <span>🌌 See the Completed Sky →</span>
-                </button>
-              )}
             </div>
           ) : viewMode === 'sky' ? (
             <div className="pointer-events-auto bg-elsewhere-surface/90 backdrop-blur-md border border-elsewhere-border px-6 py-2.5 rounded-full shadow-clay-card flex items-center gap-3">
