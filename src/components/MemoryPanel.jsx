@@ -42,7 +42,7 @@ function DaysTogetherLiveCard() {
         </div>
         <span className="text-white/20">:</span>
         <div className="flex items-baseline gap-0.5">
-          <span className="font-bold text-elsewhere-textPrimary">{String(liveTime.seconds).padStart(2, '0')}</span>
+          <span className="font-bold text-elsewhere-gold font-semibold">{String(liveTime.seconds).padStart(2, '0')}</span>
           <span className="text-[10px] text-elsewhere-gold font-semibold">s</span>
         </div>
       </div>
@@ -80,19 +80,50 @@ export default function MemoryPanel({
   if (!isOpen) return null
 
   const isFuture = status === 'future'
-  const isMainDaysCard = title && (title.includes('206 Days') || title.includes('Today — Choosing You Still')) && !title.includes('Day 200') && !title.includes('Day 100') && !title.includes('Day 50') && !title.includes('Day 1 ')
+  const isMainDaysCard = title && (
+    title.includes('Choosing Each Other') ||
+    title.includes('Choosing You Still') ||
+    (title.includes('Days') && !title.includes('Day 200') && !title.includes('Day 100') && !title.includes('Day 50') && !title.includes('Day 1 '))
+  )
 
-  // Handle choosing photo from phone or computer gallery
+  // AUTOMATIC IMAGE COMPRESSOR: Compresses huge photos so they save permanently in localStorage!
   const handleFileChange = (e) => {
     const file = e.target.files?.[0]
     if (!file) return
 
     const reader = new FileReader()
     reader.onload = (event) => {
-      const base64Url = event.target.result
-      if (onUploadPhoto) {
-        onUploadPhoto(base64Url)
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const MAX_SIZE = 1000 // Optimized crisp dimensions
+        let width = img.width
+        let height = img.height
+
+        if (width > height) {
+          if (width > MAX_SIZE) {
+            height = Math.round((height * MAX_SIZE) / width)
+            width = MAX_SIZE
+          }
+        } else {
+          if (height > MAX_SIZE) {
+            width = Math.round((width * MAX_SIZE) / height)
+            height = MAX_SIZE
+          }
+        }
+
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(img, 0, 0, width, height)
+
+        // Compress to high-quality lightweight JPEG (~150KB, saves 100% reliably!)
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.82)
+        if (onUploadPhoto) {
+          onUploadPhoto(compressedBase64)
+        }
       }
+      img.src = event.target.result
     }
     reader.readAsDataURL(file)
   }
@@ -108,7 +139,7 @@ export default function MemoryPanel({
         isFuture ? 'border-dashed border-rose-300/30' : 'border-elsewhere-border'
       }`}>
         
-        {/* Hidden File Input for Phone Gallery / Computer upload */}
+        {/* Hidden File Input */}
         <input
           type="file"
           ref={fileInputRef}
@@ -142,9 +173,7 @@ export default function MemoryPanel({
         {/* ================= FUTURE MEMORY: TACTILE EMPTY POLAROID ================= */}
         {isFuture && (
           <div className="my-5 p-4 rounded-2xl bg-white/5 border border-dashed border-white/15 text-center">
-            {/* The Polaroid Frame */}
             <div className="mx-auto w-44 sm:w-52 bg-[#f4eee4] p-3 pb-8 rounded-lg shadow-clay-card transform -rotate-1">
-              {/* Empty Photo Window */}
               <div className="w-full h-36 sm:h-44 bg-[#141b29] rounded flex flex-col items-center justify-center border border-black/10 text-center p-3">
                 <span className="text-2xl text-rose-300/60 mb-2 animate-pulse">○</span>
                 <p className="text-[10px] font-sans uppercase tracking-widest text-white/40 font-medium">
@@ -156,7 +185,6 @@ export default function MemoryPanel({
               </div>
             </div>
 
-            {/* DIRECT BUTTON: Choose from Phone Gallery or Computer! */}
             <button
               onClick={() => fileInputRef.current?.click()}
               className="mt-4 px-4 py-1.5 rounded-full bg-rose-400/15 hover:bg-rose-400/25 border border-rose-300/30 text-rose-200 text-xs font-sans transition-all flex items-center gap-1.5 mx-auto"
@@ -181,7 +209,6 @@ export default function MemoryPanel({
               </p>
             </div>
 
-            {/* Change Photo Option */}
             <button
               onClick={() => fileInputRef.current?.click()}
               className="mt-2 text-[10px] text-elsewhere-textMuted hover:text-white underline transition-colors"
@@ -201,7 +228,7 @@ export default function MemoryPanel({
           </p>
         )}
 
-        {/* Live counter rendered only for main Today card */}
+        {/* Live counter rendered for main days cards */}
         {isMainDaysCard && <DaysTogetherLiveCard />}
 
         {/* Story Text */}

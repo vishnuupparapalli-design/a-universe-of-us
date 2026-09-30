@@ -71,17 +71,19 @@ export default function Timeline({
       status: "past",
       accentColor: "#38bdf8", // Ocean Cyan
     },
+    
     {
-      id: "two-hundred-three-days",
+    id: "two-hundred-three-days",
       dateLabel: "Today",
       precision: "Live Milestone",
       title: `${currentDays} Days of Choosing Each Other`,
       chapter: `${currentDays}-days`,
-      text: `${currentDays} days of quiet trust, late-night texts, and choosing each other day by day.`,
-      location: "New Delhi ↔ Hanoi",
+      text: `${currentDays} days of quiet trust, late-night texts, and choosing each other day by day. Every single day is one more star in our universe.`,
+      location: "Dharmavaram ↔ Near Hanoi",
       status: "past",
-      accentColor: "#dfb76c", // Pure Gold
-    },
+      accentColor: "#dfb76c", // Pure Gold  
+    },  
+    
     {
       id: "someday-first-photo",
       dateLabel: "Someday Soon",

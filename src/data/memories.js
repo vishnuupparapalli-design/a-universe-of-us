@@ -15,7 +15,6 @@ export const memories = [
     approximateDate: "The first meeting",
     location: "Genshin Impact",
     status: "past",
-    // Center Anchor (Lowered to y: 0.53)
     constellationPosition: { x: 0.50, y: 0.53 },
     linkedStars: ["two-hundred-three-days", "movie-night-01", "our-stories"],
   },
@@ -29,7 +28,6 @@ export const memories = [
     approximateDate: "Early on",
     location: "Late night texts",
     status: "past",
-    // Dispersed to Mid-Left (x: 0.28, y: 0.38)
     constellationPosition: { x: 0.28, y: 0.38 },
     linkedStars: ["the-beginning", "my-story"],
   },
@@ -43,7 +41,6 @@ export const memories = [
     approximateDate: "Getting closer",
     location: "Late night texts",
     status: "past",
-    // Dispersed FAR LEFT (x: 0.18, y: 0.25) — 300px away from the center star!
     constellationPosition: { x: 0.18, y: 0.25 },
     linkedStars: ["our-stories"],
   },
@@ -57,7 +54,6 @@ export const memories = [
     approximateDate: `${currentDays} Days`,
     location: "Dharmavaram ↔ Near Hanoi",
     status: "past",
-    // Dispersed Lower-Left (x: 0.18, y: 0.58)
     constellationPosition: { x: 0.18, y: 0.58 },
     linkedStars: ["the-beginning", "hard-days-01"],
   },
@@ -71,7 +67,6 @@ export const memories = [
     approximateDate: "A difficult week",
     location: "In the quiet",
     status: "past",
-    // Dispersed Bottom-Left (x: 0.12, y: 0.82)
     constellationPosition: { x: 0.12, y: 0.82 },
     linkedStars: ["two-hundred-three-days"],
   },
@@ -85,7 +80,6 @@ export const memories = [
     approximateDate: "Every night",
     location: "Between us",
     status: "past",
-    // Dispersed FAR UPPER RIGHT (x: 0.86, y: 0.45)
     constellationPosition: { x: 0.86, y: 0.45 },
     linkedStars: ["movie-night-01", "someday-first-photo"],
   },
@@ -99,7 +93,6 @@ export const memories = [
     approximateDate: "Someday",
     location: "Where we meet",
     status: "future",
-    // Dispersed Bottom-Right (x: 0.78, y: 0.82)
     constellationPosition: { x: 0.78, y: 0.82 },
     linkedStars: ["distance-thread"],
   },
@@ -122,6 +115,18 @@ export const memories = [
     image: null,
     date: null,
     approximateDate: "Someday",
+    location: "In person",
+    status: "future",
+  },
+  // ADDED: The destination memory that connects to the last timeline node!
+  {
+    id: "someday-meeting",
+    chapter: "someday",
+    title: "The Day We Finally Meet",
+    text: "When Elsewhere quietly becomes here. The destination of our entire universe.",
+    image: null,
+    date: null,
+    approximateDate: "When the time comes",
     location: "In person",
     status: "future",
   },

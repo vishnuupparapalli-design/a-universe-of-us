@@ -30,58 +30,78 @@ export default function App() {
   const liveTime = getLiveTimeTogether(siteSettings.relationshipStartDate, countdownSettings.timezone)
   const currentDays = liveTime.days
 
-  // ================= 3 INDEPENDENT PHOTO SLOTS =================
-  const [photoFirst, setPhotoFirst] = useState(() => localStorage.getItem('elsewhere_photo_first') || null)
-  const [photoTrip, setPhotoTrip] = useState(() => localStorage.getItem('elsewhere_photo_trip') || null)
-  const [photoGift, setPhotoGift] = useState(() => localStorage.getItem('elsewhere_photo_gift') || null)
-
-  // Saves to the exact right slot depending on which card you are uploading to!
-  const handleUploadPhoto = (base64) => {
-    if (!activeMemory) return
-
-    if (activeMemory.id === 'someday-first-photo') {
-      setPhotoFirst(base64)
-      localStorage.setItem('elsewhere_photo_first', base64)
-      discover('someday-first-photo')
-    } else if (activeMemory.id === 'someday-first-trip') {
-      setPhotoTrip(base64)
-      localStorage.setItem('elsewhere_photo_trip', base64)
-      discover('someday-first-trip')
-    } else if (activeMemory.id === 'someday-gift') {
-      setPhotoGift(base64)
-      localStorage.setItem('elsewhere_photo_gift', base64)
-      discover('someday-gift')
+  // ================= UNIVERSAL PERMANENT PHOTO STORAGE =================
+  const [savedPhotos, setSavedPhotos] = useState(() => {
+    const photos = {}
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key && key.startsWith('elsewhere_photo_')) {
+        const memId = key.replace('elsewhere_photo_', '')
+        photos[memId] = localStorage.getItem(key)
+      }
     }
+    // Backward compatibility for old first photo key
+    if (localStorage.getItem('elsewhere_photo_first')) {
+      photos['someday-first-photo'] = localStorage.getItem('elsewhere_photo_first')
+    }
+    return photos
+  })
 
-    // Immediately update open card so photo stays!
-    setActiveMemory((prev) => prev ? {
-      ...prev,
-      status: 'past',
-      image: base64,
-      date: 'A memory made real',
-    } : null)
+  // Saves any compressed photo permanently to its exact memory ID!
+  const handleUploadPhoto = (compressedBase64) => {
+    if (!activeMemory) return
+    const memId = activeMemory.id
+
+    try {
+      localStorage.setItem(`elsewhere_photo_${memId}`, compressedBase64)
+      setSavedPhotos((prev) => ({ ...prev, [memId]: compressedBase64 }))
+      discover(memId)
+
+      // Immediately transform the open card so the photo appears right away!
+      setActiveMemory((prev) => prev ? {
+        ...prev,
+        status: 'past',
+        image: compressedBase64,
+        date: 'A memory made real',
+      } : null)
+    } catch (err) {
+      console.warn("Storage error:", err)
+    }
   }
 
-  // Update memories list dynamically with their saved photos
+  // Check public folder as fallback
+  useEffect(() => {
+    const commonNames = [
+      { id: 'someday-first-photo', path: './photos/first-photo.jpg' },
+      { id: 'someday-first-photo', path: './photos/first-photo.png' },
+    ]
+
+    commonNames.forEach(({ id, path }) => {
+      if (savedPhotos[id]) return
+      const img = new Image()
+      img.src = path
+      img.onload = () => {
+        setSavedPhotos((prev) => ({ ...prev, [id]: path }))
+      }
+    })
+  }, [savedPhotos])
+
+  // Dynamically update memories with their saved photos
   const processedMemories = memories.map((m) => {
-    if (m.id === 'someday-first-photo') {
-      const has = Boolean(photoFirst)
-      return { ...m, status: has ? 'past' : 'future', image: photoFirst }
-    }
-    if (m.id === 'someday-first-trip') {
-      const has = Boolean(photoTrip)
-      return { ...m, status: has ? 'past' : 'future', image: photoTrip }
-    }
-    if (m.id === 'someday-gift') {
-      const has = Boolean(photoGift)
-      return { ...m, status: has ? 'past' : 'future', image: photoGift }
+    const photo = savedPhotos[m.id]
+    if (photo) {
+      return {
+        ...m,
+        status: 'past',
+        image: photo,
+      }
     }
     return m
   })
 
   const isFinalStarLit = isDiscovered(finalLetterData.id)
 
-  // Views
+  // Experience Views
   const [viewMode, setViewMode] = useState('arrival')
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false)
   const [isFinalEnvelopeOpen, setIsFinalEnvelopeOpen] = useState(false)
@@ -136,7 +156,7 @@ export default function App() {
   }
 
   const handleSelectMemory = (id) => {
-    // TIMELINE RULE: If reading the timeline, never fly to 3D worlds! Just open the story cards!
+    // Timeline Rule: Always open the story card directly!
     if (viewMode === 'timeline') {
       const found = allContent.find((item) => item.id === id)
       if (found) {
@@ -146,19 +166,18 @@ export default function App() {
       return
     }
 
-    // 1. Where It Started (From Shelf) -> Wormhole into Chapter 1
+    // 1. Where It Started
     if (id === 'the-beginning') {
       setIsWarping(true)
       return
     }
 
-    // 2. Days Together Medallion (From Shelf) -> Days Galaxy
+    // 2. Days Together Medallion
     if (id === 'two-hundred-three-days') {
       transitionToChapter('days', 'two-hundred-three-days')
       return
     }
 
-    // (EXTRA BRACKET REMOVED HERE!)
     if (id === 'movie-night-01' && viewMode === 'shelf') {
       transitionToChapter('movie', 'movie-night-01')
       return
@@ -179,17 +198,6 @@ export default function App() {
       transitionToChapter('someday-room', 'someday-first-photo')
       return
     }
-    if (id === 'someday-meeting') {
-      setActiveMemory({
-        id: 'someday-meeting',
-        title: 'The Day We Finally Meet',
-        approximateDate: 'When the time comes',
-        text: 'The destination of this entire universe. When Elsewhere quietly becomes here.',
-        location: 'In person',
-        status: 'future',
-      })
-      return
-    }
 
     const found = allContent.find((item) => item.id === id)
     if (found) {
@@ -206,6 +214,7 @@ export default function App() {
 
   const hoveredItem = allContent.find((item) => item.id === hoveredId)
   const showCountdown = viewMode !== 'arrival' && viewMode !== 'hard-days' && viewMode !== 'final-letter'
+  const isViewingFinalLetter = activeMemory && activeMemory.id === finalLetterData.id
 
   return (
     <div className="relative w-screen h-screen overflow-hidden text-elsewhere-textPrimary font-sans select-none">
@@ -338,19 +347,20 @@ export default function App() {
             </>
           )}
 
-          {/* Reset button now clears all 3 photos cleanly */}
+          {/* Reset button cleans all saved photos */}
           <div className="bg-elsewhere-surface/80 backdrop-blur-md border border-elsewhere-border rounded-full px-2.5 sm:px-3.5 py-1 sm:py-1.5 shadow-clay-card text-[11px] sm:text-xs flex items-center gap-1.5">
             <span className="text-elsewhere-gold font-serif">★ {discoveredCount}</span>
             {discoveredCount > 1 && (
               <button
                 onClick={() => {
                   resetDiscovery()
-                  localStorage.removeItem('elsewhere_photo_first')
-                  localStorage.removeItem('elsewhere_photo_trip')
-                  localStorage.removeItem('elsewhere_photo_gift')
-                  setPhotoFirst(null)
-                  setPhotoTrip(null)
-                  setPhotoGift(null)
+                  // Clean all photo keys
+                  Object.keys(localStorage).forEach((key) => {
+                    if (key.startsWith('elsewhere_photo_')) {
+                      localStorage.removeItem(key)
+                    }
+                  })
+                  setSavedPhotos({})
                   setActiveMemory(null)
                 }}
                 className="text-[9px] text-elsewhere-textMuted hover:text-rose-400 underline transition-colors"
@@ -458,9 +468,9 @@ export default function App() {
         ) : viewMode === 'someday-room' ? (
           <Diorama>
             <SomedayScene
-              hasPhotoFirst={Boolean(photoFirst)}
-              hasPhotoTrip={Boolean(photoTrip)}
-              hasPhotoGift={Boolean(photoGift)}
+              hasPhotoFirst={Boolean(savedPhotos['someday-first-photo'])}
+              hasPhotoTrip={Boolean(savedPhotos['someday-first-trip'])}
+              hasPhotoGift={Boolean(savedPhotos['someday-gift'])}
               onSelectArtifact={(key) => {
                 if (key === 'first-photo') {
                   const found = allContent.find((it) => it.id === 'someday-first-photo')
@@ -631,7 +641,7 @@ export default function App() {
         onPrimaryAction={handleEnterWorld}
       />
 
-      {/* Keepsake Story Modal */}
+      {/* Keepsake Story Modal (Universal instant save & card update!) */}
       {activeMemory && (
         <MemoryPanel
           isOpen={Boolean(activeMemory)}
@@ -646,6 +656,12 @@ export default function App() {
           status={activeMemory.status}
           image={activeMemory.image}
           onUploadPhoto={handleUploadPhoto}
+          primaryActionLabel={isViewingFinalLetter ? "🌌 See the Completed Sky →" : undefined}
+          onPrimaryAction={isViewingFinalLetter ? () => {
+            setActiveMemory(null)
+            setIsFinalEnvelopeOpen(false)
+            setViewMode('sky')
+          } : undefined}
         />
       )}
     </div>
