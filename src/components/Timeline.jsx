@@ -71,7 +71,7 @@ export default function Timeline({
       status: "past",
       accentColor: "#38bdf8", // Ocean Cyan
     },
-    
+
     {
     id: "two-hundred-three-days",
       dateLabel: "Today",
@@ -204,7 +204,7 @@ export default function Timeline({
     <div 
       ref={scrollContainerRef}
       onScroll={handleScroll}
-      className="w-full h-full overflow-y-auto pt-24 pb-36 px-4 sm:px-6 md:px-12 select-none relative z-10"
+      className="w-full h-full overflow-y-auto pt-44 sm:pt-28 pb-36 px-4 sm:px-6 md:px-12 select-none relative z-10"
     >
       <div className="max-w-3xl mx-auto">
         

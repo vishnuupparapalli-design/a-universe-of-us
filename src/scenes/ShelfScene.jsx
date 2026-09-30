@@ -91,7 +91,7 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
         <meshBasicMaterial color="#000000" transparent opacity={0.35} />
       </mesh>
 
-      {/* ================= 1. THE BEGINNING ================= */}
+     {/* ================= 1. THE BEGINNING ================= */}
       <group position={[-1.2, 0.74, 0]}>
         <InteractiveObject
           onOpen={() => triggerPullIn(-1.2, 0.74, 'the-beginning')}
@@ -101,6 +101,12 @@ export default function ShelfScene({ onSelectObject, onHoverObject, isDiscovered
           auraColor="#a5b4fc"
           auraScale={0.85}
         >
+          {/* Big Invisible Touch Bubble for Phones */}
+          <mesh position={[0, 0.12, 0]}>
+            <sphereGeometry args={[0.45, 16, 16]} />
+            <meshBasicMaterial transparent opacity={0} />
+          </mesh>
+
           <RoundedBox args={[0.42, 0.08, 0.42]} radius={0.02} position={[0, 0, 0]}>
             <meshStandardMaterial color={isBeginningLit ? '#384466' : '#22293d'} roughness={0.6} />
           </RoundedBox>

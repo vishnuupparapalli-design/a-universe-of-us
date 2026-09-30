@@ -74,7 +74,7 @@ export default function ConstellationLayer({
       <svg
         viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
         className="w-full h-full"
-        preserveAspectRatio="xMidYMid slice"
+        preserveAspectRatio="xMidYMid meet"
       >
         <defs>
           <radialGradient id="starGlow" cx="50%" cy="50%" r="50%">
