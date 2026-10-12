@@ -503,7 +503,7 @@ export default function App() {
 
       {/* Bottom Guidance */}
       {viewMode !== 'timeline' && (
-        <footer className="absolute bottom-0 left-0 right-0 z-30 pb-4 sm:pb-8 flex flex-col items-center justify-center text-center pointer-events-none px-3">
+        <footer className="absolute bottom-1 sm:bottom-4 left-0 right-0 z-30 pb-2 sm:pb-4 flex flex-col items-center justify-center text-center pointer-events-none px-2 sm:px-4">
           {viewMode === 'arrival' ? (
             <>
               <p className="text-sm md:text-base font-serif italic text-elsewhere-textSecondary max-w-md mb-3 pointer-events-auto">

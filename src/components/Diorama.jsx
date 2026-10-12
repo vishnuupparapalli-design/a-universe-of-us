@@ -14,8 +14,8 @@ function ResponsiveCamera() {
   useEffect(() => {
     const isMobile = size.width < 768
     // Mobile: pulled back to fit whole shelf in portrait; Desktop: intimate isometric view
-    camera.position.set(0, isMobile ? 3.8 : 2.8, isMobile ? 5.2 : 3.6)
-    camera.fov = isMobile ? 52 : 42
+    camera.position.set(0, isMobile ? 4.2 : 2.8, isMobile ? 6.8 : 3.6)
+    camera.fov = isMobile ? 56 : 42
     camera.updateProjectionMatrix() // CRITICAL: Updates the 3D lens immediately on resize!
   }, [size.width, size.height, camera])
 
