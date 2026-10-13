@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Diorama from './components/Diorama'
 import OpeningScene from './scenes/OpeningScene'
 import ShelfScene from './scenes/ShelfScene'
@@ -29,6 +29,21 @@ export default function App() {
   
   const liveTime = getLiveTimeTogether(siteSettings.relationshipStartDate, countdownSettings.timezone)
   const currentDays = liveTime.days
+
+  // Background Music Controller (Loops continuously everywhere!)
+  const audioRef = useRef(null)
+  const [isPlayingMusic, setIsPlayingMusic] = useState(false)
+
+  const toggleMusic = () => {
+    if (!audioRef.current) return
+    if (isPlayingMusic) {
+      audioRef.current.pause()
+      setIsPlayingMusic(false)
+    } else {
+      audioRef.current.play().catch(() => {})
+      setIsPlayingMusic(true)
+    }
+  }
 
   // ================= UNIVERSAL PERMANENT PHOTO STORAGE =================
   const [savedPhotos, setSavedPhotos] = useState(() => {
@@ -117,6 +132,12 @@ export default function App() {
   const handleOpenEnvelope = () => {
     setIsEnvelopeOpen(true)
     discover(openingLetter.id)
+    // Starts the music automatically on the very first envelope tap!
+    if (audioRef.current && !isPlayingMusic) {
+      audioRef.current.volume = 0.55
+      audioRef.current.play().catch(() => {})
+      setIsPlayingMusic(true)
+    }
   }
 
   const handleEnterWorld = () => {
@@ -334,6 +355,15 @@ export default function App() {
                   <span>✨ One More Thing...</span>
                 </button>
               )}
+
+              {/* Music Toggle Button */}
+              <button
+                onClick={toggleMusic}
+                className="text-[10px] sm:text-xs font-sans px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border bg-white/5 hover:bg-white/10 text-elsewhere-textSecondary border-white/10 transition-all flex items-center gap-1"
+                title="Toggle background music"
+              >
+                <span>{isPlayingMusic ? '🎵 Music' : '🔇 Muted'}</span>
+              </button>
 
               <button
                 onClick={handleReturnToOpening}
@@ -664,6 +694,13 @@ export default function App() {
           } : undefined}
         />
       )}
+      {/* Endless Background Music Player */}
+      <audio
+        ref={audioRef}
+        src="./sounds/call-of-silence.wav"
+        loop
+        preload="auto"
+      />
     </div>
   )
 }
