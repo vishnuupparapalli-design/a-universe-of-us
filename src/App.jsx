@@ -134,7 +134,7 @@ export default function App() {
     discover(openingLetter.id)
     // Starts the music automatically on the very first envelope tap!
     if (audioRef.current && !isPlayingMusic) {
-      audioRef.current.volume = 0.55
+      audioRef.current.volume = 1.0
       audioRef.current.play().catch(() => {})
       setIsPlayingMusic(true)
     }
