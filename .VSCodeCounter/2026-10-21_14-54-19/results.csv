@@ -1,0 +1,46 @@
+"filename", "language", "JSON", "JavaScript", "Markdown", "JavaScript JSX", "XML", "YAML", "PostCSS", "HTML", "comment", "blank", "total"
+"c:\Amorous souvneir\A universe of us\.github\workflows\deploy.yml", "YAML", 0, 0, 0, 0, 0, 40, 0, 0, 0, 9, 49
+"c:\Amorous souvneir\A universe of us\README.md", "Markdown", 0, 0, 9, 0, 0, 0, 0, 0, 0, 8, 17
+"c:\Amorous souvneir\A universe of us\eslint.config.js", "JavaScript", 0, 20, 0, 0, 0, 0, 0, 0, 0, 2, 22
+"c:\Amorous souvneir\A universe of us\index.html", "HTML", 0, 0, 0, 0, 0, 0, 0, 16, 1, 1, 18
+"c:\Amorous souvneir\A universe of us\package-lock.json", "JSON", 4159, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4160
+"c:\Amorous souvneir\A universe of us\package.json", "JSON", 34, 0, 0, 0, 0, 0, 0, 0, 0, 1, 35
+"c:\Amorous souvneir\A universe of us\postcss.config.js", "JavaScript", 0, 6, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"c:\Amorous souvneir\A universe of us\public\favicon.svg", "XML", 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1
+"c:\Amorous souvneir\A universe of us\public\icons.svg", "XML", 0, 0, 0, 0, 24, 0, 0, 0, 0, 1, 25
+"c:\Amorous souvneir\A universe of us\src\App.css", "PostCSS", 0, 0, 0, 0, 0, 0, 158, 0, 0, 27, 185
+"c:\Amorous souvneir\A universe of us\src\App.jsx", "JavaScript JSX", 0, 0, 0, 638, 0, 0, 0, 0, 21, 47, 706
+"c:\Amorous souvneir\A universe of us\src\assets\react.svg", "XML", 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1
+"c:\Amorous souvneir\A universe of us\src\assets\vite.svg", "XML", 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 2
+"c:\Amorous souvneir\A universe of us\src\components\AtmosphereController.jsx", "JavaScript JSX", 0, 0, 0, 35, 0, 0, 0, 0, 10, 6, 51
+"c:\Amorous souvneir\A universe of us\src\components\ConstellationLayer.jsx", "JavaScript JSX", 0, 0, 0, 212, 0, 0, 0, 0, 7, 26, 245
+"c:\Amorous souvneir\A universe of us\src\components\CountdownWidget.jsx", "JavaScript JSX", 0, 0, 0, 71, 0, 0, 0, 0, 8, 12, 91
+"c:\Amorous souvneir\A universe of us\src\components\Diorama.jsx", "JavaScript JSX", 0, 0, 0, 113, 0, 0, 0, 0, 10, 20, 143
+"c:\Amorous souvneir\A universe of us\src\components\InteractiveObject.jsx", "JavaScript JSX", 0, 0, 0, 155, 0, 0, 0, 0, 9, 19, 183
+"c:\Amorous souvneir\A universe of us\src\components\MemoryPanel.jsx", "JavaScript JSX", 0, 0, 0, 228, 0, 0, 0, 0, 10, 30, 268
+"c:\Amorous souvneir\A universe of us\src\components\Timeline.jsx", "JavaScript JSX", 0, 0, 0, 288, 0, 0, 0, 0, 25, 35, 348
+"c:\Amorous souvneir\A universe of us\src\components\WarpTransition.jsx", "JavaScript JSX", 0, 0, 0, 107, 0, 0, 0, 0, 10, 26, 143
+"c:\Amorous souvneir\A universe of us\src\data\finalLetter.js", "JavaScript", 0, 14, 0, 0, 0, 0, 0, 0, 5, 1, 20
+"c:\Amorous souvneir\A universe of us\src\data\letters.js", "JavaScript", 0, 18, 0, 0, 0, 0, 0, 0, 3, 1, 22
+"c:\Amorous souvneir\A universe of us\src\data\memories.js", "JavaScript", 0, 130, 0, 0, 0, 0, 0, 0, 1, 2, 133
+"c:\Amorous souvneir\A universe of us\src\data\milestones.js", "JavaScript", 0, 36, 0, 0, 0, 0, 0, 0, 0, 2, 38
+"c:\Amorous souvneir\A universe of us\src\data\movies.js", "JavaScript", 0, 28, 0, 0, 0, 0, 0, 0, 5, 1, 34
+"c:\Amorous souvneir\A universe of us\src\data\settings.js", "JavaScript", 0, 15, 0, 0, 0, 0, 0, 0, 4, 2, 21
+"c:\Amorous souvneir\A universe of us\src\hooks\useDiscoveryState.js", "JavaScript", 0, 42, 0, 0, 0, 0, 0, 0, 26, 8, 76
+"c:\Amorous souvneir\A universe of us\src\index.css", "PostCSS", 0, 0, 0, 0, 0, 0, 29, 0, 0, 6, 35
+"c:\Amorous souvneir\A universe of us\src\main.jsx", "JavaScript JSX", 0, 0, 0, 9, 0, 0, 0, 0, 0, 2, 11
+"c:\Amorous souvneir\A universe of us\src\scenes\BeginningScene.jsx", "JavaScript JSX", 0, 0, 0, 175, 0, 0, 0, 0, 23, 23, 221
+"c:\Amorous souvneir\A universe of us\src\scenes\DaysScene.jsx", "JavaScript JSX", 0, 0, 0, 225, 0, 0, 0, 0, 19, 32, 276
+"c:\Amorous souvneir\A universe of us\src\scenes\DistanceScene.jsx", "JavaScript JSX", 0, 0, 0, 172, 0, 0, 0, 0, 19, 22, 213
+"c:\Amorous souvneir\A universe of us\src\scenes\FinalLetterScene.jsx", "JavaScript JSX", 0, 0, 0, 112, 0, 0, 0, 0, 14, 18, 144
+"c:\Amorous souvneir\A universe of us\src\scenes\HardDaysScene.jsx", "JavaScript JSX", 0, 0, 0, 96, 0, 0, 0, 0, 17, 12, 125
+"c:\Amorous souvneir\A universe of us\src\scenes\MovieScene.jsx", "JavaScript JSX", 0, 0, 0, 278, 0, 0, 0, 0, 32, 44, 354
+"c:\Amorous souvneir\A universe of us\src\scenes\OpeningScene.jsx", "JavaScript JSX", 0, 0, 0, 145, 0, 0, 0, 0, 10, 16, 171
+"c:\Amorous souvneir\A universe of us\src\scenes\ShelfScene.jsx", "JavaScript JSX", 0, 0, 0, 226, 0, 0, 0, 0, 15, 19, 260
+"c:\Amorous souvneir\A universe of us\src\scenes\SomedayScene.jsx", "JavaScript JSX", 0, 0, 0, 182, 0, 0, 0, 0, 5, 19, 206
+"c:\Amorous souvneir\A universe of us\src\scenes\StoriesScene.jsx", "JavaScript JSX", 0, 0, 0, 164, 0, 0, 0, 0, 9, 16, 189
+"c:\Amorous souvneir\A universe of us\src\styles\worldBible.js", "JavaScript", 0, 85, 0, 0, 0, 0, 0, 0, 14, 4, 103
+"c:\Amorous souvneir\A universe of us\src\utils\countdown.js", "JavaScript", 0, 41, 0, 0, 0, 0, 0, 0, 7, 9, 57
+"c:\Amorous souvneir\A universe of us\tailwind.config.js", "JavaScript", 0, 42, 0, 0, 0, 0, 0, 0, 8, 3, 53
+"c:\Amorous souvneir\A universe of us\vite.config.js", "JavaScript", 0, 6, 0, 0, 0, 0, 0, 0, 1, 1, 8
+"Total", "-", 4193, 483, 9, 3631, 27, 40, 187, 16, 348, 536, 9470

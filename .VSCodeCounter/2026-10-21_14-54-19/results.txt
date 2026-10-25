@@ -1,0 +1,88 @@
+Date : 2026-10-21 14:54:19
+Directory : c:\Amorous souvneir\A universe of us
+Total : 44 files,  8586 codes, 348 comments, 536 blanks, all 9470 lines
+
+Languages
++----------------+------------+------------+------------+------------+------------+
+| language       | files      | code       | comment    | blank      | total      |
++----------------+------------+------------+------------+------------+------------+
+| JSON           |          2 |      4,193 |          0 |          2 |      4,195 |
+| JavaScript JSX |         20 |      3,631 |        273 |        444 |      4,348 |
+| JavaScript     |         13 |        483 |         74 |         37 |        594 |
+| PostCSS        |          2 |        187 |          0 |         33 |        220 |
+| YAML           |          1 |         40 |          0 |          9 |         49 |
+| XML            |          4 |         27 |          0 |          2 |         29 |
+| HTML           |          1 |         16 |          1 |          1 |         18 |
+| Markdown       |          1 |          9 |          0 |          8 |         17 |
++----------------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                         | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                            |         44 |      8,586 |        348 |        536 |      9,470 |
+| . (Files)                                                                    |          8 |      4,292 |         10 |         18 |      4,320 |
+| .github                                                                      |          1 |         40 |          0 |          9 |         49 |
+| .github\workflows                                                            |          1 |         40 |          0 |          9 |         49 |
+| public                                                                       |          2 |         25 |          0 |          1 |         26 |
+| src                                                                          |         33 |      4,229 |        338 |        508 |      5,075 |
+| src (Files)                                                                  |          4 |        834 |         21 |         82 |        937 |
+| src\assets                                                                   |          2 |          2 |          0 |          1 |          3 |
+| src\components                                                               |          8 |      1,209 |         89 |        174 |      1,472 |
+| src\data                                                                     |          6 |        241 |         18 |          9 |        268 |
+| src\hooks                                                                    |          1 |         42 |         26 |          8 |         76 |
+| src\scenes                                                                   |         10 |      1,775 |        163 |        221 |      2,159 |
+| src\styles                                                                   |          1 |         85 |         14 |          4 |        103 |
+| src\utils                                                                    |          1 |         41 |          7 |          9 |         57 |
++------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| filename                                                                     | language       | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| c:\Amorous souvneir\A universe of us\.github\workflows\deploy.yml            | YAML           |         40 |          0 |          9 |         49 |
+| c:\Amorous souvneir\A universe of us\README.md                               | Markdown       |          9 |          0 |          8 |         17 |
+| c:\Amorous souvneir\A universe of us\eslint.config.js                        | JavaScript     |         20 |          0 |          2 |         22 |
+| c:\Amorous souvneir\A universe of us\index.html                              | HTML           |         16 |          1 |          1 |         18 |
+| c:\Amorous souvneir\A universe of us\package-lock.json                       | JSON           |      4,159 |          0 |          1 |      4,160 |
+| c:\Amorous souvneir\A universe of us\package.json                            | JSON           |         34 |          0 |          1 |         35 |
+| c:\Amorous souvneir\A universe of us\postcss.config.js                       | JavaScript     |          6 |          0 |          1 |          7 |
+| c:\Amorous souvneir\A universe of us\public\favicon.svg                      | XML            |          1 |          0 |          0 |          1 |
+| c:\Amorous souvneir\A universe of us\public\icons.svg                        | XML            |         24 |          0 |          1 |         25 |
+| c:\Amorous souvneir\A universe of us\src\App.css                             | PostCSS        |        158 |          0 |         27 |        185 |
+| c:\Amorous souvneir\A universe of us\src\App.jsx                             | JavaScript JSX |        638 |         21 |         47 |        706 |
+| c:\Amorous souvneir\A universe of us\src\assets\react.svg                    | XML            |          1 |          0 |          0 |          1 |
+| c:\Amorous souvneir\A universe of us\src\assets\vite.svg                     | XML            |          1 |          0 |          1 |          2 |
+| c:\Amorous souvneir\A universe of us\src\components\AtmosphereController.jsx | JavaScript JSX |         35 |         10 |          6 |         51 |
+| c:\Amorous souvneir\A universe of us\src\components\ConstellationLayer.jsx   | JavaScript JSX |        212 |          7 |         26 |        245 |
+| c:\Amorous souvneir\A universe of us\src\components\CountdownWidget.jsx      | JavaScript JSX |         71 |          8 |         12 |         91 |
+| c:\Amorous souvneir\A universe of us\src\components\Diorama.jsx              | JavaScript JSX |        113 |         10 |         20 |        143 |
+| c:\Amorous souvneir\A universe of us\src\components\InteractiveObject.jsx    | JavaScript JSX |        155 |          9 |         19 |        183 |
+| c:\Amorous souvneir\A universe of us\src\components\MemoryPanel.jsx          | JavaScript JSX |        228 |         10 |         30 |        268 |
+| c:\Amorous souvneir\A universe of us\src\components\Timeline.jsx             | JavaScript JSX |        288 |         25 |         35 |        348 |
+| c:\Amorous souvneir\A universe of us\src\components\WarpTransition.jsx       | JavaScript JSX |        107 |         10 |         26 |        143 |
+| c:\Amorous souvneir\A universe of us\src\data\finalLetter.js                 | JavaScript     |         14 |          5 |          1 |         20 |
+| c:\Amorous souvneir\A universe of us\src\data\letters.js                     | JavaScript     |         18 |          3 |          1 |         22 |
+| c:\Amorous souvneir\A universe of us\src\data\memories.js                    | JavaScript     |        130 |          1 |          2 |        133 |
+| c:\Amorous souvneir\A universe of us\src\data\milestones.js                  | JavaScript     |         36 |          0 |          2 |         38 |
+| c:\Amorous souvneir\A universe of us\src\data\movies.js                      | JavaScript     |         28 |          5 |          1 |         34 |
+| c:\Amorous souvneir\A universe of us\src\data\settings.js                    | JavaScript     |         15 |          4 |          2 |         21 |
+| c:\Amorous souvneir\A universe of us\src\hooks\useDiscoveryState.js          | JavaScript     |         42 |         26 |          8 |         76 |
+| c:\Amorous souvneir\A universe of us\src\index.css                           | PostCSS        |         29 |          0 |          6 |         35 |
+| c:\Amorous souvneir\A universe of us\src\main.jsx                            | JavaScript JSX |          9 |          0 |          2 |         11 |
+| c:\Amorous souvneir\A universe of us\src\scenes\BeginningScene.jsx           | JavaScript JSX |        175 |         23 |         23 |        221 |
+| c:\Amorous souvneir\A universe of us\src\scenes\DaysScene.jsx                | JavaScript JSX |        225 |         19 |         32 |        276 |
+| c:\Amorous souvneir\A universe of us\src\scenes\DistanceScene.jsx            | JavaScript JSX |        172 |         19 |         22 |        213 |
+| c:\Amorous souvneir\A universe of us\src\scenes\FinalLetterScene.jsx         | JavaScript JSX |        112 |         14 |         18 |        144 |
+| c:\Amorous souvneir\A universe of us\src\scenes\HardDaysScene.jsx            | JavaScript JSX |         96 |         17 |         12 |        125 |
+| c:\Amorous souvneir\A universe of us\src\scenes\MovieScene.jsx               | JavaScript JSX |        278 |         32 |         44 |        354 |
+| c:\Amorous souvneir\A universe of us\src\scenes\OpeningScene.jsx             | JavaScript JSX |        145 |         10 |         16 |        171 |
+| c:\Amorous souvneir\A universe of us\src\scenes\ShelfScene.jsx               | JavaScript JSX |        226 |         15 |         19 |        260 |
+| c:\Amorous souvneir\A universe of us\src\scenes\SomedayScene.jsx             | JavaScript JSX |        182 |          5 |         19 |        206 |
+| c:\Amorous souvneir\A universe of us\src\scenes\StoriesScene.jsx             | JavaScript JSX |        164 |          9 |         16 |        189 |
+| c:\Amorous souvneir\A universe of us\src\styles\worldBible.js                | JavaScript     |         85 |         14 |          4 |        103 |
+| c:\Amorous souvneir\A universe of us\src\utils\countdown.js                  | JavaScript     |         41 |          7 |          9 |         57 |
+| c:\Amorous souvneir\A universe of us\tailwind.config.js                      | JavaScript     |         42 |          8 |          3 |         53 |
+| c:\Amorous souvneir\A universe of us\vite.config.js                          | JavaScript     |          6 |          1 |          1 |          8 |
+| Total                                                                        |                |      8,586 |        348 |        536 |      9,470 |
++------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+

@@ -48,4 +48,4 @@ export default function AtmosphereController({ viewMode }) {
 
   // This component doesn't render any visible UI itself
   return null
-}
+} 
